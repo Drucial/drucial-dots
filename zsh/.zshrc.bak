@@ -1,0 +1,162 @@
+#---------
+# Exports
+#---------
+
+export VISUAL="nvim"
+export EDITOR="nvim"
+export BAT_THEME="base16"
+export XDG_CONFIG_HOME="$HOME/.config"
+
+# -----------------------------
+# Environment and Path Settings
+# -----------------------------
+
+# Function to add a directory to PATH if it's not already included
+add_to_path() {
+  if [[ ":$PATH:" != *":$1:"* ]]; then
+    export PATH="$1:$PATH"
+  fi
+}
+
+# Add Postgres binaries
+add_to_path "/Applications/Postgres.app/Contents/Versions/latest/bin"
+
+
+#----------
+# Aliases
+#----------
+
+# Apps
+alias cd="z"
+alias y="yazi"
+alias gg="lazygit"
+alias ls="lsd -la --group-dirs first"
+alias lst="lsd --tree --depth 2"
+alias ff="fzf --bind 'enter:execute(nvim {})'"
+
+
+
+# Term
+alias c='clear'
+alias h='history'
+alias x='exit'
+alias src='source ~/.zshrc'
+
+
+#--------
+# Evals
+#--------
+
+eval "$(zoxide init zsh)"
+eval "$(starship init zsh)"
+
+#----------
+# Plugins
+# ---------
+
+source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+export FZF_DEFAULT_OPTS="--style=full --layout=reverse --color=16 --height=100% --margin="1,2" --preview='bat --style=numbers --color=always {} | head -100'"
+
+# Manage Dotfiles
+fc() {
+  local selected full_path
+  selected=$(find "$XDG_CONFIG_HOME" -mindepth 1 -maxdepth 1 \
+    -exec bash -c 'for f; do
+      name=$(basename "$f")
+      [[ -d "$f" ]] && printf "📁 %s\n" "$name" || printf "📄 %s\n" "$name"
+    done' bash {} + \
+    | sort | fzf --no-preview)
+
+  [[ -n "$selected" ]] || return
+
+  # Strip icon + space
+  local clean_name="${selected:2}"
+  full_path="$XDG_CONFIG_HOME/$clean_name"
+
+  nvim "$full_path"
+}
+
+# Find Projects
+fp() {
+  local selected full_path projects_dir="${HOME}/Dev"
+
+  selected=$(find "$projects_dir" -mindepth 1 -maxdepth 1 -type d \
+    -exec bash -c 'for d; do
+      name=$(basename "$d")
+      printf "📁 %s\n" "$name"
+    done' bash {} + \
+    | sort | fzf --no-preview)
+
+  [[ -n "$selected" ]] || return
+
+  # Strip icon + space
+  local clean_name="${selected:2}"
+  full_path="$projects_dir/$clean_name"
+
+  cd "$full_path" || return
+  nvim .
+}
+
+# pnpm
+export PNPM_HOME="/Users/drucial/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+FPATH=~/.rbenv/completions:"$FPATH"
+
+autoload -U compinit
+compinit
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# >>> aicli autocomplete setup >>>
+ZSH_AUTOSUGGEST_USE_ASYNC=true
+
+_zsh_autosuggest_strategy_aicli() {
+  local suggestion=$(aicli --suggest "$BUFFER" 2>/dev/null)
+  if [[ -n "$suggestion" && "$suggestion" != "$BUFFER" ]]; then
+    echo -n "${suggestion#$BUFFER}"
+  fi
+}
+ZSH_AUTOSUGGEST_STRATEGY=aicli
+# <<< aicli autocomplete setup <<<

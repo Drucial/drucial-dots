@@ -1,0 +1,53 @@
+# Manage Dotfiles/Projects
+custom_picker() {
+  local target_dir="$XDG_CONFIG_HOME"
+  local cd_mode=false
+
+  for arg in "$@"; do
+    case "$arg" in
+      --cd)
+        cd_mode=true
+        ;;
+      *)
+        target_dir="$arg"
+        ;;
+    esac
+  done
+
+  local selected full_path
+
+  selected=$(fd --max-depth 1 --base-directory "$target_dir" --absolute-path --strip-cwd-prefix \
+    . \
+    | while read -r f; do
+        name=$(basename "$f")
+        [[ -d "$f" ]] && printf "📁 %s\n" "$name" || printf "📄 %s\n" "$name"
+      done \
+    | sort \
+    | fzf --preview '
+        entry=$(echo {} | cut -c 3-)
+        path="'"$target_dir"'/$entry"
+
+        if [[ -f "$path" ]]; then
+          /opt/homebrew/bin/chroma -f terminal256 "$path"
+        elif [[ -d "$path" ]]; then
+          /opt/homebrew/bin/lsd --all --tree --depth=2 "$path"
+        fi
+      ' \
+      --preview-window=right:60%:wrap \
+      --height=40% \
+      --prompt="Choose a file: " \
+      --marker="*" \
+      --layout=reverse-list \
+      --reverse)
+
+  [[ -z "$selected" ]] && return
+
+  local clean_name="${selected:2}"
+  full_path="$target_dir/$clean_name"
+
+  if [[ "$cd_mode" == true && -d "$full_path" ]]; then
+    cd "$full_path" && nvim .
+  else
+    nvim "$full_path"
+  fi
+}
