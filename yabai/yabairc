@@ -39,7 +39,7 @@ apply_yabai_config() {
     left_padding 8
     right_padding 9
     window_gap 8
-    external_bar all:36:0
+    # external_bar all:36:0
 
     active_window_opacity 1.0
     normal_window_opacity 1.0
