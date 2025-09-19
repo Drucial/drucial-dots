@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: bin/link [options] <name> [<name>...]
+Symlink items from THIS repo into your XDG config dir (~/.config by default).
+
+Examples:
+  bin/link nvim
+  bin/link -v zellij kitty
+  bin/link -f -v nvim
+  bin/link -n nvim   # dry-run
+
+Options:
+  -f   Force: replace existing files/links at destination (ln -sfn)
+  -n   Dry-run: show actions without changing anything
+  -v   Verbose
+  -h   Help
+EOF
+}
+
+force=false
+dryrun=false
+verbose=false
+
+while getopts ":fnvh" opt; do
+  case "$opt" in
+    f) force=true ;;
+    n) dryrun=true ;;
+    v) verbose=true ;;
+    h) usage; exit 0 ;;
+    \?) echo "Unknown option: -$OPTARG" >&2; usage; exit 2 ;;
+  esac
+done
+shift $((OPTIND-1))
+
+if [ $# -lt 1 ]; then usage; exit 2; fi
+
+# --- Resolve repo root from THIS script's directory (no git, no $PWD) ---
+# Follow symlinks to the real script, then go to its parent directory's parent.
+SCRIPT="${BASH_SOURCE[0]}"
+while [ -L "$SCRIPT" ]; do
+  link_target="$(readlink "$SCRIPT")"
+  case "$link_target" in
+    /*) SCRIPT="$link_target" ;;                        # absolute symlink
+    *)  SCRIPT="$(cd "$(dirname "$SCRIPT")" && pwd)/$link_target" ;;
+  esac
+done
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT")" && pwd -P)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd -P)"
+
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+msg(){ $verbose && echo "$@"; }
+
+link_one() {
+  local name="$1"
+
+  # no absolute paths or parent traversal
+  if [[ "$name" = /* || "$name" == *".."* ]]; then
+    echo "✖ Invalid name: $name" >&2
+    return 1
+  fi
+
+  local src="$REPO_ROOT/$name"
+  local dst="$CONFIG_DIR/$name"
+
+  if [ ! -e "$src" ]; then
+    echo "✖ Source not found: $src" >&2
+    return 1
+  fi
+
+  # Already linked to the same source?
+  if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+    msg "✓ Already linked: $dst -> $src"
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$dst")"
+
+  if [ -e "$dst" ] || [ -L "$dst" ]; then
+    if $force; then
+      msg "↻ Replacing existing: $dst"
+    else
+      echo "✖ Destination exists: $dst (use -f to replace)" >&2
+      return 1
+    fi
+  fi
+
+  if $dryrun; then
+    echo "DRY-RUN: ln -sfn \"$src\" \"$dst\""
+  else
+    if $force; then ln -sfn "$src" "$dst"; else ln -s "$src" "$dst"; fi
+    msg "→ Linked: $dst -> $src"
+  fi
+}
+
+status=0
+for name in "$@"; do
+  link_one "$name" || status=1
+done
+exit $status
