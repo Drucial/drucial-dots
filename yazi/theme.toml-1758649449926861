@@ -1,5 +1,5 @@
 # Aura Soft Dark Theme for Yazi
-[mgr]
+[manager]
 # # Main UI colors matching Aura Soft Dark
 # cwd = { fg = "#edecee", bg = "#21202E" }
 # hovered = { fg = "#edecee", bg = "#2e2b38" }
