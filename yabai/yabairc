@@ -34,20 +34,20 @@ apply_yabai_config() {
     mouse_action2 resize
     mouse_drop_action swap
 
-    top_padding 8
-    bottom_padding 8
-    left_padding 8
-    right_padding 9
-    window_gap 8
+    top_padding 16
+    bottom_padding 16
+    left_padding 16
+    right_padding 16
+    window_gap 16
     # external_bar all:36:0
 
-    active_window_opacity 1.0
-    normal_window_opacity 1.0
+    # active_window_opacity 1.0
+    # normal_window_opacity 1.0
     
     window_placement second_child
     window_shadow float
-    window_opacity on
-    window_opacity_duration 0.2
+    # window_opacity on
+    # window_opacity_duration 0.2
     window_zoom_persist off
     window_animation_duration 0.3
     window_animation_easing ease_out_quint
@@ -59,8 +59,8 @@ apply_yabai_config() {
 # function to add application-specific rules
 add_yabai_rules() {
   # specific applications with custom opacity settings
-  yabai -m rule --add app="^Cursor$" opacity=0.5
-  yabai -m rule --add app="^Visual Studio Code$" opacity=0.98
+  # yabai -m rule --add app="^Cursor$" opacity=0.5
+  # yabai -m rule --add app="^Visual Studio Code$" opacity=0.98
   # yabai -m rule --add app="^kitty$" opacity=0.95
 
   # exclude specific applications from being managed
@@ -81,7 +81,6 @@ add_yabai_rules() {
     "^Tuple$"
     "^Postgres$"
     "^CleanShot X$"
-    "^Notion Calendar"
   )
 
   for app in "${apps_to_exclude[@]}"; do

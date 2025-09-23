@@ -75,8 +75,6 @@ eval "$(starship init zsh)"
 # Plugins
 # ---------
 
-bindkey -v
-
 source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 export FZF_DEFAULT_OPTS="--style=full --layout=reverse --color=16 --height=100% --margin="1,2" --preview='bat --style=numbers --color=always {} | head -100'"
@@ -100,5 +98,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# awrit
-export PATH="/Users/drucial/.local/bin:$PATH"
+bindkey -e
+
+# Added by `rbenv init` on Tue Sep 23 10:28:24 EDT 2025
+eval "$(rbenv init - --no-rehash zsh)"
