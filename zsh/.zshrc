@@ -2,7 +2,13 @@
 # Files
 #---------
 
-source $HOME/.config/zsh/.zsh_functions
+if [ -f ~/.config/zsh/.zsh_functions ]; then
+  source $HOME/.config/zsh/.zsh_functions
+fi
+
+if [ -f ~/.config/zsh/secrets ]; then
+  source ~/.config/zsh/secrets
+fi
 
 #---------
 # Exports
@@ -12,8 +18,6 @@ export VISUAL="nvim"
 export EDITOR="nvim"
 export BAT_THEME="base16"
 export XDG_CONFIG_HOME="$HOME/.config"
-export OPENAI_API_KEY=REDACTED_OPENAI_KEY
-export ANTHROPIC_API_KEY=REDACTED_ANTHROPIC_KEY
 
 # -----------------------------
 # Environment and Path Settings
