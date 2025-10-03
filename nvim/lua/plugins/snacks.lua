@@ -2,6 +2,28 @@ return {
   "folke/snacks.nvim",
   event = "VeryLazy",
   opts = {
+    explorer = {
+      enabled = false,
+    },
+    picker = {
+      hidden = true,
+      backdrop = false,
+      win = {
+        styles = {
+          position = "float",
+          backdrop = false,
+          height = 0.9,
+          width = 0.9,
+          zindex = 50,
+        },
+      },
+    },
+    zen = {
+      enabled = true,
+      win = {
+        styles = "minimal",
+      },
+    },
     dashboard = {
       preset = {
         pick = function(cmd, opts)
@@ -32,7 +54,7 @@ return {
 ]],
         keys = {
           { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
-          { icon = "", key = "y", desc = "File Browser", action = ":Yazi" },
+          { icon = "", key = "y", desc = "File Browser", action = "<CMD>Oil<CR>" },
           { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
           { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
           { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },

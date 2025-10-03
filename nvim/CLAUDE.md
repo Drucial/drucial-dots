@@ -66,7 +66,7 @@ This is a personal Neovim configuration built on top of LazyVim, a modular Neovi
 
 ### Plugin Highlights
 
-- **File Management**: Yazi file manager integration, Mini Files, Snacks explorer
+- **File Management**: Oil file manager integration, Mini Files, Snacks explorer
 - **Editor Enhancement**: nvim-surround, scrollview, custom buffer navigation
 - **Python**: Dedicated Python configuration in `lua/plugins/python.lua`
 - **Completion**: Cursor-specific completion enhancements
@@ -87,4 +87,3 @@ When modifying plugins:
 4. Follow the return table structure for plugin specifications
 
 Lock file (`lazy-lock.json`) maintains exact plugin versions for reproducible installations.
-

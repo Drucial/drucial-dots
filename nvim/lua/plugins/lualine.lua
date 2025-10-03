@@ -68,7 +68,7 @@ return {
           "ministarter",
           "snacks_dashboard",
           "snacks_picker_input",
-          "yazi",
+          "oil",
         },
       },
 
