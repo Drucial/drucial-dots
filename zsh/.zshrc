@@ -7,7 +7,7 @@ if [ -f ~/.config/zsh/.zsh_functions ]; then
 fi
 
 if [ -f ~/.config/zsh/secrets ]; then
-  source ~/.config/zsh/secrets
+  source ~/.config/zsh/.secrets
 fi
 
 #---------
@@ -32,6 +32,9 @@ add_to_path() {
 
 # Add Postgres binaries
 add_to_path "/Applications/Postgres.app/Contents/Versions/latest/bin"
+add_to_path "$HOME/bin"
+add_to_path "$HOME/.local/bin"
+
 
 
 #----------
