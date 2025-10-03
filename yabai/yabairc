@@ -57,8 +57,10 @@ add_yabai_rules() {
     "^Raycast$"
     "^activity monitor$"
     "^Messages$"
+    "^Facetime$"
     "^Logi Options+$"
     "^Tuple$"
+    "^ChatGPT$"
     "^Postgres$"
     "^CleanShot X$"
   )
