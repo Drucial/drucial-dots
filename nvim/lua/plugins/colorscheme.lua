@@ -18,7 +18,7 @@ return { -- If you want to see what colorschemes are already installed, you can 
     name = "rose-pine",
     config = function()
       require("rose-pine").setup({
-        variant = "moon", -- auto, main, moon, or dawn
+        variant = "auto", -- auto, main, moon, or dawn
         dark_variant = "main", -- main, moon, or dawn
         dim_inactive_windows = false,
         extend_background_behind_borders = true,
@@ -71,7 +71,7 @@ return { -- If you want to see what colorschemes are already installed, you can 
         end,
       })
 
-      vim.cmd("colorscheme rose-pine-moon")
+      vim.cmd("colorscheme rose-pine")
     end,
   },
 }
