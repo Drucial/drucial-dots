@@ -48,7 +48,7 @@ return { -- If you want to see what colorschemes are already installed, you can 
 
           Pmenu = { fg = "text", bg = "none", inherit = false },
           PmenuSel = { fg = "text", bg = "highlight_med", inherit = false },
-          
+
           -- Blink.cmp specific highlights
           BlinkCmpMenu = { fg = "text", bg = "none" },
           BlinkCmpMenuBorder = { fg = "muted", bg = "none" },

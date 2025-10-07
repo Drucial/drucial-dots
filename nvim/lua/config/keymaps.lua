@@ -2,53 +2,53 @@ local map = vim.keymap.set
 local opts = { noremap = true, silent = true }
 
 -- Save file with cmd-s
-map({ "n", "v", "i" }, "<D-s>", function()
-  vim.cmd("w")
-end, { desc = "Save file" })
-
--- Close current buffer with cmd-w
-map("n", "<D-w>", function()
-  if vim.bo.filetype == "qf" then
-    vim.cmd("cclose")
-  elseif vim.bo.filetype == "help" then
-    vim.cmd("quit")
-  else
-    vim.cmd("bd")
-  end
-end, { desc = "Close Buffer" })
-
--- Cmd+p → Find files from root dir
-map("n", "<D-p>", function()
-  require("snacks.picker").files({ cwd = require("lazyvim.util").root() })
-end, { desc = "Find Files (Project Root)" })
-
--- Cmd+Shift+p → Find config files in ~/.config/nvim
-map("n", "<D-P>", function()
-  require("snacks.picker").files({ cwd = vim.fn.stdpath("config") })
-end, { desc = "Find Config Files" })
-
--- Cmd+f → Find string in current file
-map("n", "<D-f>", function()
-  require("snacks.picker").lines()
-end, { desc = "Find String in Current File" })
-
--- Cmd+Shift+f → Find string in project
-map("n", "<D-F>", function()
-  require("snacks.picker").grep({ cwd = require("lazyvim.util").root() })
-end, { desc = "Find String in Project" })
-
--- Cmd+b → Toggle file browser
-map("n", "<D-b>", "<CMD>Oil<CR>", { desc = "Toggle File Browser (Oil)" })
-
--- Leader+e → Open Oil at project root
-map("n", "<leader>e", function()
-  require("oil").open(require("lazyvim.util").root())
-end, { desc = "Explorer (root dir)" })
-
--- Leader+E → Open Oil at current working directory
-map("n", "<leader>E", function()
-  require("oil").open(vim.fn.getcwd())
-end, { desc = "Explorer (cwd)" })
+-- map({ "n", "v", "i" }, "<D-s>", function()
+--   vim.cmd("w")
+-- end, { desc = "Save file" })
+--
+-- -- Close current buffer with cmd-w
+-- map("n", "<D-w>", function()
+--   if vim.bo.filetype == "qf" then
+--     vim.cmd("cclose")
+--   elseif vim.bo.filetype == "help" then
+--     vim.cmd("quit")
+--   else
+--     vim.cmd("bd")
+--   end
+-- end, { desc = "Close Buffer" })
+--
+-- -- Cmd+p → Find files from root dir
+-- map("n", "<D-p>", function()
+--   require("snacks.picker").files({ cwd = require("lazyvim.util").root() })
+-- end, { desc = "Find Files (Project Root)" })
+--
+-- -- Cmd+Shift+p → Find config files in ~/.config/nvim
+-- map("n", "<D-P>", function()
+--   require("snacks.picker").files({ cwd = vim.fn.stdpath("config") })
+-- end, { desc = "Find Config Files" })
+--
+-- -- Cmd+f → Find string in current file
+-- map("n", "<D-f>", function()
+--   require("snacks.picker").lines()
+-- end, { desc = "Find String in Current File" })
+--
+-- -- Cmd+Shift+f → Find string in project
+-- map("n", "<D-F>", function()
+--   require("snacks.picker").grep({ cwd = require("lazyvim.util").root() })
+-- end, { desc = "Find String in Project" })
+--
+-- -- Cmd+b → Toggle file browser
+-- map("n", "<D-b>", "<CMD>Oil<CR>", { desc = "Toggle File Browser (Oil)" })
+--
+-- -- Leader+e → Open Oil at project root
+-- map("n", "<leader>e", function()
+--   require("oil").open(require("lazyvim.util").root())
+-- end, { desc = "Explorer (root dir)" })
+--
+-- -- Leader+E → Open Oil at current working directory
+-- map("n", "<leader>E", function()
+--   require("oil").open(vim.fn.getcwd())
+-- end, { desc = "Explorer (cwd)" })
 
 -- Buffer Navigation
 local function next_buffer()
@@ -60,8 +60,8 @@ local function prev_buffer()
 end
 
 -- Cmd +[ and Cmd +] to navigate buffers
-map("n", "<D-]>", next_buffer, { desc = "Next Buffer" })
-map("n", "<D-[>", prev_buffer, { desc = "Previous Buffer" })
+-- map("n", "<D-]>", next_buffer, { desc = "Next Buffer" })
+-- map("n", "<D-[>", prev_buffer, { desc = "Previous Buffer" })
 
 map("n", "<leader>]", next_buffer, { desc = "Next Buffer" })
 map("n", "<leader>[", prev_buffer, { desc = "Previous Buffer" })
