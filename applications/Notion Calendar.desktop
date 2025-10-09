@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Notion Calendar
+Comment=Notion Calendar
+Exec=omarchy-launch-webapp https://calendar.notion.so
+Terminal=false
+Type=Application
+Icon=/home/drucial/.local/share/applications/icons/Notion Calendar.png
+StartupNotify=true

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Linear
+Comment=Linear
+Exec=omarchy-launch-webapp https://linear.app
+Terminal=false
+Type=Application
+Icon=/home/drucial/.local/share/applications/icons/Linear.png
+StartupNotify=true

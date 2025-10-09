@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Unsplash
+Comment=Unsplash
+Exec=omarchy-launch-webapp https://unsplash.com/
+Terminal=false
+Type=Application
+Icon=/home/drucial/.local/share/applications/icons/Unsplash.png
+StartupNotify=true
