@@ -79,12 +79,12 @@
 # 	{ name = "*", use = [ "open", "reveal" ] },
 # ]
 #
-# [tasks]
+[tasks]
 # micro_workers    = 10
 # macro_workers    = 10
 # bizarre_retry    = 3
 # image_alloc      = 536870912  # 512MB
-# image_bound      = [ 0, 0 ]
+image_bound = [10000, 10000]
 # suppress_preload = false
 #
 # [plugin]
@@ -222,4 +222,3 @@
 # sort_sensitive = false
 # sort_reverse 	 = false
 # sort_translit  = false
-
