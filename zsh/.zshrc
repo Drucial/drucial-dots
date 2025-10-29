@@ -35,7 +35,20 @@ add_to_path "/Applications/Postgres.app/Contents/Versions/latest/bin"
 add_to_path "$HOME/bin"
 add_to_path "$HOME/.local/bin"
 
+#---------
+# Helpers
+#
+git_branch_name() {
+  git rev-parse --abbrev-ref HEAD
+}
 
+lst() {
+  local depth=2
+  if [[ -n $1 ]]; then
+    depth=${1#-}
+  fi
+  eza -a --tree --level=$depth --color=always --icons=always --group-directories-first
+}
 
 #----------
 # Aliases
@@ -45,12 +58,13 @@ add_to_path "$HOME/.local/bin"
 alias cd="z"
 alias y="yazi"
 alias gg="lazygit"
-alias lsa="lsd -la --group-dirs first"
-alias ls="lsd --tree --depth 1"
+alias ls="eza -a -1 --color=always --icons=always --group-directories-first"
+alias lsa="eza -a -1 -l --color=always --icons=always --group-directories-first"
 alias f="spf"
 alias ff="fzf --bind 'enter:execute(nvim {})'"
 alias fc="custom_picker"
 alias fp="custom_picker ~/Dev --cd"
+alias ip='echo $(curl -s ipinfo.io) | jq '.'; curl -s ipinfo.io/ip | pbcopy; echo "IP address copied to cliboard."'
 
 # Term
 alias c='clear'
@@ -59,6 +73,7 @@ alias x='exit'
 alias src='source ~/.zshrc'
 alias e='nvim'
 alias v='vim'
+alias nvim-bak='NVIM_APPNAME=nvim.bak nvim'
 
 alias zshrc='nvim ~/.zshrc'
 
@@ -68,8 +83,21 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
-alias fs='~/.config/kitty/session-manager/session-picker'
-alias fse='~/.config/kitty/session-manager/session-editor'
+# Git
+alias gg='lazygit'
+alias gst='git status'
+alias gco='git checkout'
+alias gcom='git checkout main'
+alias gcob='git checkout -b'
+alias gcm='git commit -m'
+alias gcam='git commit --all -m'
+alias gb='git branch'
+alias ga='git add'
+alias gaa='git add -A'
+alias gpo='git pull'
+alias gpsup='git push --set-upstream origin $(git_branch_name)'
+alias ghpr='open_github_pr'
+alias gdc='git diff main | pbcopy && echo "Diff copied to clipboard."'
 
 #--------
 # Evals
@@ -84,7 +112,19 @@ eval "$(starship init zsh)"
 
 source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-export FZF_DEFAULT_OPTS="--style=full --layout=reverse --color=16 --height=100% --margin="1,2" --preview='bat --style=numbers --color=always {} | head -100'"
+export FZF_DEFAULT_OPTS="
+  --style=full
+  --layout=reverse
+  --color=16
+  --height=100%
+  --margin='1,2'
+  --preview='bat --style=numbers --color=always {} | head -100'
+  --color=fg:#908caa,bg:#232136,hl:#ea9a97
+  --color=fg+:#e0def4,bg+:#393552,hl+:#ea9a97
+  --color=border:#44415a,header:#3e8fb0,gutter:#232136
+  --color=spinner:#f6c177,info:#9ccfd8
+  --color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa
+"
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 

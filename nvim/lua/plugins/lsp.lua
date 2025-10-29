@@ -52,6 +52,42 @@ return {
 
     -- servers
     opts.servers = vim.tbl_deep_extend("force", opts.servers or {}, {
+      -- ESLint (auto-fix on save)
+      eslint = {
+        -- Use project root that actually has ESLint config or a package.json
+        root_dir = function(fname)
+          return require("lspconfig.util").root_pattern(
+            ".eslintrc",
+            ".eslintrc.js",
+            ".eslintrc.cjs",
+            ".eslintrc.json",
+            "package.json",
+            ".git"
+          )(fname)
+        end,
+        on_attach = function(client, bufnr)
+          -- If you use Prettier (via conform.nvim or null-ls) for formatting,
+          -- keep ESLint for fixes only:
+          client.server_capabilities.documentFormattingProvider = false
+
+          local function eslint_fix_all()
+            -- Ask the LSP for the ESLint "source.fixAll" code action and apply it.
+            vim.lsp.buf.code_action({
+              context = { only = { "source.fixAll.eslint" } },
+              apply = true,
+            })
+          end
+
+          -- Run *before* the buffer is written
+          vim.api.nvim_create_autocmd("BufWritePre", {
+            buffer = bufnr,
+            callback = function()
+              eslint_fix_all()
+            end,
+            desc = "ESLint: fix all on save",
+          })
+        end,
+      },
       -- Lua
       lua_ls = {
         settings = {
