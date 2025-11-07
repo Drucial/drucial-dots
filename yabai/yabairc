@@ -29,7 +29,7 @@ apply_yabai_config() {
     left_padding 16
     right_padding 16
     window_gap 16
-    
+
     window_placement second_child
     window_shadow float
     window_zoom_persist off
@@ -60,10 +60,15 @@ add_yabai_rules() {
     "^Facetime$"
     "^Logi Options+$"
     "^Tuple$"
-    "^ChatGPT$"
     "^Postgres$"
     "^CleanShot X$"
   )
+
+   # --- ChatGPT-specific rules ---
+  # Exclude the companion popup (sticky/system dialog)
+  yabai -m rule --add app="ChatGPT" subrole="AXSystemDialog" manage=off
+  # Allow the main app window to be tiled/managed
+  yabai -m rule --add app="ChatGPT" subrole="AXStandardWindow" layer=normal manage=on
 
   for app in "${apps_to_exclude[@]}"; do
     yabai -m rule --add app="$app" manage=off
