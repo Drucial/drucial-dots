@@ -99,6 +99,9 @@ alias gpsup='git push --set-upstream origin $(git_branch_name)'
 alias ghpr='open_github_pr'
 alias gdc='git diff main | pbcopy && echo "Diff copied to clipboard."'
 
+# SSH
+alias omakase-pi="ssh drucial@omakase-pi"
+
 #--------
 # Evals
 #--------

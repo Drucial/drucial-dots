@@ -3,3 +3,4 @@ zsh/.secrets
 .zcompdump
 .zsh_history
 .DS_STORE
+zsh/.zcompdump
