@@ -64,7 +64,7 @@ alias f="spf"
 alias ff="fzf --bind 'enter:execute(nvim {})'"
 alias fc="custom_picker"
 alias fp="custom_picker ~/Dev --cd"
-alias ip='echo $(curl -s ipinfo.io) | jq '.'; curl -s ipinfo.io/ip | pbcopy; echo "IP address copied to cliboard."'
+alias ip='ipconfig getifaddr en0 | tee >(pbcopy)'
 
 # Term
 alias c='clear'
