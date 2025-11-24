@@ -36,13 +36,23 @@ return {
     local lualine_require = require("lualine_require")
     lualine_require.require = require
 
-    local icons = LazyVim.config.icons
+    -- Get rose-pine colors
+    local palette = require("rose-pine.palette")
+
+    -- Custom icons (replacing LazyVim.config.icons)
+    local icons = {
+      git = {
+        added = "+",
+        modified = "~",
+        removed = "-",
+      },
+    }
 
     vim.o.laststatus = vim.g.lualine_laststatus
 
     local opts = {
       options = {
-        theme = "auto",
+        -- theme = "auto",
         globalstatus = true,
         separators = {
           left = "",
@@ -56,8 +66,8 @@ return {
             "alpha",
             "ministarter",
             "snacks_dashboard",
-            "terminal",
-            "snacks_terminal",
+            -- "terminal",
+            -- "snacks_terminal",
             "lazy", -- if you're using lazy.nvim
             "", -- this disables lualine for buffers with *no* filetype (like term:// sometimes)
           },
@@ -82,33 +92,63 @@ return {
           },
         },
         lualine_b = {
-          -- {
-          --   function()
-          --     local repo = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
-          --     return repo
-          --   end,
-          --   icon = { "", align = "left" },
-          --   fmt = trunc(80, 20, 60, 20),
-          --   padding = { left = 1, right = 0 },
-          -- },
           {
-            "branch",
-            fmt = trunc(80, 20, 60, 30), -- Adjust these values as needed
+            function()
+              return vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+            end,
             padding = { left = 1, right = 1 },
+            color = { fg = palette.rose },
           },
         },
 
         lualine_c = {
-          LazyVim.lualine.root_dir(),
-          { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
-          { LazyVim.lualine.pretty_path(), padding = { left = 0, right = 0 }, color = { fg = "muted" } },
-          -- {
-          --   "filetype",
-          --   icon_only = false, -- show full text
-          --   colored = false, -- disable color if it's hard to read
-          -- },
+          {
+            function()
+              -- Show terminal process in terminal mode
+              if vim.bo.buftype == "terminal" then
+                local term_name = vim.fn.expand("%:t")
+                -- Extract process name from terminal buffer name (e.g., "term://...//12345:/bin/zsh")
+                local process = term_name:match(":([^:]+)$") or term_name
+                return "~" .. process
+              end
+              local filepath = vim.fn.expand("%:.:h")
+              return filepath == "." and "" or filepath .. "/"
+            end,
+            padding = { left = 1, right = 1 },
+            color = { fg = palette.muted },
+          },
+          {
+            function()
+              -- Hide arrow in terminal mode
+              if vim.bo.buftype == "terminal" then
+                return ""
+              end
+              return "→"
+            end,
+            padding = { left = 0, right = 0 },
+            color = { fg = palette.muted },
+          },
+          {
+            "filename",
+            path = 0, -- Just the filename, no path
+            padding = { left = 1, right = 1 },
+            color = { fg = palette.muted },
+            cond = function()
+              -- Hide filename in terminal mode
+              return vim.bo.buftype ~= "terminal"
+            end,
+          },
         },
         lualine_x = {
+          {
+            "branch",
+            icon = { "" },
+            fmt = trunc(80, 20, 60, 30), -- Adjust these values as needed
+            padding = { left = 1, right = 1 },
+            color = { fg = palette.rose },
+          },
+        },
+        lualine_y = {
           {
             "diff",
             symbols = {
@@ -126,13 +166,17 @@ return {
                 }
               end
             end,
+            color = { fg = palette.muted },
           },
         },
-        lualine_y = {
-          -- { "progress", separator = " ", padding = { left = 1, right = 0 } },
-          -- { "location", padding = { left = 0, right = 1 } },
+        lualine_z = {
+          {
+            function()
+              return "⌥"
+            end,
+            padding = { left = 1, right = 1 },
+          },
         },
-        lualine_z = {},
       },
       extensions = { "oil", "lazy", "fzf" },
     }

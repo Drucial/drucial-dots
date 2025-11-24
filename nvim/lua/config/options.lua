@@ -1,15 +1,28 @@
 -- Options are automatically loaded before lazy.nvim startup
 -- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- Add any additional options here
---
--- vim.g.copilot_no_tab_map = true
--- vim.g.copilot_assume_mapped = true
--- vim.g.ai_cmp = true -- enables ghost_text in LazyVim default cmp setup
 
 local opt = vim.opt
--- Show which line your cursor is on
-opt.cursorline = true
-opt.termguicolors = true -- Enable 24-bit RGB colors in the TUI
 
--- Minimal number of screen lines to keep above and below the cursor.
-opt.scrolloff = 16
+-- Centered cursor (keeps cursor in middle of screen)
+opt.scrolloff = 999
+
+-- Better horizontal scroll context
+opt.sidescrolloff = 16
+
+-- Show substitution preview in split window
+opt.inccommand = "split"
+
+-- Hide command line when not in use (cleaner UI with Noice)
+opt.cmdheight = 0
+
+-- Better treesitter-based folding
+opt.foldmethod = "expr"
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opt.foldlevelstart = 99 -- Start with all folds open
+
+-- Disable swapfiles (optional - remove if you prefer swapfiles)
+opt.swapfile = false
+
+-- Better wrapped line indentation
+opt.breakindent = true
