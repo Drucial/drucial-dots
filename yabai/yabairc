@@ -71,6 +71,9 @@ add_yabai_rules() {
   # Allow the main app window to be tiled/managed
   yabai -m rule --add app="ChatGPT" subrole="AXStandardWindow" layer=normal manage=on
 
+  # explicitly manage IOS simulator
+  yabai -m rule --add app="Simulator" manage=on
+
   for app in "${apps_to_exclude[@]}"; do
     yabai -m rule --add app="$app" manage=off
   done

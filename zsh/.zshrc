@@ -6,7 +6,7 @@ if [ -f ~/.config/zsh/.zsh_functions ]; then
   source $HOME/.config/zsh/.zsh_functions
 fi
 
-if [ -f ~/.config/zsh/secrets ]; then
+if [ -f ~/.config/zsh/.secrets ]; then
   source ~/.config/zsh/.secrets
 fi
 
@@ -55,6 +55,7 @@ lst() {
 #----------
 
 # Apps
+alias ask="chatgpt"
 alias cd="z"
 alias y="yazi"
 alias gg="lazygit"
@@ -129,7 +130,7 @@ export FZF_DEFAULT_OPTS="
 	--color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa
 "
 
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --no-ignore --exclude .git --exclude node_modules --exclude build --exclude dist --exclude .next --exclude coverage'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 # pnpm
