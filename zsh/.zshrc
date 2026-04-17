@@ -56,16 +56,17 @@ lst() {
 
 # Apps
 alias ask="chatgpt"
-alias cd="z"
+# alias cd="z"
 alias y="yazi"
 alias gg="lazygit"
 alias ls="eza -a -1 --color=always --icons=always --group-directories-first"
 alias lsa="eza -a -1 -l --color=always --icons=always --group-directories-first"
 alias f="spf"
 alias ff="fzf --bind 'enter:execute(nvim {})'"
-alias fc="custom_picker"
+alias configs="custom_picker"
 alias fp="custom_picker ~/Dev --cd"
 alias ip='ipconfig getifaddr en0 | tee >(pbcopy)'
+alias notes='nvim ~/notes'
 
 # Term
 alias c='clear'
@@ -154,3 +155,5 @@ bindkey -e
 
 # Added by `rbenv init` on Tue Sep 23 10:28:24 EDT 2025
 eval "$(rbenv init - --no-rehash zsh)"
+
+eval "$(atuin init zsh)"
