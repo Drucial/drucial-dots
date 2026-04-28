@@ -63,6 +63,11 @@ alias ls="eza -a -1 --color=always --icons=always --group-directories-first"
 alias lsa="eza -a -1 -l --color=always --icons=always --group-directories-first"
 alias f="spf"
 alias ff="fzf --bind 'enter:execute(nvim {})'"
+alias fs='fzf --ansi --disabled --delimiter : \
+  --bind "start:reload:rg --column --line-number --no-heading --color=always --smart-case {q}" \
+  --bind "change:reload:sleep 0.1; rg --column --line-number --no-heading --color=always --smart-case {q} || true" \
+  --preview "bat --style=numbers --color=always --highlight-line {2} {1}" \
+  --bind "enter:become(nvim +{2} {1})"'
 alias configs="custom_picker"
 alias fp="custom_picker ~/Dev --cd"
 alias ip='ipconfig getifaddr en0 | tee >(pbcopy)'
