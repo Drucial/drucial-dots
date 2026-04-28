@@ -50,6 +50,12 @@ lst() {
   eza -a --tree --level=$depth --color=always --icons=always --group-directories-first
 }
 
+fa() {
+  local selection
+  selection=$(alias | fzf --no-multi --preview-window=hidden) || return
+  print -z "${selection%%=*}"
+}
+
 #----------
 # Aliases
 #----------
