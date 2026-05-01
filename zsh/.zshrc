@@ -64,7 +64,6 @@ fa() {
 alias ask="chatgpt"
 # alias cd="z"
 alias y="yazi"
-alias gg="lazygit"
 alias ls="eza -a -1 --color=always --icons=always --group-directories-first"
 alias lsa="eza -a -1 -l --color=always --icons=always --group-directories-first"
 alias f="spf"
@@ -98,6 +97,7 @@ alias .....='cd ../../../..'
 
 # Git
 alias gg='lazygit'
+alias gd="gh dash"
 alias gst='git status'
 alias gco='git checkout'
 alias gcom='git checkout main'

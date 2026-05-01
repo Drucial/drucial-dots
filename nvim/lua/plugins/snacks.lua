@@ -11,23 +11,23 @@ return {
       },
       -- scroll = { enabled = true },
       -- image = { enabled = true },
-      -- picker = {
-      -- 	enabled = true,
-      -- 	hidden = true,
-      -- 	sources = {
-      -- 		files = {
-      -- 			hidden = true,
-      -- 			ignored = true,
-      -- 			exclude = {
-      -- 				"**/.git/*",
-      -- 				"**/node_modules/*",
-      -- 				"**/dist/*",
-      -- 				"**/build/*",
-      -- 				"**/.next/*",
-      -- 			},
-      -- 		},
-      -- 	},
-      -- },
+      picker = {
+        enabled = true,
+        hidden = true,
+        sources = {
+          files = {
+            hidden = true,
+            ignored = true,
+            exclude = {
+              "**/.git/*",
+              "**/node_modules/*",
+              "**/dist/*",
+              "**/build/*",
+              "**/.next/*",
+            },
+          },
+        },
+      },
       -- terminal = {
       -- 	enabled = true,
       -- 	win = {

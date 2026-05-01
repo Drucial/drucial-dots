@@ -1,0 +1,11 @@
+[theme]
+name = "rose-pine"
+
+[colors]
+AlertInfo = "powderblue"
+AlertWarn = "burlywood"
+AlertError = "palevioletred"
+Annotation = "slategray"
+Base = "lavender"
+Guidance = "steelblue"
+Important = "plum"
