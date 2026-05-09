@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: install [options]
+Symlink Claude Code config from this repo into ~/.claude/.
+
+Items linked: CLAUDE.md, settings.json, agents/, skills/
+
+Examples:
+  ./install         # link with safety checks
+  ./install -f      # replace existing files/links
+  ./install -n -v   # dry-run, verbose
+
+Options:
+  -f   Force: replace existing files/links at destination
+  -n   Dry-run: show actions without changing anything
+  -v   Verbose
+  -h   Help
+EOF
+}
+
+force=false
+dryrun=false
+verbose=false
+
+while getopts ":fnvh" opt; do
+  case "$opt" in
+    f) force=true ;;
+    n) dryrun=true ;;
+    v) verbose=true ;;
+    h) usage; exit 0 ;;
+    \?) echo "Unknown option: -$OPTARG" >&2; usage; exit 2 ;;
+  esac
+done
+
+# Resolve this script's directory, following symlinks.
+SCRIPT="${BASH_SOURCE[0]}"
+while [ -L "$SCRIPT" ]; do
+  link_target="$(readlink "$SCRIPT")"
+  case "$link_target" in
+    /*) SCRIPT="$link_target" ;;
+    *)  SCRIPT="$(cd "$(dirname "$SCRIPT")" && pwd)/$link_target" ;;
+  esac
+done
+SRC_DIR="$(cd "$(dirname "$SCRIPT")" && pwd -P)"
+
+CLAUDE_DIR="$HOME/.claude"
+ITEMS=(CLAUDE.md settings.json agents skills)
+msg(){ $verbose && echo "$@"; }
+
+mkdir -p "$CLAUDE_DIR"
+
+link_one() {
+  local name="$1"
+  local src="$SRC_DIR/$name"
+  local dst="$CLAUDE_DIR/$name"
+
+  if [ ! -e "$src" ]; then
+    echo "✖ Source not found: $src" >&2
+    return 1
+  fi
+
+  if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+    msg "✓ Already linked: $dst -> $src"
+    return 0
+  fi
+
+  if [ -e "$dst" ] || [ -L "$dst" ]; then
+    if $force; then
+      msg "↻ Replacing existing: $dst"
+    else
+      echo "✖ Destination exists: $dst (use -f to replace)" >&2
+      return 1
+    fi
+  fi
+
+  if $dryrun; then
+    echo "DRY-RUN: ln -sfn \"$src\" \"$dst\""
+  else
+    if $force; then ln -sfn "$src" "$dst"; else ln -s "$src" "$dst"; fi
+    msg "→ Linked: $dst -> $src"
+  fi
+}
+
+status=0
+for name in "${ITEMS[@]}"; do
+  link_one "$name" || status=1
+done
+exit $status
