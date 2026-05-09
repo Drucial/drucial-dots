@@ -2,14 +2,15 @@
 # # If you encounter any issues, please make an issue at https://github.com/yazi-rs/schemas.
 # "$schema" = "https://yazi-rs.github.io/schemas/yazi.json"
 #
-# [manager]
+# [mgr]
 # ratio          = [ 1, 4, 3 ]
 # sort_by        = "alphabetical"
 # sort_sensitive = false
 # sort_reverse 	 = false
 # sort_dir_first = true
 # sort_translit  = false
-linemode = "size"
+# linemode = "size"
+# calc_dir_size = true
 # show_hidden    = false
 # show_symlink   = true
 # scrolloff      = 5
