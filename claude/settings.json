@@ -45,7 +45,8 @@
         "hooks": [
           { "type": "command", "command": "$HOME/.claude/hooks/protect-files.sh", "timeout": 5000, "statusMessage": "Checking file protections..." },
           { "type": "command", "command": "$HOME/.claude/hooks/warn-large-files.sh", "timeout": 5000, "statusMessage": "Checking for build artifacts..." },
-          { "type": "command", "command": "$HOME/.claude/hooks/scan-secrets.sh", "timeout": 5000, "statusMessage": "Scanning for secrets..." }
+          { "type": "command", "command": "$HOME/.claude/hooks/scan-secrets.sh", "timeout": 5000, "statusMessage": "Scanning for secrets..." },
+          { "type": "command", "command": "$HOME/.claude/hooks/check-primitives.sh", "timeout": 5000, "statusMessage": "Checking for existing primitives..." }
         ]
       },
       {
@@ -59,7 +60,8 @@
       {
         "matcher": "Edit|Write",
         "hooks": [
-          { "type": "command", "command": "$HOME/.claude/hooks/format-on-save.sh", "timeout": 15000, "statusMessage": "Formatting..." }
+          { "type": "command", "command": "$HOME/.claude/hooks/format-on-save.sh", "timeout": 15000, "statusMessage": "Formatting..." },
+          { "type": "command", "command": "$HOME/.claude/hooks/nudge-duplication.sh", "timeout": 5000, "statusMessage": "Scanning for duplication..." }
         ]
       }
     ],
