@@ -128,6 +128,7 @@ eval "$(starship init zsh)"
 
 source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# source $HOMEBREW_PREFIX/opt/zsh-vi-mode/share/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 export FZF_DEFAULT_OPTS="
   --style=full
   --layout=reverse
@@ -168,3 +169,4 @@ bindkey -e
 eval "$(rbenv init - --no-rehash zsh)"
 
 eval "$(atuin init zsh)"
+export SHARP_IGNORE_GLOBAL_LIBVIPS=1
