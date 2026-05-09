@@ -1,12 +1,14 @@
 prSections:
   - title: My Pull Requests
     filters: is:open author:@me
-  - title: Craftwork
-    filters: is:open repo:craftworkco/craftwork
   - title: Needs My Review
     filters: is:open review-requested:@me
-  - title: Involved
-    filters: is:open involves:@me -author:@me
+  - title: Craftwork
+    filters: is:open repo:craftworkco/craftwork
+  - title: Drucial-App
+    filters: is:open repo:drucial/drucial-app
+  - title: Reecv
+    filters: is:open repo:drucial/reecv
 issuesSections:
   - title: My Issues
     filters: is:open author:@me
