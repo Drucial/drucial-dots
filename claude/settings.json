@@ -1,24 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true,
-    "code-review@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": true,
-    "commit-commands@claude-plugins-official": true,
-    "playwright@claude-plugins-official": true,
-    "security-guidance@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
-    "claude-code-setup@claude-plugins-official": true,
-    "ruby-lsp@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true
-  },
-  "alwaysThinkingEnabled": true,
-  "effortLevel": "high",
-  "theme": "auto",
-  "editorMode": "normal",
-  "feedbackSurveyState": {
-    "lastShownTime": 1754504720087
-  },
   "permissions": {
     "deny": [
       "Read(**/.env)",
@@ -43,16 +24,41 @@
       {
         "matcher": "Edit|Write",
         "hooks": [
-          { "type": "command", "command": "$HOME/.claude/hooks/protect-files.sh", "timeout": 5000, "statusMessage": "Checking file protections..." },
-          { "type": "command", "command": "$HOME/.claude/hooks/warn-large-files.sh", "timeout": 5000, "statusMessage": "Checking for build artifacts..." },
-          { "type": "command", "command": "$HOME/.claude/hooks/scan-secrets.sh", "timeout": 5000, "statusMessage": "Scanning for secrets..." },
-          { "type": "command", "command": "$HOME/.claude/hooks/check-primitives.sh", "timeout": 5000, "statusMessage": "Checking for existing primitives..." }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/protect-files.sh",
+            "timeout": 5000,
+            "statusMessage": "Checking file protections..."
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/warn-large-files.sh",
+            "timeout": 5000,
+            "statusMessage": "Checking for build artifacts..."
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/scan-secrets.sh",
+            "timeout": 5000,
+            "statusMessage": "Scanning for secrets..."
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/check-primitives.sh",
+            "timeout": 5000,
+            "statusMessage": "Checking for existing primitives..."
+          }
         ]
       },
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "$HOME/.claude/hooks/block-dangerous-commands.sh", "timeout": 5000, "statusMessage": "Checking command safety..." }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/block-dangerous-commands.sh",
+            "timeout": 5000,
+            "statusMessage": "Checking command safety..."
+          }
         ]
       }
     ],
@@ -60,8 +66,18 @@
       {
         "matcher": "Edit|Write",
         "hooks": [
-          { "type": "command", "command": "$HOME/.claude/hooks/format-on-save.sh", "timeout": 15000, "statusMessage": "Formatting..." },
-          { "type": "command", "command": "$HOME/.claude/hooks/nudge-duplication.sh", "timeout": 5000, "statusMessage": "Scanning for duplication..." }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/format-on-save.sh",
+            "timeout": 15000,
+            "statusMessage": "Formatting..."
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/nudge-duplication.sh",
+            "timeout": 5000,
+            "statusMessage": "Scanning for duplication..."
+          }
         ]
       }
     ],
@@ -69,9 +85,35 @@
       {
         "matcher": "",
         "hooks": [
-          { "type": "command", "command": "$HOME/.claude/hooks/session-start.sh", "timeout": 5000, "statusMessage": "Loading project context..." }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/session-start.sh",
+            "timeout": 5000,
+            "statusMessage": "Loading project context..."
+          }
         ]
       }
     ]
-  }
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "ruby-lsp@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
+  "theme": "auto",
+  "editorMode": "normal",
+  "agentPushNotifEnabled": true,
+  "feedbackSurveyState": {
+    "lastShownTime": 1754504720087
+  },
+  "skipAutoPermissionPrompt": true
 }
