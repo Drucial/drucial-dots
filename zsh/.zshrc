@@ -170,3 +170,5 @@ eval "$(rbenv init - --no-rehash zsh)"
 
 eval "$(atuin init zsh)"
 export SHARP_IGNORE_GLOBAL_LIBVIPS=1
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
