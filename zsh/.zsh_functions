@@ -1,3 +1,48 @@
+# Alias cheat sheet — fzf picker over ~/.config/zsh/.aliases.
+# Enter drops the alias name onto the prompt (no execute) so you can add args.
+fa() {
+  local aliases_file="$HOME/.config/zsh/.aliases"
+  if [[ ! -f "$aliases_file" ]]; then
+    print -u2 "fa: aliases file not found at $aliases_file"
+    return 1
+  fi
+
+  local selection
+  selection=$(
+    awk '
+      /^[[:space:]]*alias[[:space:]]+/ {
+        line = $0
+        sub(/^[[:space:]]*alias[[:space:]]+/, "", line)
+        name = line
+        sub(/=.*$/, "", name)
+
+        desc = ""
+        rest = line
+        # Grab the trailing " # ..." comment (last occurrence wins, so quoted
+        # values containing '\''#'\'' are tolerated as long as the real comment is preceded by whitespace).
+        while (match(rest, /[[:space:]]#[[:space:]]*/)) {
+          desc = substr(rest, RSTART + RLENGTH)
+          rest = substr(rest, RSTART + RLENGTH)
+        }
+        # Extract category (text before the first colon in the description) so
+        # we can sort by program. Tab-separated sort keys are stripped after.
+        category = desc
+        if (match(category, /:/)) {
+          category = substr(category, 1, RSTART - 1)
+        }
+        printf "%s\t%s\t%-12s  %s\n", tolower(category), tolower(name), name, desc
+      }
+    ' "$aliases_file" \
+      | sort -t$'\t' -k1,1 -k2,2 \
+      | cut -f3- \
+      | fzf --no-multi \
+            --prompt='alias> ' \
+            --header='enter inserts alias on prompt (no run)' \
+            --preview-window=hidden
+  ) || return
+  print -z "${selection%% *}"
+}
+
 # Manage Dotfiles/Projects
 custom_picker() {
   local target_dir="$XDG_CONFIG_HOME"

@@ -6,6 +6,10 @@ if [ -f ~/.config/zsh/.zsh_functions ]; then
   source $HOME/.config/zsh/.zsh_functions
 fi
 
+if [ -f ~/.config/zsh/.aliases ]; then
+  source $HOME/.config/zsh/.aliases
+fi
+
 if [ -f ~/.config/zsh/.secrets ]; then
   source ~/.config/zsh/.secrets
 fi
@@ -49,71 +53,6 @@ lst() {
   fi
   eza -a --tree --level=$depth --color=always --icons=always --group-directories-first
 }
-
-fa() {
-  local selection
-  selection=$(alias | fzf --no-multi --preview-window=hidden) || return
-  print -z "${selection%%=*}"
-}
-
-#----------
-# Aliases
-#----------
-
-# Apps
-alias ask="chatgpt"
-# alias cd="z"
-alias y="yazi"
-alias ls="eza -a -1 --color=always --icons=always --group-directories-first"
-alias lsa="eza -a -1 -l --color=always --icons=always --group-directories-first"
-alias f="spf"
-alias ff="fzf --bind 'enter:execute(nvim {})'"
-alias fs='fzf --ansi --disabled --delimiter : \
-  --bind "start:reload:rg --column --line-number --no-heading --color=always --smart-case {q}" \
-  --bind "change:reload:sleep 0.1; rg --column --line-number --no-heading --color=always --smart-case {q} || true" \
-  --preview "bat --style=numbers --color=always --highlight-line {2} {1}" \
-  --bind "enter:become(nvim +{2} {1})"'
-alias configs="custom_picker"
-alias fp="custom_picker ~/Dev --cd"
-alias ip='ipconfig getifaddr en0 | tee >(pbcopy)'
-alias notes='nvim ~/notes'
-
-# Term
-alias c='clear'
-alias h='history'
-alias x='exit'
-alias src='source ~/.zshrc'
-alias e='nvim'
-alias v='vim'
-alias nvim-bak='NVIM_APPNAME=nvim.bak nvim'
-
-alias zshrc='nvim ~/.zshrc'
-
-alias ~='cd ~'
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
-
-# Git
-alias gg='lazygit'
-alias gd="gh dash"
-alias gst='git status'
-alias gco='git checkout'
-alias gcom='git checkout main'
-alias gcob='git checkout -b'
-alias gcm='git commit -m'
-alias gcam='git commit --all -m'
-alias gb='git branch'
-alias ga='git add'
-alias gaa='git add -A'
-alias gpo='git pull'
-alias gpsup='git push --set-upstream origin $(git_branch_name)'
-alias ghpr='open_github_pr'
-alias gdc='git diff main | pbcopy && echo "Diff copied to clipboard."'
-
-# SSH
-alias omakase-pi="ssh drucial@omakase-pi"
 
 #--------
 # Evals
@@ -172,3 +111,4 @@ eval "$(atuin init zsh)"
 export SHARP_IGNORE_GLOBAL_LIBVIPS=1
 
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
