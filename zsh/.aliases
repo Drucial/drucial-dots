@@ -69,7 +69,7 @@ alias omakase-pi="ssh drucial@omakase-pi"                                       
 
 alias wn='wt switch --create'                                                                # Worktrunk: New branch off default + worktree (arg: branch name)
 alias wfix='wt switch --create --base ^'                                                     # Worktrunk: New hotfix branch off main (arg: branch name)
-alias ws='wt switch'                                                                         # Worktrunk: Switch worktree (arg: name; no arg = picker)
+alias ws='wt switch --branches'                                                                         # Worktrunk: Switch worktree (arg: name; no arg = picker)
 alias wp='wt switch'                                                                         # Worktrunk: Jump to a PR worktree (arg: pr:<number>)
 alias wb='wt switch -'                                                                       # Worktrunk: Back to previous worktree
 alias wm='wt switch ^'                                                                       # Worktrunk: Jump to default branch worktree
