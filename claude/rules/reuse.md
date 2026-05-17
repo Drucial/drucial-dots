@@ -1,14 +1,10 @@
----
-alwaysApply: true
----
-
 # Reuse Before Build
 
-Before writing any new UI element, hook, util, or validation:
+Before writing any new UI element, helper, hook, or validation, search first. The principle is stack-agnostic; the directory names below are React/Next.js examples — translate to the project's layout (`app/components/`, `app/helpers/`, `lib/`, `src/components/`, etc.).
 
 ## UI primitives (HIGHEST PRIORITY)
 
-Grep `components/ui/` for the concept first. Common primitives include:
+Grep the project's shared UI directory for the concept first. Common primitives:
 
 - Buttons / inputs: `button`, `input`, `select`, `checkbox`, `radio`, `switch`, `slider`, `textarea`
 - Tags / labels: `pill`, `badge`, `chip`, `tag`, `label`
@@ -19,12 +15,12 @@ Grep `components/ui/` for the concept first. Common primitives include:
 If found: compose with it. Pass props/variants instead of restyling.
 If not found: confirm with the user before creating a new primitive.
 
-## Hooks, utils, validations
+## Helpers, hooks, validations
 
-- Hooks: grep `hooks/**` for `use-{concept}` before creating one.
-- Utils: grep `lib/`, `utils/` for the function before creating one.
-- Validations: grep `lib/validations.ts` (or equivalent) before adding a new Zod schema.
+- Hooks (React): grep `hooks/**` for `use-{concept}` before creating one.
+- Utilities: grep `lib/`, `utils/`, `app/helpers/`, or the project's equivalent before creating a new helper.
+- Validations / schemas: grep the project's schema/validation home (e.g. `lib/validations.ts`, `app/schemas/`) before adding a new one.
 
 ## Never modify shared without an explicit ask
 
-Files in `components/ui/` are shared. Don't change their behavior or API without the user explicitly requesting it.
+Files in the shared UI directory (`components/ui/`, `app/components/shared/`, etc.) are consumed by many places. Don't change their behavior or API without the user explicitly requesting it.
