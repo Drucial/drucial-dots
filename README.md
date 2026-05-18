@@ -8,6 +8,7 @@ My personal dotfiles. Each top-level directory is a config that gets symlinked i
 | -------------- | ------------- |
 | `atuin/`       | shell history |
 | `btop/`        | system monitor |
+| `claude/`      | Claude Code config |
 | `diffnav/`     | git diff TUI |
 | `eza/`         | `ls` replacement theme |
 | `gh-dash/`     | GitHub TUI |
