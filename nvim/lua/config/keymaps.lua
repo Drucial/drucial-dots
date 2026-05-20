@@ -38,3 +38,44 @@ map("n", "<C-l>", "<cmd>KittyNavigateRight<cr>", { desc = "Kitty Navigate Right"
 -- Buffer Management
 map("n", "<leader>bn", ":bnext<CR>", { desc = "Cycle to next buffer" })
 map("n", "<leader>bp", ":bprevious<CR>", { desc = "Cycle to previous buffer" })
+
+-- Dashboard
+local function show_dashboard()
+  Snacks.dashboard()
+end
+
+-- A "real" buffer is listed and has a name on disk. Excludes the unnamed
+-- scratch buffer nvim/Snacks leaves behind after the last delete, plus
+-- help/terminal/quickfix and other transient buffers.
+local function has_real_buffer()
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if
+      vim.api.nvim_buf_is_loaded(buf)
+      and vim.bo[buf].buflisted
+      and vim.api.nvim_buf_get_name(buf) ~= ""
+    then
+      return true
+    end
+  end
+  return false
+end
+
+map("n", "<leader>uh", show_dashboard, { desc = "Show Dashboard" })
+
+map("n", "<leader>bd", function()
+  Snacks.bufdelete()
+  vim.schedule(function()
+    if not has_real_buffer() then
+      show_dashboard()
+    end
+  end)
+end, { desc = "Delete Buffer (dashboard if last)" })
+
+map("n", "<leader>bD", function()
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.bo[buf].buflisted then
+      Snacks.bufdelete(buf)
+    end
+  end
+  vim.schedule(show_dashboard)
+end, { desc = "Delete All Buffers + Dashboard" })
