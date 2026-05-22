@@ -13,6 +13,33 @@ on = "<C-o>"
 run = "shell --block -- cursor --reuse-window $1"
 desc = "Open in current Cursor window"
 
+[[mgr.prepend_keymap]]
+on = "<C-Up>"
+run = "seek -5"
+desc = "Seek up 5 units in the preview"
+
+[[mgr.prepend_keymap]]
+on = "<C-Down>"
+run = "seek 5"
+desc = "Seek down 5 units in the preview"
+
+[[mgr.prepend_keymap]]
+on = "F"
+run = "plugin toggle-pane max-preview"
+desc = "Maximize or restore the preview pane"
+
+# Override default `q` so quitting doesn't cd the shell — paired with the `y`
+# wrapper, this keeps the cwd-file unwritten on normal quit.
+[[mgr.prepend_keymap]]
+on = "q"
+run = "quit --no-cwd-file"
+desc = "Quit (shell stays put)"
+
+[[mgr.prepend_keymap]]
+on = ["g", "n"]
+run = ["enter", "quit"]
+desc = "Enter hovered dir and drop shell there"
+
 # [manager] # defaults
 #
 # keymap = [
