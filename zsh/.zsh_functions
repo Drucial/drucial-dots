@@ -43,6 +43,19 @@ fa() {
   print -z "${selection%% *}"
 }
 
+# Yazi wrapper: regular quit (`q`) leaves shell put; `gn` inside yazi enters
+# the hovered dir and drops shell there.
+unalias y 2>/dev/null
+y() {
+  local tmp cwd
+  tmp="$(mktemp -t yazi-cwd.XXXXXX)"
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(command cat -- "$tmp")" && [[ -n "$cwd" && "$cwd" != "$PWD" ]]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
+
 # Manage Dotfiles/Projects
 custom_picker() {
   local target_dir="$XDG_CONFIG_HOME"

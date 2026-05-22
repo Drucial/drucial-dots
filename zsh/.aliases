@@ -7,7 +7,6 @@
 #------
 
 alias ask="chatgpt"                                                                          # ChatGPT: Launch interactive CLI (arg: optional prompt)
-alias y="yazi"                                                                               # Yazi: Open file manager in current dir
 alias ls="eza -a -1 --color=always --icons=always --group-directories-first"                 # Eza: List files (one-per-line, icons)
 alias lsa="eza -a -1 -l --color=always --icons=always --group-directories-first"             # Eza: List files (detailed, long format)
 alias f="spf"                                                                                # Superfile: Launch superfile manager
@@ -17,6 +16,7 @@ alias configs="custom_picker"                                                   
 alias fp="custom_picker ~/Dev --cd"                                                          # Picker: Jump into a project under ~/Dev and open nvim
 alias ip='ipconfig getifaddr en0 | tee >(pbcopy)'                                            # Network: Print and copy local IP (en0)
 alias notes='nvim ~/notes'                                                                   # Neovim: Open notes directory
+alias clean='mole'                                                                           # Mole: Find storage hogs and clean up disk space
 
 #------
 # Term
