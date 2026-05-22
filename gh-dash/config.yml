@@ -86,6 +86,10 @@ keybindings:
       builtin: pageUp
     - key: ctrl+down
       builtin: pageDown
+    # - key: ctrl+k
+    #   builtin: pageUp
+    # - key: ctrl+j
+    #   builtin: pageDown
   prs:
     - key: g
       name: lazygit
