@@ -5,11 +5,13 @@
 	diffFilter = delta --color-only
 
 [delta]
-	features = side-by-side rose-pine-moon
+	features = side-by-side line-numbers-on rose-pine-moon
 	navigate = true
-	line-numbers = true
 	syntax-theme = base16
 	hyperlinks = true
+
+[delta "line-numbers-on"]
+	line-numbers = true
 
 [delta "rose-pine-moon"]
 	# File + hunk headers
