@@ -6,7 +6,7 @@ usage() {
 Usage: install [options]
 Symlink Claude Code config from this repo into ~/.claude/.
 
-Items linked: CLAUDE.md, settings.json, agents/, rules/, hooks/
+Items linked: CLAUDE.md, settings.json, agents/, rules/, hooks/, skills/
 
 Examples:
   ./install         # link with safety checks
@@ -47,7 +47,7 @@ done
 SRC_DIR="$(cd "$(dirname "$SCRIPT")" && pwd -P)"
 
 CLAUDE_DIR="$HOME/.claude"
-ITEMS=(CLAUDE.md settings.json agents rules hooks)
+ITEMS=(CLAUDE.md settings.json agents rules hooks skills)
 msg(){ $verbose && echo "$@"; }
 
 mkdir -p "$CLAUDE_DIR"
