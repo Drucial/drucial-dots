@@ -2,7 +2,7 @@
 git:
   paging:
     colorArg: always
-    pager: delta --dark --paging=never --syntax-theme base16-256 --file-decoration-style=""
+    pager: delta --dark --paging=never --syntax-theme base16-256 --file-decoration-style="" --features=rose-pine-moon
   diffContextSize: 999
 gui:
   theme:
