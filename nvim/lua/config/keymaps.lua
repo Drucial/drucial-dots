@@ -100,6 +100,8 @@ map("n", "<C-j>", "<cmd>KittyNavigateDown<cr>", { desc = "Kitty Navigate Down" }
 map("n", "<C-k>", "<cmd>KittyNavigateUp<cr>", { desc = "Kitty Navigate Up" })
 map("n", "<C-l>", "<cmd>KittyNavigateRight<cr>", { desc = "Kitty Navigate Right" })
 
+map("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Terminal: normal mode" })
+
 map("t", "<C-h>", [[<C-\><C-n><cmd>KittyNavigateLeft<cr>]], { desc = "Kitty Navigate Left" })
 map("t", "<C-j>", [[<C-\><C-n><cmd>KittyNavigateDown<cr>]], { desc = "Kitty Navigate Down" })
 map("t", "<C-k>", [[<C-\><C-n><cmd>KittyNavigateUp<cr>]], { desc = "Kitty Navigate Up" })
@@ -111,7 +113,7 @@ map("n", "<leader>bp", ":bprevious<CR>", { desc = "Cycle to previous buffer" })
 
 -- Dashboard
 local function show_dashboard()
-  pcall(Snacks.dashboard.open)
+  pcall(Snacks.dashboard.open, { win = 0 })
 end
 
 -- A "real" buffer is listed and has a name on disk. Excludes the unnamed

@@ -12,7 +12,6 @@ return {
       })
     end,
     opts = {
-      open_mapping = [[<C-\>]],
       direction = "horizontal",
       size = function() return math.floor(vim.o.lines * 0.30) end,
       shade_terminals = false,
@@ -34,6 +33,7 @@ return {
       end,
     },
     keys = {
+      { [[<C-\>]], "<cmd>ToggleTerm<cr>", mode = { "n", "i", "v", "t" }, desc = "Toggle Terminal" },
       {
         "<leader>tn",
         function()

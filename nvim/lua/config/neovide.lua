@@ -19,6 +19,15 @@ end
 vim.api.nvim_create_autocmd("ColorScheme", { callback = set_bg })
 set_bg()
 
+-- System clipboard: Cmd+C / Cmd+V everywhere
+vim.keymap.set({ "n", "v" }, "<D-c>", '"+y', { desc = "Copy to system clipboard" })
+vim.keymap.set({ "n", "v" }, "<D-v>", '"+p', { desc = "Paste from system clipboard" })
+vim.keymap.set("i", "<D-v>", "<C-r>+", { desc = "Paste from system clipboard" })
+vim.keymap.set("c", "<D-v>", "<C-r>+", { desc = "Paste from system clipboard" })
+vim.keymap.set("t", "<D-v>", function()
+  vim.api.nvim_chan_send(vim.bo.channel, vim.fn.getreg("+"))
+end, { desc = "Paste from system clipboard" })
+
 vim.cmd([[cnoreabbrev <expr> q getcmdtype() ==# ':' && getcmdline() ==# 'q' ? 'bd' : 'q']])
 vim.cmd([[cnoreabbrev <expr> q! getcmdtype() ==# ':' && getcmdline() ==# 'q!' ? 'bd!' : 'q!']])
 vim.cmd([[cnoreabbrev <expr> qa getcmdtype() ==# ':' && getcmdline() ==# 'qa' ? 'Bdall' : 'qa']])
