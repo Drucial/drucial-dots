@@ -4,6 +4,10 @@ return {
     dependencies = { "folke/snacks.nvim" },
     opts = {
       terminal_cmd = vim.fn.expand("~/.local/bin/claude"),
+      diff_opts = {
+        open_in_new_tab = true,
+        hide_terminal_in_new_tab = true,
+      },
     },
     keys = {
       { "<leader>a", nil, desc = "AI/Claude Code" },
