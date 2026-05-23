@@ -31,8 +31,6 @@ return {
       terminal = {
         enabled = true,
         win = {
-          position = "bottom",
-          height = 0.30,
           wo = {
             statusline = "",
             winbar = "",
