@@ -4,6 +4,11 @@
 
 local opt = vim.opt
 
+local local_bin = vim.fn.expand("~/.local/bin")
+if not vim.env.PATH:find(local_bin, 1, true) then
+  vim.env.PATH = local_bin .. ":" .. vim.env.PATH
+end
+
 -- Centered cursor (keeps cursor in middle of screen)
 opt.scrolloff = 999
 

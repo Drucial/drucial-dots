@@ -29,7 +29,6 @@ return {
         vim.wo[term.window].winbar = ""
         local opts = { buffer = term.bufnr, silent = true }
         vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], opts)
-        vim.keymap.set("t", "<C-n>", [[<C-\><C-n>]], opts)
       end,
     },
     keys = {
