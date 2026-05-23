@@ -5,6 +5,7 @@ return {
       {
         mode = { "n", "x" },
         { "<leader><tab>", hidden = true },
+        { "<leader>a", group = "AI" },
       },
     },
   },

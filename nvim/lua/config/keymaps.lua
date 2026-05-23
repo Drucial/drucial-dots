@@ -30,6 +30,23 @@ map({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete without yanking" })
 map({ "n", "v" }, "c", [["_c]], { desc = "Change without yanking" })
 map({ "n", "v" }, "C", [["_C]], { desc = "Change to end of line without yanking" })
 
+map({ "n", "t" }, [[<C-\>]], function() Snacks.terminal() end, { desc = "Toggle Terminal" })
+
+map({ "n", "t" }, "<D-j>", function()
+  Snacks.terminal(nil, {
+    win = {
+      position = "float",
+      relative = "editor",
+      width = 0.96,
+      height = 0.30,
+      row = -1,
+      col = function() return math.floor(vim.o.columns * 0.02) end,
+      border = "rounded",
+      wo = { statusline = "", winbar = "" },
+    },
+  })
+end, { desc = "Toggle Floating Terminal" })
+
 map("n", "<C-h>", "<cmd>KittyNavigateLeft<cr>", { desc = "Kitty Navigate Left" })
 map("n", "<C-j>", "<cmd>KittyNavigateDown<cr>", { desc = "Kitty Navigate Down" })
 map("n", "<C-k>", "<cmd>KittyNavigateUp<cr>", { desc = "Kitty Navigate Up" })
@@ -41,7 +58,7 @@ map("n", "<leader>bp", ":bprevious<CR>", { desc = "Cycle to previous buffer" })
 
 -- Dashboard
 local function show_dashboard()
-  Snacks.dashboard()
+  Snacks.dashboard.open({ win = 0 })
 end
 
 -- A "real" buffer is listed and has a name on disk. Excludes the unnamed
@@ -71,11 +88,15 @@ map("n", "<leader>bd", function()
   end)
 end, { desc = "Delete Buffer (dashboard if last)" })
 
-map("n", "<leader>bD", function()
+local function delete_all_buffers()
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     if vim.bo[buf].buflisted then
       Snacks.bufdelete(buf)
     end
   end
   vim.schedule(show_dashboard)
-end, { desc = "Delete All Buffers + Dashboard" })
+end
+
+vim.api.nvim_create_user_command("Bdall", delete_all_buffers, { desc = "Delete all buffers + dashboard" })
+
+map("n", "<leader>bD", delete_all_buffers, { desc = "Delete All Buffers + Dashboard" })

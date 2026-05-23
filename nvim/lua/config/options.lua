@@ -26,3 +26,7 @@ opt.swapfile = false
 
 -- Better wrapped line indentation
 opt.breakindent = true
+
+-- Silence all bells (no macOS funk sound on unmapped keys in neovide)
+opt.belloff = "all"
+opt.visualbell = false

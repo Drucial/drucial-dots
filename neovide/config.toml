@@ -1,0 +1,16 @@
+frame = "buttonless"
+title-hidden = true
+maximized = false
+no-idle = true
+srgb = true
+vsync = true
+opacity = 0.90
+window-blurred = true
+theme = "auto"
+
+[font]
+normal = ["JetBrainsMono Nerd Font Mono"]
+size = 14.0
+
+[box-drawing]
+mode = "font-glyph"

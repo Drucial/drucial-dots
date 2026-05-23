@@ -28,19 +28,17 @@ return {
           },
         },
       },
-      -- terminal = {
-      -- 	enabled = true,
-      -- 	win = {
-      -- 		position = "right",
-      -- 		width = 0.30, -- 30% of screen width
-      -- 		border = "rounded",
-      -- 		stack = true, -- stack multiple terminals in the same position
-      -- 		wo = {
-      -- 			statusline = "", -- hide statusline
-      -- 			winbar = "", -- hide winbar
-      -- 		},
-      -- 	},
-      -- },
+      terminal = {
+        enabled = true,
+        win = {
+          position = "bottom",
+          height = 0.30,
+          wo = {
+            statusline = "",
+            winbar = "",
+          },
+        },
+      },
       zen = {
         enabled = true,
         toggles = {
