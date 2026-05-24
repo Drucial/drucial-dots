@@ -5,28 +5,42 @@
 -- another process (e.g. Claude in a separate kitty pane) and reloads stale buffers
 -- via :checktime, without depending on nvim focus events.
 do
-  local ignore_patterns = {
-    "node_modules",
-    "/.git/",
-    "/dist/",
-    "/build/",
-    "/.next/",
-    "/.turbo/",
-    "/target/",
-    "/__pycache__/",
-    "/.venv/",
-    "/venv/",
-    "/.cache/",
-    ".swp",
-    "4913", -- vim's atomic-save sentinel
+  -- Path-segment ignores: any dir/file name in the path matching one of these
+  -- means the event is ignored. Anchored, so `node_modules-backup` is NOT
+  -- treated as `node_modules`.
+  local segment_ignores = {
+    ["node_modules"] = true,
+    [".git"] = true,
+    ["dist"] = true,
+    ["build"] = true,
+    [".next"] = true,
+    [".turbo"] = true,
+    ["target"] = true,
+    ["__pycache__"] = true,
+    [".venv"] = true,
+    ["venv"] = true,
+    [".cache"] = true,
   }
+  -- Suffix matches on the basename (vim swap files).
+  local suffix_ignores = { ".swp" }
+  -- Exact basename matches (vim's atomic-save sentinel).
+  local exact_ignores = { ["4913"] = true }
 
   local function ignored(fname)
     if not fname or fname == "" then
       return false
     end
-    for _, p in ipairs(ignore_patterns) do
-      if fname:find(p, 1, true) then
+    local base = fname:match("([^/]+)$") or fname
+    if exact_ignores[base] then
+      return true
+    end
+    for _, suffix in ipairs(suffix_ignores) do
+      if #base >= #suffix and base:sub(-#suffix) == suffix then
+        return true
+      end
+    end
+    for segment in fname:gmatch("[^/]+") do
+      if segment_ignores[segment] then
         return true
       end
     end
@@ -35,37 +49,64 @@ do
 
   local watcher
   local debounce_timer
+  local notified_nil = false
+  local restart_count = 0
+  local MAX_RESTARTS = 5
 
-  local function start_watcher(root)
+  local start_watcher
+  start_watcher = function(root)
     if watcher then
-      watcher:stop()
+      pcall(function()
+        watcher:stop()
+      end)
     end
     watcher = vim.uv.new_fs_event()
     if not watcher then
+      if not notified_nil then
+        notified_nil = true
+        vim.schedule(function()
+          vim.notify("fs-watcher: vim.uv.new_fs_event() returned nil; external file changes won't auto-reload", vim.log.levels.WARN)
+        end)
+      end
       return
     end
-    watcher:start(root, { recursive = true }, function(err, fname)
-      if err or ignored(fname) then
-        return
-      end
-      vim.schedule(function()
-        if debounce_timer then
-          debounce_timer:stop()
-        end
-        debounce_timer = vim.defer_fn(function()
-          if vim.fn.mode() ~= "c" then
-            vim.cmd("checktime")
+    local ok = pcall(function()
+      watcher:start(root, { recursive = true }, function(err, fname)
+        if err then
+          if restart_count < MAX_RESTARTS then
+            restart_count = restart_count + 1
+            vim.schedule(function()
+              start_watcher(root)
+            end)
           end
-          debounce_timer = nil
-        end, 100)
+          return
+        end
+        if ignored(fname) then
+          return
+        end
+        vim.schedule(function()
+          if debounce_timer then
+            debounce_timer:stop()
+          end
+          debounce_timer = vim.defer_fn(function()
+            if vim.fn.mode() ~= "c" then
+              pcall(vim.cmd, "checktime")
+            end
+            debounce_timer = nil
+          end, 100)
+        end)
       end)
     end)
+    if not ok then
+      watcher = nil
+    end
   end
 
   start_watcher(vim.fn.getcwd())
 
   vim.api.nvim_create_autocmd("DirChanged", {
     callback = function()
+      restart_count = 0
       start_watcher(vim.fn.getcwd())
     end,
   })
@@ -73,7 +114,9 @@ do
   vim.api.nvim_create_autocmd("VimLeavePre", {
     callback = function()
       if watcher then
-        watcher:stop()
+        pcall(function()
+          watcher:stop()
+        end)
         watcher = nil
       end
     end,
