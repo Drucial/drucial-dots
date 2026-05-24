@@ -150,6 +150,21 @@ return {
         },
         lualine_y = {
           {
+            function()
+              local ok, claudecode = pcall(require, "claudecode")
+              if not ok or type(claudecode.is_claude_connected) ~= "function" then
+                return ""
+              end
+              local connected = false
+              pcall(function()
+                connected = claudecode.is_claude_connected()
+              end)
+              return connected and "● Claude" or ""
+            end,
+            padding = { left = 1, right = 1 },
+            color = { fg = palette.iris or palette.rose },
+          },
+          {
             "diff",
             symbols = {
               added = icons.git.added,
