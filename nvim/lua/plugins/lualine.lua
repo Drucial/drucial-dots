@@ -104,6 +104,24 @@ return {
         lualine_c = {
           {
             function()
+              return "●"
+            end,
+            cond = function()
+              local ok, claudecode = pcall(require, "claudecode")
+              if not ok or type(claudecode.is_claude_connected) ~= "function" then
+                return false
+              end
+              local connected = false
+              pcall(function()
+                connected = claudecode.is_claude_connected()
+              end)
+              return connected
+            end,
+            padding = { left = 1, right = 0 },
+            color = { fg = palette.iris or palette.rose },
+          },
+          {
+            function()
               -- Show terminal process in terminal mode
               if vim.bo.buftype == "terminal" then
                 local term_name = vim.fn.expand("%:t")
@@ -137,21 +155,6 @@ return {
               -- Hide filename in terminal mode
               return vim.bo.buftype ~= "terminal"
             end,
-          },
-          {
-            function()
-              local ok, claudecode = pcall(require, "claudecode")
-              if not ok or type(claudecode.is_claude_connected) ~= "function" then
-                return ""
-              end
-              local connected = false
-              pcall(function()
-                connected = claudecode.is_claude_connected()
-              end)
-              return connected and "● Claude" or ""
-            end,
-            padding = { left = 1, right = 1 },
-            color = { fg = palette.iris or palette.rose },
           },
         },
         lualine_x = {
