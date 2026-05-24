@@ -60,6 +60,12 @@ do
         watcher:stop()
       end)
     end
+    if debounce_timer then
+      pcall(function()
+        debounce_timer:stop()
+      end)
+      debounce_timer = nil
+    end
     watcher = vim.uv.new_fs_event()
     if not watcher then
       if not notified_nil then
@@ -99,6 +105,10 @@ do
     end)
     if not ok then
       watcher = nil
+    else
+      -- Healthy start clears the restart budget so a fresh transient error
+      -- later in the session doesn't trip the cap from accumulated history.
+      restart_count = 0
     end
   end
 
@@ -113,6 +123,12 @@ do
 
   vim.api.nvim_create_autocmd("VimLeavePre", {
     callback = function()
+      if debounce_timer then
+        pcall(function()
+          debounce_timer:stop()
+        end)
+        debounce_timer = nil
+      end
       if watcher then
         pcall(function()
           watcher:stop()
