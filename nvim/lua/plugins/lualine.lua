@@ -138,17 +138,6 @@ return {
               return vim.bo.buftype ~= "terminal"
             end,
           },
-        },
-        lualine_x = {
-          {
-            "branch",
-            icon = { "" },
-            fmt = trunc(80, 20, 60, 30), -- Adjust these values as needed
-            padding = { left = 1, right = 1 },
-            color = { fg = palette.rose },
-          },
-        },
-        lualine_y = {
           {
             function()
               local ok, claudecode = pcall(require, "claudecode")
@@ -164,6 +153,17 @@ return {
             padding = { left = 1, right = 1 },
             color = { fg = palette.iris or palette.rose },
           },
+        },
+        lualine_x = {
+          {
+            "branch",
+            icon = { "" },
+            fmt = trunc(80, 20, 60, 30), -- Adjust these values as needed
+            padding = { left = 1, right = 1 },
+            color = { fg = palette.rose },
+          },
+        },
+        lualine_y = {
           {
             "diff",
             symbols = {
