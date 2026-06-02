@@ -43,9 +43,10 @@ if echo "$CONTENT" | grep -qE '(ghp_|gho_|ghs_|ghr_|github_pat_)[a-zA-Z0-9_]{20,
   MATCHES="$MATCHES GitHub token;"
 fi
 
-# OpenAI / Stripe / Anthropic style keys (sk-...)
-if echo "$CONTENT" | grep -qE 'sk-[a-zA-Z0-9]{20,}'; then
-  MATCHES="$MATCHES API key (sk-...);"
+# OpenAI / Anthropic / Stripe style keys. Covers hyphen (sk-..., sk-ant-...)
+# and underscore (Stripe sk_live_/sk_test_, restricted rk_live_/rk_test_) formats.
+if echo "$CONTENT" | grep -qE '(sk|rk)[-_][A-Za-z0-9_-]{20,}'; then
+  MATCHES="$MATCHES API key (sk/rk ...);"
 fi
 
 # Slack tokens

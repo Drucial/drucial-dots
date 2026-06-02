@@ -31,7 +31,7 @@ class_dupes="$(grep -oE 'className="[^"]+"' "$file_path" 2>/dev/null \
                 | sort | uniq -c | awk '$1 >= 3 {print $0}' || true)"
 
 if [[ -n "$matches" || -n "$class_dupes" ]]; then
-  echo "📋 Pattern repeated 3+ times in $file_path — extraction candidate. Run /extract for analysis." >&2
+  echo "📋 Pattern repeated 3+ times in $file_path — extraction candidate. Consider extracting a shared component or util." >&2
   if [[ -n "$matches" ]]; then
     echo "  JSX repetition:" >&2
     echo "$matches" | head -3 | sed 's/^/    /' >&2

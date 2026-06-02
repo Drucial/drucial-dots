@@ -31,6 +31,8 @@ alias v='vim'                                                                   
 alias nvim-bak='NVIM_APPNAME=nvim.bak nvim'                                                  # Neovim: Launch backup config (NVIM_APPNAME=nvim.bak)
 alias zshrc='nvim ~/.zshrc'                                                                  # Zsh: Edit .zshrc in nvim
 
+alias pd="pnpm dev"
+
 alias ~='cd ~'                                                                               # Shell: Go to home directory
 alias ..='cd ..'                                                                             # Shell: Up one directory
 alias ...='cd ../..'                                                                         # Shell: Up two directories
