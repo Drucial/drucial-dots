@@ -19,12 +19,12 @@ Stack-agnostic. The TypeScript section is opt-in — apply only when the project
 - **Functions**: verb-first (`getUser`, `createEntry`).
 - **Constants**: `SCREAMING_SNAKE`.
 
-## Code markers
+## No defer markers
 
-- `TODO(@drew): desc` for planned work.
-- `FIXME(@drew): desc (#issue)` for known bugs.
-- `HACK(@drew): desc` for ugly workarounds (explain proper fix).
-- Never `XXX`, `TEMP`, `REMOVEME`.
+- Never leave `TODO`, `FIXME`, `HACK`, `XXX`, `TEMP`, or `REMOVEME` in code. A marker is a sign the thing should be fixed — so fix it now.
+- Never use `eslint-disable` (or any equivalent suppression) to silence a violation. The violation is the signal to fix the code, not to annotate around it.
+- Don't split "make the change" from "fix what it surfaced" — resolve surfaced issues in the same change.
+- Genuinely out-of-scope future work belongs in a tracker (e.g. a Linear ticket), never as a comment in the code.
 
 ## TypeScript (apply only in TS projects)
 
