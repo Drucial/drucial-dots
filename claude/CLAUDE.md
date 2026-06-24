@@ -32,3 +32,7 @@ See `rules/code-quality.md` for anti-defaults, naming, and TypeScript-flavored g
 
 - Don't modify generated files (`*.gen.*`, `*.generated.*`).
 - Don't bundle tangential improvements into a focused task — mention them separately.
+
+## Feature-complete PR process
+
+When a feature build is complete, run my ship process. Invoke the `/ship-feature` skill rather than reproducing the steps from memory. In short: full local check → open a **draft** PR → request a Copilot review → run `/code-review` → pull down Copilot's comments → review the combined findings → triage each as **fix / mitigate / ignore** (default to fix, no tech debt) → update the tracking ticket (scope changes + move to **In Review**) → mark the PR **ready for review** (which is what fires CI).
