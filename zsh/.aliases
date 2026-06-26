@@ -29,6 +29,7 @@ alias src='source ~/.zshrc'                                                     
 alias e='nvim'                                                                               # Neovim: Launch (arg: optional file/dir)
 alias v='vim'                                                                                # Vim: Launch (arg: optional file)
 alias nvim-bak='NVIM_APPNAME=nvim.bak nvim'                                                  # Neovim: Launch backup config (NVIM_APPNAME=nvim.bak)
+alias killport='_killport(){ lsof -ti:"$1" | xargs kill -9 ;}; _killport'                    # Shell: Kill process holding a port (arg: port number)
 alias zshrc='nvim ~/.zshrc'                                                                  # Zsh: Edit .zshrc in nvim
 
 alias pd="pnpm dev"
