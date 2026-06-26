@@ -1,9 +1,9 @@
-zsh/secrets
-zsh/.secrets
+configs/zsh/secrets
+configs/zsh/.secrets
 .zcompdump
 .zsh_history
 .DS_STORE
-zsh/.zcompdump
+configs/zsh/.zcompdump
 
 # rainfrog: track the .example, keep the real config (DB connection details) local
-rainfrog/rainfrog_config.toml
+configs/rainfrog/rainfrog_config.toml

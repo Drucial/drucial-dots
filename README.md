@@ -1,28 +1,35 @@
 # drucial-dots
 
-My personal dotfiles. Each top-level directory is a config that gets symlinked into `~/.config` (or `$XDG_CONFIG_HOME`).
+My personal dotfiles. App configs live under `configs/` and get symlinked into `~/.config` (or `$XDG_CONFIG_HOME`).
 
-## What's in here
+## Layout
 
-| Config         | App           |
-| -------------- | ------------- |
-| `atuin/`       | shell history |
-| `btop/`        | system monitor |
-| `claude/`      | Claude Code config |
-| `diffnav/`     | git diff TUI |
-| `eza/`         | `ls` replacement theme |
-| `gh-dash/`     | GitHub TUI |
-| `git/`         | git config + ignore |
-| `kitty/`       | terminal |
-| `lazygit/`     | git TUI |
-| `nvim/`        | editor (LazyVim) |
-| `posting/`     | API client |
-| `yabai/`       | window manager |
-| `yazi/`        | file manager |
-| `zsh/`         | shell |
-| `starship.toml`| prompt |
+```
+configs/   app configs, symlinked into ~/.config via bin/link
+claude/    Claude Code config, symlinked into ~/.claude via claude/install
+bin/link   the symlink helper
+```
 
-Plus `wallpapers/` and `bin/link` (the symlink helper below).
+### `configs/`
+
+| Config          | App           |
+| --------------- | ------------- |
+| `atuin/`        | shell history |
+| `btop/`         | system monitor |
+| `diffnav/`      | git diff TUI |
+| `eza/`          | `ls` replacement theme |
+| `gh-dash/`      | GitHub TUI |
+| `git/`          | git config + ignore |
+| `kitty/`        | terminal |
+| `lazygit/`      | git TUI |
+| `neovide/`      | Neovim GUI |
+| `nvim/`         | editor (LazyVim) |
+| `posting/`      | API client |
+| `rainfrog/`     | database TUI |
+| `yabai/`        | window manager |
+| `yazi/`         | file manager |
+| `zsh/`          | shell |
+| `starship.toml` | prompt |
 
 ## Bootstrap
 
@@ -30,11 +37,12 @@ Plus `wallpapers/` and `bin/link` (the symlink helper below).
 git clone https://github.com/Drucial/drucial-dots.git ~/Dev/drucial-dots
 cd ~/Dev/drucial-dots
 bin/link nvim zsh kitty git   # link whatever you need
+./claude/install              # Claude Code config -> ~/.claude
 ```
 
 ### `bin/link`
 
-Symlinks a config from this repo into `~/.config`.
+Symlinks a config from `configs/` into `~/.config`.
 
 ```sh
 bin/link <name> [<name>...]   # link one or more
@@ -47,4 +55,4 @@ The script resolves the repo root from its own location, so it works whether you
 
 ## Convention
 
-Configs live in this repo and are symlinked out — never copied. To make a change, edit the file under its real path (e.g. `nvim/lua/...`) and commit. The symlink in `~/.config/nvim` picks it up automatically.
+Configs live in this repo and are symlinked out — never copied. To make a change, edit the file under its real path (e.g. `configs/nvim/lua/...`) and commit. The symlink in `~/.config/nvim` picks it up automatically.

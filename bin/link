@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage: bin/link [options] <name> [<name>...]
-Symlink items from THIS repo into your XDG config dir (~/.config by default).
+Symlink items from this repo's configs/ dir into your XDG config dir (~/.config by default).
 
 Examples:
   bin/link nvim
@@ -49,6 +49,7 @@ while [ -L "$SCRIPT" ]; do
 done
 SCRIPT_DIR="$(cd "$(dirname "$SCRIPT")" && pwd -P)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd -P)"
+CONFIGS_ROOT="$REPO_ROOT/configs"
 
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 msg(){ $verbose && echo "$@"; }
@@ -62,7 +63,7 @@ link_one() {
     return 1
   fi
 
-  local src="$REPO_ROOT/$name"
+  local src="$CONFIGS_ROOT/$name"
   local dst="$CONFIG_DIR/$name"
 
   if [ ! -e "$src" ]; then
