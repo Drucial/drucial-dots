@@ -1,0 +1,15 @@
+[db]
+# Copy this file to `rainfrog_config.toml` (gitignored) and fill in your own
+# connections. rainfrog prompts for the password on connect and can store it in
+# the OS keychain, so no secrets live in this file.
+#
+# Two connection styles are supported:
+#   1. Discrete fields (host/port/database/username/driver)
+#   2. A full connection_string
+# Add `default = true` to one connection to auto-connect and skip the picker.
+
+# Field style — local Postgres (e.g. Postgres.app, trust auth, blank password):
+local-dev = { host = "localhost", driver = "postgres", port = 5432, database = "my_app_development", username = "myuser" }
+
+# Connection-string style — handy for remote DBs:
+remote = { connection_string = "postgresql://user@host:5432/dbname", driver = "postgres" }

@@ -22,6 +22,7 @@ export VISUAL="nvim"
 export EDITOR="nvim"
 export BAT_THEME="base16"
 export XDG_CONFIG_HOME="$HOME/.config"
+export RAINFROG_CONFIG="$XDG_CONFIG_HOME/rainfrog"
 
 # -----------------------------
 # Environment and Path Settings

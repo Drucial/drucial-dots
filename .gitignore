@@ -4,3 +4,6 @@ zsh/.secrets
 .zsh_history
 .DS_STORE
 zsh/.zcompdump
+
+# rainfrog: track the .example, keep the real config (DB connection details) local
+rainfrog/rainfrog_config.toml
