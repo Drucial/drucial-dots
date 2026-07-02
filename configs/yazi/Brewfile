@@ -1,0 +1,7 @@
+brew "yazi"
+brew "ffmpeg"
+brew "sevenzip"
+brew "poppler"
+brew "imagemagick"
+brew "resvg"
+brew "chafa"

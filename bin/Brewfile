@@ -1,0 +1,80 @@
+# Base manifest: taps, fonts, and tooling not owned by a single config.
+# Per-config dependencies live in configs/<tool>/Brewfile. bin/sync concatenates
+# this file with all of those and pipes the result to `brew bundle`.
+
+# Taps — only those a kept tool needs.
+tap "dlvhdr/formulae"      # diffnav, gh-dash
+tap "felixkratz/formulae"  # yabai
+
+# Shared CLIs used across several configs (zsh, nvim, yazi, git).
+brew "fzf"
+brew "ripgrep"
+brew "fd"
+brew "bat"
+brew "zoxide"
+brew "lsd"
+brew "starship"            # prompt; config: configs/starship.toml
+
+# Configless daily-driver tooling.
+brew "gh"
+brew "jq"
+brew "yq"
+brew "git-filter-repo"
+brew "tldr"
+brew "tree"
+
+# Language / runtime toolchains.
+brew "go"
+brew "node"
+brew "pnpm"
+brew "rbenv"
+brew "python@3.13"
+brew "lua"
+brew "cmake"
+
+# Fonts.
+cask "font-jetbrains-mono"
+cask "font-jetbrains-mono-nerd-font"
+cask "font-hack-nerd-font"
+cask "font-symbols-only-nerd-font"
+cask "sf-symbols"
+
+# GUI / other.
+cask "1password-cli"
+
+# --- REVIEW -----------------------------------------------------------------
+# No config references these and they aren't obviously foundational — likely
+# experiment residue or one-offs. Uncomment any you actually want on a fresh
+# machine. Nothing here is installed while commented.
+#
+# brew "aerc"                                    # terminal email client
+# brew "black"                                   # python formatter
+# brew "chroma"                                  # syntax highlighter
+# brew "docker", link: false
+# brew "ghostscript"                             # PostScript/PDF
+# brew "htop"                                    # btop is the primary monitor
+# brew "mole"                                    # macOS cleaner
+# brew "moor"                                    # pager
+# brew "overmind"                                # Procfile/tmux process manager
+# brew "rdfind"                                  # duplicate-file finder
+# brew "redis", restart_service: :changed
+# brew "render"                                  # Render cloud CLI
+# brew "tiger-vnc"                               # VNC client
+# brew "w3m"                                     # terminal browser / yazi image fallback
+# brew "worktrunk"                               # git worktree manager
+# brew "yt-dlp"                                  # media downloader
+# brew "python@3.11"                             # older python (3.13 kept above)
+# tap "mongodb/brew"
+# brew "mongodb/brew/mongodb-community"
+# brew "mongodb/brew/mongodb-community@8.0"
+# cask "ngrok"
+#
+# Orphan taps (no installed tool now). Uncomment with their tools if wanted:
+# tap "anomalyco/tap"
+# tap "asmvik/formulae"
+# tap "drucial/hyperdirmic"
+# tap "kardolus/chatgpt-cli"
+# tap "nikitabobko/tap"
+# tap "roeyazroel/linear-tui"
+# tap "stripe/stripe-cli"
+# tap "supabase/tap"

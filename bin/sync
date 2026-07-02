@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: bin/sync [options]
+Make this machine match the dotfiles: install package dependencies (Homebrew),
+symlink every config into ~/.config, link Claude config, and set up home-level
+symlinks. Idempotent — re-run any time to apply only what's new or missing.
+
+Options:
+  -f   Force: replace existing files/links at destinations
+  -n   Dry-run: show actions (and `brew bundle check`) without changing anything
+  -v   Verbose
+  -h   Help
+
+Packages come from bin/Brewfile plus every configs/<tool>/Brewfile, concatenated
+and handed to `brew bundle`. If Homebrew isn't installed, package install is
+skipped with a message and the rest still runs.
+EOF
+}
+
+force=false
+dryrun=false
+verbose=false
+
+while getopts ":fnvh" opt; do
+  case "$opt" in
+    f) force=true ;;
+    n) dryrun=true ;;
+    v) verbose=true ;;
+    h) usage; exit 0 ;;
+    \?) echo "Unknown option: -$OPTARG" >&2; usage; exit 2 ;;
+  esac
+done
+
+# --- Resolve repo root from THIS script's location (follow symlinks) ---
+SCRIPT="${BASH_SOURCE[0]}"
+while [ -L "$SCRIPT" ]; do
+  link_target="$(readlink "$SCRIPT")"
+  case "$link_target" in
+    /*) SCRIPT="$link_target" ;;
+    *)  SCRIPT="$(cd "$(dirname "$SCRIPT")" && pwd)/$link_target" ;;
+  esac
+done
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT")" && pwd -P)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd -P)"
+CONFIGS_ROOT="$REPO_ROOT/configs"
+BASE_BREWFILE="$REPO_ROOT/bin/Brewfile"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+
+msg(){ $verbose && echo "$@" || true; }
+section(){ echo; echo "▶ $*"; }
+
+# Symlink $1 (source) -> $2 (destination). Idempotent.
+link_path() {
+  local src="$1" dst="$2"
+  if [ ! -e "$src" ]; then
+    echo "✖ Source not found: $src" >&2
+    return 1
+  fi
+  if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+    msg "✓ Already linked: $dst"
+    return 0
+  fi
+  mkdir -p "$(dirname "$dst")"
+  if [ -e "$dst" ] || [ -L "$dst" ]; then
+    if $force; then
+      msg "↻ Replacing: $dst"
+    else
+      echo "✖ Destination exists: $dst (use -f to replace)" >&2
+      return 1
+    fi
+  fi
+  if $dryrun; then
+    echo "DRY-RUN: ln -sfn \"$src\" \"$dst\""
+    return 0
+  fi
+  if $force; then ln -sfn "$src" "$dst"; else ln -s "$src" "$dst"; fi
+  msg "→ Linked: $dst -> $src"
+}
+
+# 1. Packages -----------------------------------------------------------------
+sync_packages() {
+  section "Packages"
+  if ! command -v brew >/dev/null 2>&1; then
+    echo "⚠ Homebrew not found — skipping package install (configs will still be linked)."
+    return 0
+  fi
+  local files=("$BASE_BREWFILE")
+  local f
+  for f in "$CONFIGS_ROOT"/*/Brewfile; do
+    [ -f "$f" ] && files+=("$f")
+  done
+  if $dryrun; then
+    echo "DRY-RUN: brew bundle check over $(( ${#files[@]} )) Brewfile(s)"
+    cat "${files[@]}" | brew bundle check --file=- --verbose || true
+  else
+    cat "${files[@]}" | brew bundle install --file=- --no-upgrade
+  fi
+}
+
+# 2. Configs -> ~/.config -----------------------------------------------------
+sync_configs() {
+  section "Configs → $CONFIG_DIR"
+  local src name
+  for src in "$CONFIGS_ROOT"/*; do
+    name="$(basename "$src")"
+    [ "$name" = "Brewfile" ] && continue
+    # A config dir's own Brewfile is package metadata, not something to link out;
+    # it rides along inside the linked directory, which is fine.
+    link_path "$src" "$CONFIG_DIR/$name" || true
+  done
+}
+
+# 3. Claude config -> ~/.claude ----------------------------------------------
+sync_claude() {
+  section "Claude → ~/.claude"
+  local install="$REPO_ROOT/claude/install"
+  if [ ! -x "$install" ]; then
+    echo "⚠ $install not found or not executable — skipping."
+    return 0
+  fi
+  local args=()
+  $force && args+=(-f)
+  $dryrun && args+=(-n)
+  $verbose && args+=(-v)
+  "$install" "${args[@]}"
+}
+
+# 4. Home-level symlinks ------------------------------------------------------
+sync_home() {
+  section "Home symlinks"
+  # dst::src — extend as needed.
+  local pairs=(
+    "$HOME/.zshrc::$CONFIG_DIR/zsh/.zshrc"
+  )
+  local pair dst src
+  for pair in "${pairs[@]}"; do
+    dst="${pair%%::*}"; src="${pair##*::}"
+    link_path "$src" "$dst" || true
+  done
+}
+
+sync_packages
+sync_configs
+sync_claude
+sync_home
+
+echo
+if $dryrun; then
+  echo "✓ Dry-run complete — no changes made."
+else
+  echo "✓ Sync complete."
+fi
