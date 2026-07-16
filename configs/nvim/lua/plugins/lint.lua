@@ -11,11 +11,12 @@ return {
       }) do
         opts.linters_by_ft[ft] = { "eslint_d" }
       end
+      opts.linters_by_ft.swift = { "swiftlint" }
     end,
   },
 
   {
     "mason-org/mason.nvim",
-    opts = { ensure_installed = { "eslint_d" } },
+    opts = { ensure_installed = { "eslint_d", "swiftlint" } },
   },
 }

@@ -95,17 +95,28 @@ map({ "n", "v" }, "C", [["_C]], { desc = "Change to end of line without yanking"
 --   end,
 -- })
 
-map("n", "<C-h>", "<cmd>KittyNavigateLeft<cr>", { desc = "Kitty Navigate Left" })
-map("n", "<C-j>", "<cmd>KittyNavigateDown<cr>", { desc = "Kitty Navigate Down" })
-map("n", "<C-k>", "<cmd>KittyNavigateUp<cr>", { desc = "Kitty Navigate Up" })
-map("n", "<C-l>", "<cmd>KittyNavigateRight<cr>", { desc = "Kitty Navigate Right" })
+-- Kitty navigator (replaced by zen-navigator.nvim for ZenTerm)
+-- map("n", "<C-h>", "<cmd>KittyNavigateLeft<cr>", { desc = "Kitty Navigate Left" })
+-- map("n", "<C-j>", "<cmd>KittyNavigateDown<cr>", { desc = "Kitty Navigate Down" })
+-- map("n", "<C-k>", "<cmd>KittyNavigateUp<cr>", { desc = "Kitty Navigate Up" })
+-- map("n", "<C-l>", "<cmd>KittyNavigateRight<cr>", { desc = "Kitty Navigate Right" })
+
+-- Seamless nav across nvim splits + ZenTerm panes (zen-navigator.nvim)
+map("n", "<C-h>", "<cmd>lua require('zen-navigator').navigate('h')<cr>", { desc = "Zen Navigate Left" })
+map("n", "<C-j>", "<cmd>lua require('zen-navigator').navigate('j')<cr>", { desc = "Zen Navigate Down" })
+map("n", "<C-k>", "<cmd>lua require('zen-navigator').navigate('k')<cr>", { desc = "Zen Navigate Up" })
+map("n", "<C-l>", "<cmd>lua require('zen-navigator').navigate('l')<cr>", { desc = "Zen Navigate Right" })
 
 map("t", "<C-n>", [[<C-\><C-n>]], { desc = "Terminal: normal mode" })
 
-map("t", "<C-h>", [[<C-\><C-n><cmd>KittyNavigateLeft<cr>]], { desc = "Kitty Navigate Left" })
-map("t", "<C-j>", [[<C-\><C-n><cmd>KittyNavigateDown<cr>]], { desc = "Kitty Navigate Down" })
-map("t", "<C-k>", [[<C-\><C-n><cmd>KittyNavigateUp<cr>]], { desc = "Kitty Navigate Up" })
-map("t", "<C-l>", [[<C-\><C-n><cmd>KittyNavigateRight<cr>]], { desc = "Kitty Navigate Right" })
+-- map("t", "<C-h>", [[<C-\><C-n><cmd>KittyNavigateLeft<cr>]], { desc = "Kitty Navigate Left" })
+-- map("t", "<C-j>", [[<C-\><C-n><cmd>KittyNavigateDown<cr>]], { desc = "Kitty Navigate Down" })
+-- map("t", "<C-k>", [[<C-\><C-n><cmd>KittyNavigateUp<cr>]], { desc = "Kitty Navigate Up" })
+-- map("t", "<C-l>", [[<C-\><C-n><cmd>KittyNavigateRight<cr>]], { desc = "Kitty Navigate Right" })
+map("t", "<C-h>", [[<C-\><C-n><cmd>lua require('zen-navigator').navigate('h')<cr>]], { desc = "Zen Navigate Left" })
+map("t", "<C-j>", [[<C-\><C-n><cmd>lua require('zen-navigator').navigate('j')<cr>]], { desc = "Zen Navigate Down" })
+map("t", "<C-k>", [[<C-\><C-n><cmd>lua require('zen-navigator').navigate('k')<cr>]], { desc = "Zen Navigate Up" })
+map("t", "<C-l>", [[<C-\><C-n><cmd>lua require('zen-navigator').navigate('l')<cr>]], { desc = "Zen Navigate Right" })
 
 -- Buffer Management
 map("n", "<leader>bn", ":bnext<CR>", { desc = "Cycle to next buffer" })

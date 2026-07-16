@@ -73,6 +73,8 @@ add_yabai_rules() {
 
   # explicitly manage IOS simulator
   yabai -m rule --add app="Simulator" manage=on
+  # explicitly manage ZenTerm
+  yabai -m rule --add app="ZenTerm" manage=on
 
   for app in "${apps_to_exclude[@]}"; do
     yabai -m rule --add app="$app" manage=off

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Blocks edits to sensitive or generated files.
+# Blocks or gates edits to sensitive or generated files.
 # PreToolUse hook for Edit|Write operations.
-# Exit 2 = block. Exit 0 = allow.
+# Emits a JSON permissionDecision and exits 0 so the decision drives the
+# outcome: "deny" blocks the edit, "ask" prompts for confirmation.
 
 set -uo pipefail
 
@@ -10,7 +11,7 @@ emit() {
   local decision="$1"
   local reason="${2//\"/\\\"}"
   printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"%s","permissionDecisionReason":"%s"}}\n' "$decision" "$reason"
-  exit 2
+  exit 0
 }
 
 if ! command -v jq >/dev/null 2>&1; then

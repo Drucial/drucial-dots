@@ -53,5 +53,10 @@ return {
     opts.servers.eslint = vim.tbl_deep_extend("force", opts.servers.eslint or {}, {
       enabled = false,
     })
+
+    -- sourcekit-lsp ships with the Xcode toolchain, not Mason.
+    opts.servers.sourcekit = vim.tbl_deep_extend("force", opts.servers.sourcekit or {}, {
+      mason = false,
+    })
   end,
 }

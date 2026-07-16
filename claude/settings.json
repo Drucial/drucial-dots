@@ -134,6 +134,16 @@
             "statusMessage": "Scanning for duplication..."
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/kitty-agent-state.sh PostToolUse",
+            "timeout": 5000
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -145,6 +155,47 @@
             "command": "$HOME/.claude/hooks/session-start.sh",
             "timeout": 5000,
             "statusMessage": "Loading project context..."
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/kitty-agent-state.sh SessionStart",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/kitty-agent-state.sh UserPromptSubmit",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/kitty-agent-state.sh Notification",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/kitty-agent-state.sh SessionEnd",
+            "timeout": 5000
           }
         ]
       }
@@ -162,7 +213,8 @@
     "ruby-lsp@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
     "lua-lsp@claude-plugins-official": true,
-    "andrej-karpathy-skills@karpathy-skills": true
+    "andrej-karpathy-skills@karpathy-skills": true,
+    "swift-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "karpathy-skills": {
@@ -174,13 +226,14 @@
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
+  "tui": "default",
   "skipWorkflowUsageWarning": true,
   "theme": "auto",
   "editorMode": "normal",
+  "preferredNotifChannel": "auto",
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754504720087
-  },
-  "tui": "fullscreen"
+  }
 }
