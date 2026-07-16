@@ -26,6 +26,10 @@ Stack-agnostic. The TypeScript section is opt-in — apply only when the project
 - Don't split "make the change" from "fix what it surfaced" — resolve surfaced issues in the same change.
 - Genuinely out-of-scope future work belongs in a tracker (e.g. a Linear ticket), never as a comment in the code.
 
+## Testing
+
+- Test through the real interface, not internal state. A test that only asserts a component's backing state can stay green while the rendered thing is broken — drive the actual control, endpoint, or output the user hits. State-only tests give false confidence exactly where it's most expensive to be wrong: UI controls and rendered output.
+
 ## TypeScript (apply only in TS projects)
 
 - Never use `any` — use proper types, `unknown`, or generics.
