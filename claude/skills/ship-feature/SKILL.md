@@ -1,6 +1,6 @@
 ---
 name: ship-feature
-description: Run my feature-complete PR process — full local check, open a draft PR, gather Copilot + /code-review findings, triage them (fix / mitigate / ignore, no tech debt), then update the tracking ticket to In Review and mark the PR ready for review. Invoke when a feature build is complete and ready to ship.
+description: Run my feature-complete PR process — full local check, open a draft PR, gather Copilot + /code-review findings, triage them (fix / mitigate / ignore, no tech debt), then mark the PR ready for review. Invoke when a feature build is complete and ready to ship.
 ---
 
 # Ship a completed feature
@@ -50,7 +50,9 @@ Present the triage table to me and apply the agreed fixes. Re-run the check afte
 
 ## 8. Close out
 
-- **Tracking ticket (if one exists):** update it with any scope changes uncovered during the build, and move it to **In Review**. If no ticket exists, note that and skip.
 - **Mark the PR ready for review.** Where CI is gated on `ready_for_review`, this is what fires CI — so it runs once against the reviewed, triaged branch instead of on every intermediate push.
+- **Let the tracker move the ticket.** Where the tracker has a PR integration (Linear does, via the ticket id in the branch/PR), marking the PR ready moves it to **In Review** on its own. Don't write that status by hand — a manual move is a second copy of a transition the integration owns, and it drifts the moment the automation changes.
+- **Move it yourself only when nothing else will:** no PR (a local-only ship), or a tracker with no PR integration. Note which case applies.
+- **Tracking ticket:** update it with any scope changes uncovered during the build. If no ticket exists, note that and skip.
 
 Report the final state: PR link, CI status, ticket status, and the triage summary.
