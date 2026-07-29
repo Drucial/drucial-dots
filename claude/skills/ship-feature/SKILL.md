@@ -47,9 +47,20 @@ The requestable actor is `copilot-swe-agent`; it comes back as `copilot-pull-req
 
 It runs async; continue and re-check later.
 
-## 5. Run /code-review
+**Never `@copilot`, in a comment or anywhere else.** The mutation above is the only way to request a review. An `@`-mention summons it out of band, and it re-fires on every edit of the comment that carries it. Read its findings from the review comments and write your triage as ordinary prose that does not address it. This holds for every comment on the PR, the description included.
 
-Invoke the `/code-review` skill against the branch diff. Capture its findings.
+## 5. Run /code-review — I run this, not you
+
+**Stop here and ask me to run it.** `/code-review` is user-triggered and billed; a session cannot invoke it — not via the Skill tool, not via Bash, not via a Workflow. Don't try, and don't treat the failure as a bug to route around.
+
+Say plainly that you're blocked on this and what to run:
+
+- `/code-review` for the working diff
+- `/code-review ultra` for a multi-agent cloud review of the branch, or `/code-review ultra <PR#>` for the PR opened in step 3
+
+Then **wait** for the findings before starting step 7. Step 6 is Copilot's, runs on its own clock, and should proceed while you wait — fetch its comments as soon as they land. It is steps 7–10 that block, because the triage in step 8 needs both sources in front of it.
+
+If I decline or say to skip it, continue with Copilot's review as the only source and **say so in the step 7 output**. What you must never do is run your own review pass and present it as `/code-review`'s findings — name which review actually produced each finding.
 
 ## 6. Pull down Copilot's comments
 
