@@ -7,6 +7,7 @@ My personal dotfiles. App configs live under `configs/` and get symlinked into `
 ```
 configs/     app configs (symlinked into ~/.config) + per-config Brewfiles
 claude/      Claude Code config, symlinked into ~/.claude via claude/install
+codex/       Codex config, hooks, agents, and shared skills
 bin/sync     installs packages + links everything (idempotent)
 bin/Brewfile base manifest: taps, fonts, shared/configless tooling
 ```
@@ -37,7 +38,7 @@ bin/Brewfile base manifest: taps, fonts, shared/configless tooling
 ```sh
 git clone https://github.com/Drucial/drucial-dots.git ~/Dev/drucial-dots
 cd ~/Dev/drucial-dots
-bin/sync          # install packages + link every config + claude + ~/.zshrc
+bin/sync          # install packages + link every config + agents + ~/.zshrc
 ```
 
 That's the whole setup. On a machine without Homebrew (Linux, etc.) `bin/sync`
@@ -56,9 +57,23 @@ bin/sync -v     # verbose
 ```
 
 It (1) installs packages via `brew bundle`, (2) symlinks every `configs/*` into
-`~/.config`, (3) runs `claude/install`, and (4) sets up home-level symlinks
-(`~/.zshrc`). The script resolves the repo root from its own location, so it works
-whether you clone to `~/Dev`, `~/dotfiles`, or anywhere else.
+`~/.config`, (3) installs the tracked Claude and Codex configuration, and (4)
+sets up home-level symlinks (`~/.zshrc`). The script resolves the repo root from
+its own location, so it works whether you clone to `~/Dev`, `~/dotfiles`, or
+anywhere else.
+
+## Codex parity
+
+`codex/` translates the behavior of this repo's personal Claude setup without
+trying to mirror either product's entire plugin ecosystem. Shared instructions,
+rules, agent prompts, and portable skills remain canonical under `claude/`.
+Codex-only TOML, hooks, and small skill adapters live under `codex/`.
+
+`codex/install` manages only
+`~/.codex/{config.toml,AGENTS.md,rules,hooks.json,hooks,agents}` and
+`~/.agents/skills`. It does not touch authentication, sessions, history,
+databases, caches, or installed plugins. Existing managed destinations require
+`-f`; replacements are moved to `~/.codex-config-backups/` first.
 
 ## Package manifests (Brewfiles)
 

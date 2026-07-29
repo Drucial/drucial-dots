@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: install [options]
+Symlink tracked Codex config into ~/.codex and ~/.agents.
+
+Managed Codex items: config.toml, AGENTS.md, rules/, hooks.json, hooks/, agents/
+Managed shared skills: ~/.agents/skills
+
+The installer never touches Codex auth, history, databases, caches, plugins,
+sessions, or other runtime state.
+
+Options:
+  -f   Back up and replace existing managed destinations
+  -n   Dry-run
+  -v   Verbose
+  -h   Help
+EOF
+}
+
+force=false
+dryrun=false
+verbose=false
+
+while getopts ":fnvh" opt; do
+  case "$opt" in
+    f) force=true ;;
+    n) dryrun=true ;;
+    v) verbose=true ;;
+    h) usage; exit 0 ;;
+    \?) echo "Unknown option: -$OPTARG" >&2; usage; exit 2 ;;
+  esac
+done
+
+SCRIPT="${BASH_SOURCE[0]}"
+while [ -L "$SCRIPT" ]; do
+  target="$(readlink "$SCRIPT")"
+  case "$target" in
+    /*) SCRIPT="$target" ;;
+    *) SCRIPT="$(cd "$(dirname "$SCRIPT")" && pwd)/$target" ;;
+  esac
+done
+SRC_DIR="$(cd "$(dirname "$SCRIPT")" && pwd -P)"
+CODEX_DIR="${CODEX_HOME:-$HOME/.codex}"
+AGENTS_DIR="$HOME/.agents"
+BACKUP_ROOT="${CODEX_CONFIG_BACKUP_DIR:-$HOME/.codex-config-backups}"
+ITEMS=(config.toml AGENTS.md rules hooks.json hooks agents)
+
+msg() { $verbose && echo "$@" || true; }
+
+link_one() {
+  local src="$1" dst="$2"
+  if [ ! -e "$src" ] && [ ! -L "$src" ]; then
+    echo "✖ Source not found: $src" >&2
+    return 1
+  fi
+  if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+    msg "✓ Already linked: $dst"
+    return 0
+  fi
+  if [ -e "$dst" ] || [ -L "$dst" ]; then
+    if ! $force; then
+      echo "✖ Destination exists: $dst (use -f to back up and replace)" >&2
+      return 1
+    fi
+    local rel stamp backup
+    rel="${dst#$HOME/}"
+    stamp="$(date +%Y%m%d-%H%M%S)"
+    backup="$BACKUP_ROOT/$stamp/$rel"
+    if $dryrun; then
+      echo "DRY-RUN: backup \"$dst\" -> \"$backup\""
+    else
+      mkdir -p "$(dirname "$backup")"
+      mv "$dst" "$backup"
+      msg "↻ Backed up: $dst -> $backup"
+    fi
+  fi
+  if $dryrun; then
+    echo "DRY-RUN: ln -s \"$src\" \"$dst\""
+  else
+    mkdir -p "$(dirname "$dst")"
+    ln -s "$src" "$dst"
+    msg "→ Linked: $dst -> $src"
+  fi
+}
+
+status=0
+for name in "${ITEMS[@]}"; do
+  link_one "$SRC_DIR/$name" "$CODEX_DIR/$name" || status=1
+done
+link_one "$SRC_DIR/skills" "$AGENTS_DIR/skills" || status=1
+
+exit "$status"

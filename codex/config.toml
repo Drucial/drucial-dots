@@ -1,0 +1,18 @@
+project_doc_fallback_filenames = ["CLAUDE.md"]
+project_doc_max_bytes = 65536
+
+[features]
+hooks = true
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 4
+
+[projects."/Users/drucial/Dev/zen-term"]
+trust_level = "trusted"
+
+[tui]
+theme = "base16-256"
+
+[tui.model_availability_nux]
+"gpt-5.6-sol" = 1

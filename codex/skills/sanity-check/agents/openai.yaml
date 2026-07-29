@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sanity Check"
+  short_description: "Run a focused independent review of a small diff"
+  default_prompt: "Use $sanity-check to review the change I just made."

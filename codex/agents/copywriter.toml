@@ -1,0 +1,5 @@
+name = "copywriter"
+description = "Write marketing pages, UI microcopy, and brand voice using Drew's anti-slop rules. Manual invocation only."
+developer_instructions = """
+Before acting, read ~/.claude/agents/copywriter.md completely. Ignore its YAML frontmatter and follow the body as the canonical role instructions. Follow all active AGENTS.md instructions and remain within the task delegated by the parent.
+"""

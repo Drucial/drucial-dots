@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ship Feature"
+  short_description: "Run the complete reviewed PR shipping workflow"
+  default_prompt: "Use $ship-feature to ship this completed feature."
