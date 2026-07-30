@@ -201,6 +201,10 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
@@ -214,7 +218,8 @@
     "superpowers@claude-plugins-official": true,
     "lua-lsp@claude-plugins-official": true,
     "andrej-karpathy-skills@karpathy-skills": true,
-    "swift-lsp@claude-plugins-official": true
+    "swift-lsp@claude-plugins-official": true,
+    "stripe@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "karpathy-skills": {
@@ -228,7 +233,7 @@
   "effortLevel": "high",
   "tui": "default",
   "skipWorkflowUsageWarning": true,
-  "theme": "auto",
+  "theme": "dark-ansi",
   "editorMode": "normal",
   "preferredNotifChannel": "auto",
   "agentPushNotifEnabled": true,
