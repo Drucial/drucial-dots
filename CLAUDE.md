@@ -88,6 +88,8 @@ Hook scripts target bash 3.2 (macOS system bash) — no associative arrays.
 
 **`codex/config.toml` drifts on its own.** Codex writes runtime state back through the symlink into the tracked file — `[hooks.state]` trust hashes, `[tui.model_availability_nux]`, `[projects.*] trust_level`. A dirty `codex/config.toml` you didn't edit is usually this. Review the diff before committing and don't assume it's yours.
 
+**`~/.claude/settings.json` drifts *invisibly*.** Claude Code saves settings atomically — write a temp file, `rename()` over the destination — and `rename()` replaces a symlink rather than following it. So the first `/theme`, `/plugin`, `/statusline`, or `/permissions` turns `~/.claude/settings.json` from a link into a standalone file, and every later change lands only there. This is the opposite of the Codex case above: Codex writes *through* its link, so its drift shows up in `git status`; this one is invisible to git, and the repo copy silently goes stale. The tell is `bin/sync` failing with `Drifted: … is a real file`. Diff the live file against `claude/settings.json` and merge before re-running with `-f` — `claude/install -f` overwrites with **no backup**, unlike `codex/install -f`.
+
 **Secrets are gitignored, not absent.** `configs/zsh/.secrets` and `configs/rainfrog/rainfrog_config.toml` hold real credentials on disk and are excluded in `.gitignore`; `.secrets.example` and the rainfrog `.example` are the tracked stand-ins. Update the example when the real file gains a key.
 
 **`configs/nvim/` is a LazyVim distribution** with its own `README.md`, `.gitignore`, and `lazy-lock.json`. Plugin specs go in `lua/plugins/<name>.lua`, editor settings in `lua/config/`. Lua is formatted by stylua (`configs/nvim/stylua.toml`).

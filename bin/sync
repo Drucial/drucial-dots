@@ -67,9 +67,19 @@ link_path() {
   mkdir -p "$(dirname "$dst")"
   if [ -e "$dst" ] || [ -L "$dst" ]; then
     if $force; then
+      # A real file here is drift, and it holds the only copy of whatever was
+      # written to it — warn unconditionally, since -f overwrites with no backup.
+      [ -L "$dst" ] || echo "⚠ Overwriting a real file (drifted, not a link): $dst" >&2
       msg "↻ Replacing: $dst"
     else
-      echo "✖ Destination exists: $dst (use -f to replace)" >&2
+      if [ -L "$dst" ]; then
+        echo "✖ Destination exists: $dst (use -f to replace)" >&2
+      else
+        echo "✖ Drifted: $dst is a real file, not a link into this repo." >&2
+        echo "  An app rewrote it in place, so it may hold changes that exist" >&2
+        echo "  nowhere else. Diff it against $src and keep what you want —" >&2
+        echo "  -f overwrites it without a backup." >&2
+      fi
       return 1
     fi
   fi
@@ -126,7 +136,8 @@ sync_claude() {
   $force && args+=(-f)
   $dryrun && args+=(-n)
   $verbose && args+=(-v)
-  "$install" "${args[@]}"
+  # bash 3.2 treats "${args[@]}" on an empty array as unbound under `set -u`.
+  "$install" ${args[@]+"${args[@]}"}
 }
 
 # 4. Codex config -> ~/.codex and ~/.agents ----------------------------------
@@ -141,7 +152,8 @@ sync_codex() {
   $force && args+=(-f)
   $dryrun && args+=(-n)
   $verbose && args+=(-v)
-  "$install" "${args[@]}"
+  # bash 3.2 treats "${args[@]}" on an empty array as unbound under `set -u`.
+  "$install" ${args[@]+"${args[@]}"}
 }
 
 # 5. Home-level symlinks ------------------------------------------------------

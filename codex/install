@@ -62,7 +62,13 @@ link_one() {
   fi
   if [ -e "$dst" ] || [ -L "$dst" ]; then
     if ! $force; then
-      echo "✖ Destination exists: $dst (use -f to back up and replace)" >&2
+      if [ -L "$dst" ]; then
+        echo "✖ Destination exists: $dst (use -f to back up and replace)" >&2
+      else
+        echo "✖ Drifted: $dst is a real file, not a link into this repo." >&2
+        echo "  An app rewrote it in place. -f backs it up to $BACKUP_ROOT" >&2
+        echo "  before replacing it." >&2
+      fi
       return 1
     fi
     local rel stamp backup
