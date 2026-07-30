@@ -16,3 +16,48 @@ theme = "base16-256"
 
 [tui.model_availability_nux]
 "gpt-5.6-sol" = 1
+
+[hooks.state]
+
+[hooks.state."/Users/drucial/.codex/hooks.json:pre_tool_use:1:0"]
+trusted_hash = "sha256:55939eca71d79b2c3a9f94ceaf233f72afc6342cd4de2e2c3122806830aafc26"
+
+[hooks.state."/Users/drucial/.codex/hooks.json:pre_tool_use:0:3"]
+trusted_hash = "sha256:c04b901ea3c4299002bbe62295247e16a8bef447e54ed13d3b434ea6f3757e8a"
+
+[hooks.state."/Users/drucial/.codex/hooks.json:pre_tool_use:0:2"]
+trusted_hash = "sha256:4c798d67c7d21121a09b0c067fb0368d1d45beb6984b8ac6633c3fb22346217d"
+
+[hooks.state."/Users/drucial/.codex/hooks.json:pre_tool_use:0:1"]
+trusted_hash = "sha256:1c5d9dd3290f57b2bb05799a2be9f592a8b5c920beb5929b5dbc81adea5698c9"
+
+[hooks.state."/Users/drucial/.codex/hooks.json:pre_tool_use:0:0"]
+trusted_hash = "sha256:97b6cd8a24e6e05d02a7c5304877441b6db7b6ca955321a47e72e9bb8fc02080"
+enabled = true
+
+[hooks.state."/Users/drucial/.codex/hooks.json:permission_request:0:0"]
+trusted_hash = "sha256:e529cd663a2ba8f6d8c86723d8102ffa940f8799bc229a6fb57ba5789b044b42"
+
+[hooks.state."/Users/drucial/.codex/hooks.json:post_tool_use:0:0"]
+trusted_hash = "sha256:7cccc0ccc8e83119fefe22d72d0775d56b24c9df5dffc0ca7d02b62aaad5945b"
+
+[hooks.state."/Users/drucial/.codex/hooks.json:post_tool_use:0:1"]
+trusted_hash = "sha256:29c45f602d3cfebaa2b9d144abcb47aabbc72e309e6e80d4d33ea9c6b1c247f7"
+
+[hooks.state."/Users/drucial/.codex/hooks.json:post_tool_use:1:0"]
+trusted_hash = "sha256:e504acac1ca2c83ace3e270ada71fb8ad7d1da7229814e6461a9ea5727140ce3"
+
+[hooks.state."/Users/drucial/.codex/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:09d61c0bc2bbf730b19d01622d1c579c39c6776a99dc964a86756b8c1e8e7e78"
+
+[hooks.state."/Users/drucial/.codex/hooks.json:session_start:0:1"]
+trusted_hash = "sha256:8306ca79177a5731211e88cf7fafc5ba4f95cbaeb8873ddf656c4b9fb59c7686"
+
+[hooks.state."/Users/drucial/.codex/hooks.json:session_end:0:0"]
+trusted_hash = "sha256:0cf850e93045948dd75e16bc880b0fd0a34b1f8c91af8430fb3f8ca5057c7f8f"
+
+[hooks.state."/Users/drucial/.codex/hooks.json:user_prompt_submit:0:0"]
+trusted_hash = "sha256:761004b88d35cf293834f0eb5439249620866cf1c1542f41087fdc4b25df2ab0"
+
+[hooks.state."/Users/drucial/.codex/hooks.json:stop:0:0"]
+trusted_hash = "sha256:2c3151b614afd7b60ec25b2613566b25255520a6f38fc57b75ba582130d6875e"
