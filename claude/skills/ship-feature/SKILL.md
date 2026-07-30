@@ -98,3 +98,5 @@ After marking ready, **confirm CI actually started** (`gh pr checks` or the run 
 - **Never merge.** Shipping ends at "ready for review"; merge only on an explicit instruction to merge.
 
 Report the final state: PR link, CI status (from an actual check, not an assumption), ticket status, and the triage summary. Say plainly what was verified and what wasn't — a green CI is not a substitute for anything that needed eyes on a screen.
+
+If the change has manual checks, invoke the global `interactive-runbook` skill and work through them with me one at a time before declaring the shipping run complete. Do not substitute an unattended driver or print the whole checklist and leave it as a handoff.

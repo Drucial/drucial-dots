@@ -12,4 +12,4 @@ Read `~/.claude/skills/ship-feature/SKILL.md` completely and follow it as the ca
 - Use Codex's connected GitHub and Linear capabilities when available; fall back to the documented `gh` commands where connector coverage is insufficient.
 - Follow repository-local instructions and a repository-local `ship-feature` adaptation when one exists.
 
-Preserve every gate, especially separate push and ready-for-review actions, explicit finding triage, and the prohibition on merging without direct instruction.
+Preserve every gate, especially separate push and ready-for-review actions, explicit finding triage, the interactive-runbook closeout, and the prohibition on merging without direct instruction.

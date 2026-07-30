@@ -1,0 +1,4 @@
+interface:
+  display_name: "Interactive Runbook"
+  short_description: "Run manual verification one step at a time"
+  default_prompt: "Use $interactive-runbook to guide me through this runbook one check at a time."
