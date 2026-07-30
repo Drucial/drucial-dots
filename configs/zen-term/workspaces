@@ -1,0 +1,43 @@
+# zen-term workspaces — the ⌘⇧P project list.
+# See docs/config/workspaces in the repo for the full field reference.
+
+[ZenTerm]
+path   = ~/Dev/zen-term
+main   = claude
+
+[ZenTerm Website]
+path   = ~/Dev/zen-term-website
+main   = nvim
+right  = claude
+bottom = shell
+
+[Cohaus]
+path   = ~/Dev/cohaus
+main   = claude
+
+[Craftwork]
+path   = ~/Dev/craftwork
+main   = claude
+
+[Reecv-v2]
+path   = ~/Dev/reecv-v2
+main   = claude
+
+[Wire]
+path   = ~/Dev/wire
+main   = nvim
+right  = claude
+bottom = shell
+focus  = main
+
+[Drucial App]
+path   = ~/Dev/drucial-app
+main   = claude
+
+[Dot Files]
+path   = ~/Dev/drucial-dots
+main   = "nvim ."
+
+[Praxis-Labs]
+path   = ~/Dev/praxis-labs
+main   = Claude

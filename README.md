@@ -24,12 +24,13 @@ bin/Brewfile base manifest: taps, fonts, shared/configless tooling
 | `git/`          | git config + ignore |
 | `kitty/`        | terminal |
 | `lazygit/`      | git TUI |
-| `neovide/`      | Neovim GUI |
 | `nvim/`         | editor (LazyVim) |
 | `posting/`      | API client |
 | `rainfrog/`     | database TUI |
+| `tuicr/`        | TUI code review |
 | `yabai/`        | window manager |
 | `yazi/`         | file manager |
+| `zen-term/`     | terminal |
 | `zsh/`          | shell |
 | `starship.toml` | prompt |
 
