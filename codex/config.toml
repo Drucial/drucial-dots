@@ -1,5 +1,6 @@
 project_doc_fallback_filenames = ["CLAUDE.md"]
 project_doc_max_bytes = 65536
+approvals_reviewer = "auto_review"
 
 [features]
 hooks = true
@@ -9,6 +10,9 @@ enabled = true
 max_concurrent_threads_per_session = 4
 
 [projects."/Users/drucial/Dev/zen-term"]
+trust_level = "trusted"
+
+[projects."/Users/drucial/Dev/craftwork"]
 trust_level = "trusted"
 
 [tui]
