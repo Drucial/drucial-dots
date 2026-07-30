@@ -1,0 +1,79 @@
+# Rosé Pine Moon for tuicr.
+#
+# tuicr ships no rose-pine variant, so this is a local theme: flat TOML, one
+# file per theme, loaded from this `themes/` directory. Select it with
+# `theme = "rose-pine-moon"` in ../config.toml or `tuicr --theme rose-pine-moon`.
+# Every key below except `syntax_theme` is required — tuicr validates at load.
+#
+# Palette (Rosé Pine Moon, official):
+#   base #232136   surface #2a273f   overlay #393552
+#   muted #6e6a86  subtle #908caa    text #e0def4
+#   love #eb6f92   gold #f6c177      rose #ea9a97
+#   pine #3e8fb0   foam #9ccfd8      iris #c4a7e7
+#   highlight low #2a283e  med #44415a  high #56526e
+#
+# Rosé Pine has no green, so adds read cool (foam) and deletes warm (love)
+# rather than the usual green/red. That is the palette working as intended.
+
+# Surfaces and text.
+panel_bg = "#232136"       # base — note config.toml sets transparent_background,
+                           # which lets the terminal show through and wins over this
+bg_highlight = "#44415a"   # highlight med
+fg_primary = "#e0def4"     # text        — 11.9:1 on base
+fg_secondary = "#908caa"   # subtle      — 4.9:1
+fg_dim = "#6e6a86"         # muted       — 3.0:1
+
+# Diff body. The two backgrounds are foam and love blended 22% over base, which
+# keeps body text above 7:1 on both while staying distinct from the base panel.
+diff_add = "#9ccfd8"           # foam
+diff_add_bg = "#3e475a"
+diff_del = "#eb6f92"           # love
+diff_del_bg = "#4f324a"
+diff_context = "#e0def4"       # text
+diff_hunk_header = "#c4a7e7"   # iris
+expanded_context_fg = "#6e6a86"
+
+# Syntax-highlighted diff backgrounds — same blends, so the two views agree.
+syntax_add_bg = "#3e475a"
+syntax_del_bg = "#4f324a"
+# syntax_theme is optional and intentionally omitted: with a dark panel_bg,
+# tuicr falls back to its bundled dark .tmTheme. Point it at a local file here
+# if you ever want the code itself to follow Rosé Pine too.
+
+# File list status.
+file_added = "#9ccfd8"     # foam
+file_modified = "#f6c177"  # gold
+file_deleted = "#eb6f92"   # love
+file_renamed = "#c4a7e7"   # iris
+reviewed = "#3e8fb0"       # pine — the one role pine owns alone
+pending = "#f6c177"        # gold
+
+# Comment types. These four appear side by side, so they take four distinct
+# hues; the `nit` type in config.toml overrides its own color separately.
+comment_note = "#9ccfd8"        # foam  (labelled "question")
+comment_suggestion = "#c4a7e7"  # iris
+comment_issue = "#eb6f92"       # love
+comment_praise = "#ea9a97"      # rose
+
+# Chrome.
+border_focused = "#c4a7e7"   # iris
+border_unfocused = "#393552" # overlay
+status_bar_bg = "#2a273f"    # surface — one step up from base
+cursor_color = "#ea9a97"     # rose
+cursor_line_bg = "#2a283e"   # highlight low, for config's cursor_line = true
+branch_name = "#c4a7e7"      # iris
+help_indicator = "#908caa"   # subtle
+
+# Messages and badges: base as the foreground on a saturated ground, 5.4:1 at
+# the worst (love) and 9.6:1 at the best (gold).
+message_info_fg = "#232136"
+message_info_bg = "#9ccfd8"
+message_warning_fg = "#232136"
+message_warning_bg = "#f6c177"
+message_error_fg = "#232136"
+message_error_bg = "#eb6f92"
+update_badge_fg = "#232136"
+update_badge_bg = "#f6c177"
+
+mode_fg = "#232136"
+mode_bg = "#c4a7e7"
