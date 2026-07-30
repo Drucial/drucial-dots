@@ -3,8 +3,8 @@
 # this file with all of those and pipes the result to `brew bundle`.
 
 # Taps — only those a kept tool needs.
-tap "dlvhdr/formulae"      # diffnav, gh-dash
-tap "felixkratz/formulae"  # yabai
+tap "dlvhdr/formulae"      # diffnav
+tap "koekeishiya/formulae"  # yabai
 
 # Shared CLIs used across several configs (zsh, nvim, yazi, git).
 brew "fzf"
