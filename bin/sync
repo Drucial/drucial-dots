@@ -162,6 +162,7 @@ sync_home() {
   # dst::src — extend as needed.
   local pairs=(
     "$HOME/.zshrc::$CONFIG_DIR/zsh/.zshrc"
+    "$HOME/.linear-tui/config.json::$CONFIG_DIR/linear-tui/config.json"
   )
   local pair dst src
   for pair in "${pairs[@]}"; do
