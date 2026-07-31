@@ -15,6 +15,9 @@ trust_level = "trusted"
 [projects."/Users/drucial/Dev/craftwork"]
 trust_level = "trusted"
 
+[projects."/Users/drucial/Dev/zen-linear"]
+trust_level = "trusted"
+
 [tui]
 theme = "base16-256"
 status_line = ["project-name", "git-branch", "pull-request-number", "branch-changes", "permissions", "approval-mode", "task-progress"]
