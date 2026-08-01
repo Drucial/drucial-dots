@@ -10,6 +10,10 @@
   "density": "comfortable",
   "group_by": "status",
   "subgroup_by": "",
+  "sort_by": [
+    "status",
+    "priority"
+  ],
   "rounded_borders": true,
   "workspaces": [
     {
