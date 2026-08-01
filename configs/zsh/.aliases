@@ -59,6 +59,10 @@ alias gpo='git pull'                                                            
 alias gpsup='git push --set-upstream origin $(git_branch_name)'                              # Git: Push and set upstream to origin/<current-branch>
 alias ghpr='open_github_pr'                                                                  # GitHub: Open current branch's PR in browser
 alias gdc='git diff main | pbcopy && echo "Diff copied to clipboard."'                       # Git: Copy diff vs main to clipboard
+alias tw='tuicr -w'                                                                          # Tuicr: Review uncommitted working-tree changes
+alias tb='tuicr -w -r $(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/main)..HEAD'  # Tuicr: Review all local work (commits + working tree) vs origin default branch
+alias tpr='tuicr pr'                                                                         # Tuicr: Review a GitHub PR (arg: number or URL)
+alias tprb='tuicr pr "$(gh pr view --json number --jq .number)"'                             # Tuicr: Review the current branch's own PR
 
 #-----
 # SSH
