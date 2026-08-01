@@ -1,14 +1,16 @@
+# yaml-language-server: $schema=https://gh-dash.dev/schema.json
 prSections:
-  - title: My Pull Requests
+  - title: My PRs
     filters: is:open author:@me
+    layout:
+      author:
+        hidden: true
+      authorIcon:
+        hidden: true
   - title: Needs My Review
     filters: is:open review-requested:@me
-  - title: Craftwork
-    filters: is:open repo:craftworkco/craftwork
-  - title: Drucial-App
-    filters: is:open repo:drucial/drucial-app
-  - title: Reecv
-    filters: is:open repo:drucial/reecv
+  - title: Involved
+    filters: is:open involves:@me -author:@me
 issuesSections:
   - title: My Issues
     filters: is:open author:@me
@@ -17,88 +19,58 @@ issuesSections:
   - title: Involved
     filters: is:open involves:@me -author:@me
 notificationsSections:
-  - title: All
-    filters: ""
-  - title: Created
-    filters: reason:author
+  - title: Unread
+    filters: is:unread
   - title: Participating
     filters: reason:participating
-  - title: Mentioned
-    filters: reason:mention
   - title: Review Requested
     filters: reason:review-requested
-  - title: Assigned
-    filters: reason:assign
-  - title: Subscribed
-    filters: reason:subscribed
-  - title: Team Mentioned
-    filters: reason:team-mention
-repo:
-  branchesRefetchIntervalSeconds: 30
-  prsRefetchIntervalSeconds: 60
 defaults:
+  view: prs
   preview:
-    open: true
-    width: 0.45
+    open: false
+    width: 0.5
   prsLimit: 20
-  prApproveComment: LGTM
   issuesLimit: 20
   notificationsLimit: 20
-  view: prs
+  prApproveComment: LGTM
+  refetchIntervalMinutes: 30
   layout:
     prs:
       updatedAt:
         width: 5
-      createdAt:
-        width: 5
       repo:
         width: 20
-      author:
-        width: 15
-      authorIcon:
-        hidden: false
       assignees:
-        width: 20
         hidden: true
       base:
-        width: 15
         hidden: true
-      lines:
-        width: 15
     issues:
       updatedAt:
-        width: 5
-      createdAt:
         width: 5
       repo:
         width: 15
       creator:
-        width: 10
-      creatorIcon:
-        hidden: false
+        width: 12
       assignees:
-        width: 20
         hidden: true
-  refetchIntervalMinutes: 30
 keybindings:
   universal:
-    - key: ctrl+up
-      builtin: pageUp
-    - key: ctrl+down
-      builtin: pageDown
-    # - key: ctrl+k
-    #   builtin: pageUp
-    # - key: ctrl+j
-    #   builtin: pageDown
+    - key: enter
+      builtin: togglePreview
   prs:
     - key: g
       name: lazygit
       command: cd {{.RepoPath}} && lazygit
+    - key: t
+      name: tuicr review
+      command: tuicr pr {{.RepoName}}#{{.PrNumber}}
     - key: R
       name: rerun failed jobs
       command: gh run rerun -R {{.RepoName}} --failed $(gh run list -R {{.RepoName}} -b {{.HeadRefName}} -s failure -L 1 --json databaseId --jq '.[0].databaseId')
 repoPaths:
   craftworkco/*: ~/Dev/*
+  drucial/*: ~/Dev/*
 theme:
   ui:
     sectionsShowCount: true
@@ -133,4 +105,4 @@ pager:
 confirmQuit: false
 showAuthorIcons: true
 smartFilteringAtLaunch: true
-includeReadNotifications: true
+includeReadNotifications: false
