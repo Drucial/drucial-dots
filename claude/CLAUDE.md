@@ -28,6 +28,12 @@ See `rules/code-quality.md` for anti-defaults, naming, and TypeScript-flavored g
   files too. A common miss is editing prose in components while leaving the same
   voice violations untouched in the content map that feeds them.
 
+## Voice
+
+See `rules/voice.md`. It governs every word written as Drew or to Drew:
+PRs, issues, Linear tickets and comments, commit messages, docs, code
+comments, and chat replies. Not optional, not scoped to published text.
+
 ## Don'ts
 
 - Don't modify generated files (`*.gen.*`, `*.generated.*`).
