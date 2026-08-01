@@ -3,37 +3,47 @@
   "timeout": "30s",
   "page_size": 50,
   "cache_ttl": "5m0s",
+  "search_debounce": "300ms",
   "log_file": "/Users/drucial/.linear-tui/app.log",
   "log_level": "warning",
   "theme": "rose_pine_moon",
   "density": "comfortable",
-  "rounded_borders": true,
   "group_by": "status",
+  "subgroup_by": "",
+  "rounded_borders": true,
+  "workspaces": [
+    {
+      "name": "Craftwork",
+      "api_key_env": "LINEAR_API_KEY_CRAFTWORK"
+    },
+    {
+      "name": "Zenterm",
+      "api_key_env": "LINEAR_API_KEY_ZENTERM"
+    }
+  ],
   "default_workspace": "Zenterm",
-  "keybindings": {
-    "switch_workspace": "w",
-    "copy_url": "y",
-    "copy_branch": "Y",
-    "copy_id": "i",
-    "create_sub_issue": "N",
-    "toggle_expand_all": "e",
-    "add_comment": "c",
-    "edit_title": "t",
-    "edit_labels": "T",
-    "toggle_navigation_pane": "{",
-    "toggle_details_pane": "}",
-    "tab_prev": "[",
-    "tab_next": "]",
-    "set_parent": "P",
-    "set_cycle": "C",
-    "open_github": "O"
-  },
   "agent_provider": "cursor",
   "agent_sandbox": "enabled",
   "agent_model": "",
   "agent_workspace": "",
-  "workspaces": [
-    { "name": "Craftwork", "api_key_env": "LINEAR_API_KEY_CRAFTWORK" },
-    { "name": "Zenterm", "api_key_env": "LINEAR_API_KEY_ZENTERM" }
-  ]
+  "keybindings": {
+    "add_comment": "c",
+    "copy_branch": "Y",
+    "copy_id": "i",
+    "copy_url": "y",
+    "create_sub_issue": "N",
+    "edit_labels": "T",
+    "edit_title": "t",
+    "open_github": "O",
+    "set_cycle": "C",
+    "set_parent": "P",
+    "switch_workspace": "w",
+    "tab_next": "]",
+    "tab_prev": "[",
+    "toggle_details_pane": "}",
+    "toggle_expand_all": "e",
+    "toggle_navigation_pane": "{"
+  },
+  "default_team": "",
+  "default_project": ""
 }

@@ -41,3 +41,7 @@ main   = "nvim ."
 [Praxis-Labs]
 path   = ~/Dev/praxis-labs
 main   = Claude
+
+[Zen Linear]
+path   = ~/Dev/zen-linear
+main   = claude
