@@ -11,6 +11,10 @@ main   = nvim
 right  = claude
 bottom = shell
 
+[Zen Linear]
+path   = ~/Dev/zen-linear
+main   = claude
+
 [Cohaus]
 path   = ~/Dev/cohaus
 main   = claude
@@ -34,14 +38,10 @@ focus  = main
 path   = ~/Dev/drucial-app
 main   = claude
 
-[Dot Files]
-path   = ~/Dev/drucial-dots
-main   = "nvim ."
-
 [Praxis-Labs]
 path   = ~/Dev/praxis-labs
 main   = Claude
 
-[Zen Linear]
-path   = ~/Dev/zen-linear
-main   = claude
+[Dot Files]
+path   = ~/Dev/drucial-dots
+main   = "nvim ."

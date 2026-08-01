@@ -69,6 +69,7 @@
       "Edit(**/*.key)"
     ]
   },
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -235,6 +236,5 @@
   "skipAutoPermissionPrompt": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754504720087
-  },
-  "model": "claude-fable-5[1m]"
+  }
 }

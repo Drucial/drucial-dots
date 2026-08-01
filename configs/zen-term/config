@@ -151,15 +151,16 @@ keybind = nav_up=ctrl+k
 # Moves pane nav onto ctrl+hjkl, freeing ⌘-hjkl for other binds / the shell. The nvim
 # pass-through guard ensures a pane running nvim still receives ctrl+hjkl.
 float = order:1 title:"Open Lazygit" key:cmd+g icon:git command:lazygit height:0.78 git:true persist:dir
-float = order:6 title:Yazi key:cmd+y icon:folder command:yazi width:0.9 height:0.9 persist:dir
-float = order:5 title:"Open Nvim" key:cmd+e icon:chevron.left.forwardslash.chevron.right command:nvim persist:dir
-float = order:7 title:"Open BTOP" key:cmd+shift+b icon:gauge command:btop dir:~ persist:window
-float = order:4 title:"Open Tuicr" key:cmd+r icon:list.bullet.rectangle command:tuicr git:true persist:dir
+float = order:6 title:Yazi key:cmd+y icon:folder command:yazi width:0.9 height:0.9 persist:dir toolbar:false
+float = order:5 title:"Open Nvim" key:cmd+e icon:neovim command:nvim persist:dir
+float = order:7 title:"Open BTOP" key:cmd+m icon:gauge command:btop dir:~ persist:window toolbar:false
+float = order:4 title:"Open Tuicr" key:cmd+r icon:bolt command:tb git:true persist:dir
 float = order:3 title:"Open Linear" key:cmd+l icon:linear command:linear-tui persist:window
-float = order:2 title:GitDash key:cmd+shift+d icon:github command:gd dir:~ persist:window
+float = order:2 title:GitDash key:cmd+shift+g icon:github command:gd dir:~ persist:window
 
 window-chrome = false
 agent-notifications = true
 diff-layout = inline
 automatic-update-checks = true
-background-alpha = 1
+background-alpha = 0.7
+hide-toolbar-buttons = new-tab,split-h,split-v,bottom-drawer,right-drawer,focus-mode,command-palette,diff-viewer

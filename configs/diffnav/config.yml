@@ -1,2 +1,6 @@
 ui:
+  hideHeader: true
   fileTreeWidth: 40
+  icons: nerd-fonts-status
+  sideBySide: true
+  startFoldersOpenDepth: -1
