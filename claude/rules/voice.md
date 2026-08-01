@@ -35,5 +35,19 @@ No exceptions, including "minor" edits to already-approved text.
 
 ## Code comments
 
-Same voice, and WHY-only per `code-quality.md`. If a comment explains what
-the next line does, delete it or rename the thing.
+Same voice, full rules included: no em-dashes, no strong adverbs. Applies
+to new comments; don't retrofit old repos.
+
+- WHY-only, per `code-quality.md`. If a comment explains what the next
+  line does, delete it or rename the thing.
+- Comment the code, not the work. No session narration, no review-speak,
+  no documenting missteps or superseded approaches. If it only makes
+  sense next to the PR, it doesn't belong in the file.
+- Terse and infrequent. Digestible code gets no comment. The target
+  register: `// else a newer toggle of this edge owns the layout`.
+- A deviation from the standard path earns one: state the constraint and
+  the cost of breaking it, then stop. Concurrency guards, external
+  contracts invisible at the call site, and safety justifications qualify.
+  Design rationale essays and caps-lock emphasis don't.
+- Ticket references only when the ticket holds context the comment can't
+  carry (a repro, a measurement). Never as decoration.
