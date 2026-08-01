@@ -1,8 +1,10 @@
-# [flavor]
-# dark = "rose-pine-moon"
+[flavor]
+dark = "rose-pine-moon"
+
+# Flavor settings outrank this file, so selection/hover styling lives in the
+# vendored flavor (flavors/rose-pine-moon.yazi/flavor.toml), not here.
 
 [mgr]
 # Border
 border_symbol = "│"
 border_style  = { fg = "#56526e" }
-

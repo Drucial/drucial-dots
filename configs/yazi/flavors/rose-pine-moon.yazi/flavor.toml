@@ -5,10 +5,6 @@
 [mgr]
 cwd = { fg = "#9ccfd8" }
 
-# Hovered
-hovered         = { reversed = true }
-preview_hovered = { underline = true }
-
 # Find
 find_keyword  = { fg = "#f6c177", bold = true, italic = true, underline = true }
 find_position = { fg = "#c4a7e7", bg = "reset", bold = true, italic = true }
@@ -33,6 +29,19 @@ border_style  = { fg = "#56526e" }
 
 # Highlighting
 syntect_theme = ""
+
+# : }}}
+
+
+# : Indicator {{{
+
+# Yazi 26 moved hovered-row styling here from [mgr]; muted bg to match the
+# selection treatment across the other TUIs.
+[indicator]
+parent  = { bg = "#403d52" }
+current = { bg = "#403d52" }
+preview = { underline = true }
+padding = { open = "", close = "" }
 
 # : }}}
 
@@ -178,7 +187,7 @@ inactive = { fg = "#908caa" }
 [tasks]
 border  = { fg = "#3e8fb0" }
 title   = { bold = true}
-hovered = { fg = "#c4a7e7", bold = true, reversed = true }
+hovered = { fg = "#c4a7e7", bold = true, bg = "#403d52" }
 
 # : }}}
 
@@ -189,7 +198,7 @@ hovered = { fg = "#c4a7e7", bold = true, reversed = true }
 on      = { fg = "#9ccfd8" }
 run     = { fg = "#c4a7e7" }
 desc    = { fg = "#f6c177"}
-hovered = { reversed = true, bold = true }
+hovered = { bold = true, bg = "#403d52" }
 footer  = { fg = "#232136", bg = "#e0def4" }
 
 # : }}}
@@ -215,16 +224,16 @@ rules = [
 	# { mime = "inode/empty", fg = "#eb6f92" },
 
 	# Special files
-	{ name = "*", is = "orphan", fg = "#232136", bg = "#eb6f92" },
-	{ name = "*", is = "exec"  , fg = "#9ccfd8" },
+	{ url = "*", is = "orphan", fg = "#232136", bg = "#eb6f92" },
+	{ url = "*", is = "exec"  , fg = "#9ccfd8" },
 
 	# Dummy files
-	{ name = "*", is = "dummy",  fg = "#232136", bg = "#eb6f92" },
-	{ name = "*/", is = "dummy", fg = "#232136", bg = "#eb6f92" },
+	{ url = "*", is = "dummy",  fg = "#232136", bg = "#eb6f92" },
+	{ url = "*/", is = "dummy", fg = "#232136", bg = "#eb6f92" },
 
 	# Fallback
-	{ name = "*",  fg = "#e0def4" },
-	{ name = "*/", fg = "#3e8fb0" }
+	{ url = "*",  fg = "#e0def4" },
+	{ url = "*/", fg = "#e0def4" }
 ]
 
 # : }}}
