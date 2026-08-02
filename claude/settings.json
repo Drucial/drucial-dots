@@ -229,7 +229,7 @@
   "effortLevel": "high",
   "tui": "default",
   "skipWorkflowUsageWarning": true,
-  "theme": "dark-ansi",
+  "theme": "custom:rose-pine",
   "editorMode": "normal",
   "preferredNotifChannel": "auto",
   "agentPushNotifEnabled": true,
