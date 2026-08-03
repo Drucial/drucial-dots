@@ -9,6 +9,7 @@ belong in the project's own `CLAUDE.md`, not here.
 - **Plan Before Implementing.** For multi-file features or anything touching schemas, present a plan and wait for approval before editing.
 - **Root-Cause Before Patching.** When a bug persists after one targeted fix, stop and investigate root causes before more surface fixes.
 - **Verify Before Claiming Done.** Run the project's typecheck/lint/test commands before reporting a task as complete. Don't claim success from a clean diff alone.
+- **Right-Size Review Effort.** Default code review to low or medium. Reserve high and above for large or risky diffs.
 
 ## Copy & content
 

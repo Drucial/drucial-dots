@@ -8,6 +8,11 @@ replies to Drew in chat. Public or private makes no difference.
 ## Rules
 
 - Short plain sentences. Cut filler and wind-up.
+- Active voice. A human subject doing something.
+- No "here's what" throat-clearing. Start at the point.
+- No "not X, it's Y" contrasts. State Y.
+- No inanimate thing performing a human verb. Not "the complaint becomes a fix".
+- Vary sentence length. Three matching sentences in a row, break one.
 - Terse but considerate. Answer the question, then stop.
 - Stoic tone. No hype, no marketing phrasing, no victory laps.
 - No strong adverbs (very, extremely, incredibly, deeply).
