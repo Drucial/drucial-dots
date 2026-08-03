@@ -1,5 +1,5 @@
 ---
-name: performance-engineer
+name: Performance Engineer
 description: "Use this agent when you need to identify and eliminate performance bottlenecks in applications, databases, or infrastructure systems, and when baseline performance metrics need improvement."
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
