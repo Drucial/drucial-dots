@@ -7,7 +7,7 @@ description: Run my feature-complete PR process: full local check, push, open a 
 
 Drive my feature-complete PR process end to end. Work through the steps in order; do not skip ahead, and report results at each gate rather than silently continuing.
 
-**This file is the source of truth; the copies in project repos are downstream.** Each repo carries a real copy rather than a symlink, because a cloud session clones that repo on its own. A link into a sibling checkout would dangle there, and the skill would silently not exist in the one place it can't be fixed by hand. So edit this file, then copy it out; never edit a repo's copy directly, or the next sync overwrites it.
+**This file is the source of truth; the copies in project repos are downstream.** Each repo carries a real copy rather than a symlink, because a cloud session clones that repo on its own. A link into a sibling checkout would dangle there, and the skill would silently not exist in the one place it can't be fixed by hand. Propagation is manual: edit this file, then copy it into each repo yourself. Never edit a repo's copy directly, because the next copy-out silently discards it and the fix is lost.
 
 **Every repo gets the same copy. No repo gets a bespoke version.** Nothing below names an ecosystem, a package manager, or a tracker. Where a step needs a project-specific command, it says how to find it in the repo rather than assuming one. If you hit something that seems to need a local fork of this file, that is a gap in this file: say so and fix it here.
 
@@ -22,6 +22,8 @@ Run whatever that resolves to: format, lint, typecheck, and the test or coverage
 - Where the repo ships docs that describe the code you changed, check they still match. A stale doc is a defect the diff introduced.
 
 ## 2. Push the branch
+
+Confirm you are on a feature branch first. If the work sits on the default branch, stop and say so rather than pushing; the commits need moving to a branch before anything else here applies.
 
 Commit and push (`git push -u origin <branch>`). Use the tracker's generated branch name; don't invent one.
 
@@ -62,9 +64,25 @@ Run `/code-review` against the branch diff and capture its findings. Effort foll
 
 Never run your own review pass and present it as `/code-review`'s findings. Name which review produced each finding.
 
-## 6. Pull down Copilot's comments
+## 6. Pull down Copilot's review
 
-Once Copilot has finished, fetch its review comments from the PR. Re-check if they aren't posted yet.
+Copilot writes to two places and you need both. Line comments:
+
+```bash
+gh api 'repos/{owner}/{repo}/pulls/<PR#>/comments' --jq '.[] | "\(.path):\(.line) \(.body)"'
+```
+
+And the review body, which carries its summary and per-file notes:
+
+```bash
+gh api 'repos/{owner}/{repo}/pulls/<PR#>/reviews' --jq '.[] | select(.user.login=="copilot-pull-request-reviewer[bot]") | .body'
+```
+
+**Zero line comments does not mean zero findings.** A review commonly lands with an empty `comments` array and everything in the review body. Read both before concluding Copilot flagged nothing.
+
+The body states how many files it reviewed. If that falls short of the changed file count, say so in step 7 rather than treating the review as complete coverage.
+
+Re-check if nothing is posted yet; it runs async.
 
 ## 7. Review the combined findings
 
