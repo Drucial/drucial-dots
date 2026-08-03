@@ -1,19 +1,9 @@
 {
-  "api_endpoint": "https://api.linear.app/graphql",
-  "timeout": "30s",
-  "page_size": 50,
-  "cache_ttl": "5m0s",
-  "search_debounce": "300ms",
   "log_file": "/Users/drucial/.linear-tui/app.log",
-  "log_level": "warning",
+  "log_level": "debug",
   "theme": "rose_pine_moon",
-  "density": "comfortable",
   "group_by": "status",
-  "subgroup_by": "",
-  "sort_by": [
-    "status",
-    "priority"
-  ],
+  "sort_by": ["status", "priority"],
   "rounded_borders": true,
   "workspaces": [
     {
@@ -23,13 +13,17 @@
     {
       "name": "Zenterm",
       "api_key_env": "LINEAR_API_KEY_ZENTERM"
+    },
+    {
+      "name": "CoHaus",
+      "api_key_env": "LINEAR_API_KEY_COHAUS"
+    },
+    {
+      "name": "Praxis Labs",
+      "api_key_env": "LINEAR_API_KEY_PRAXIS_LABS"
     }
   ],
   "default_workspace": "Zenterm",
-  "agent_provider": "cursor",
-  "agent_sandbox": "enabled",
-  "agent_model": "",
-  "agent_workspace": "",
   "keybindings": {
     "add_comment": "c",
     "copy_branch": "Y",
@@ -47,7 +41,5 @@
     "toggle_details_pane": "}",
     "toggle_expand_all": "e",
     "toggle_navigation_pane": "{"
-  },
-  "default_team": "",
-  "default_project": ""
+  }
 }

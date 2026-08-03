@@ -155,12 +155,12 @@ float = order:6 title:Yazi key:cmd+y icon:folder command:yazi width:0.9 height:0
 float = order:5 title:"Open Nvim" key:cmd+e icon:neovim command:nvim persist:dir
 float = order:7 title:"Open BTOP" key:cmd+m icon:gauge command:btop dir:~ persist:window toolbar:false
 float = order:4 title:"Open Tuicr" key:cmd+r icon:bolt command:tb git:true persist:dir
-float = order:3 title:"Open Linear" key:cmd+l icon:linear command:linear-tui persist:window
+float = order:3 title:"Open Linear" key:cmd+l icon:linear command:zen-linear persist:window
 float = order:2 title:GitDash key:cmd+shift+g icon:github command:gd dir:~ persist:window
 
 window-chrome = false
 agent-notifications = true
 diff-layout = inline
 automatic-update-checks = true
-background-alpha = 0.7
+background-alpha = 1
 hide-toolbar-buttons = new-tab,split-h,split-v,bottom-drawer,right-drawer,focus-mode,command-palette,diff-viewer
