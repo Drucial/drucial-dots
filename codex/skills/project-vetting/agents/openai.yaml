@@ -1,4 +1,0 @@
-interface:
-  display_name: "Project Vetting"
-  short_description: "Vet a project idea before implementation begins"
-  default_prompt: "Use $project-vetting to pressure-test this project idea."

@@ -202,20 +202,20 @@
     "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
-    "commit-commands@claude-plugins-official": true,
     "playwright@claude-plugins-official": true,
-    "security-guidance@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
-    "claude-code-setup@claude-plugins-official": true,
-    "ruby-lsp@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
     "lua-lsp@claude-plugins-official": true,
-    "andrej-karpathy-skills@karpathy-skills": true,
+    "ruby-lsp@claude-plugins-official": true,
     "swift-lsp@claude-plugins-official": true,
-    "stripe@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": false,
+    "commit-commands@claude-plugins-official": false,
+    "security-guidance@claude-plugins-official": false,
+    "code-simplifier@claude-plugins-official": false,
+    "claude-code-setup@claude-plugins-official": false,
+    "stripe@claude-plugins-official": false,
+    "andrej-karpathy-skills@karpathy-skills": false
   },
   "extraKnownMarketplaces": {
     "karpathy-skills": {
