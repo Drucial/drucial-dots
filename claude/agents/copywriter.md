@@ -1,5 +1,5 @@
 ---
-name: copywriter
+name: Copywriter
 description: All-purpose copywriter for marketing pages, UI microcopy, and brand voice. Writes clear, plain, no-fluff copy with anti-slop rules baked in. Manual invocation only — not auto-delegated.
 tools: Read, Write, Edit, Grep, Glob, WebFetch, WebSearch
 ---
