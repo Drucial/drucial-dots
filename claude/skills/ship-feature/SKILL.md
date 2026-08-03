@@ -1,30 +1,31 @@
 ---
 name: ship-feature
-description: Run my feature-complete PR process — full local check, push, open a draft PR, gather Copilot + /code-review findings, triage them (fix / mitigate / ignore, no tech debt), apply, push again, then mark the PR ready for review. Invoke when a feature build is complete and ready to ship.
+description: Run my feature-complete PR process: full local check, push, open a draft PR, gather Copilot + /code-review findings, triage them (fix / mitigate / ignore, no tech debt), apply, push again, then mark the PR ready for review. Invoke when a feature build is complete and ready to ship.
 ---
 
 # Ship a completed feature
 
 Drive my feature-complete PR process end to end. Work through the steps in order; do not skip ahead, and report results at each gate rather than silently continuing.
 
-**This file is the source of truth; the copies in project repos are downstream.** Each repo carries a real copy rather than a symlink, because a cloud session clones that repo on its own — a link into a sibling checkout would dangle there, and the skill would silently not exist in the one place it can't be fixed by hand. So edit this file, then copy it out; never edit a repo's copy directly, or the next sync overwrites it.
+**This file is the source of truth; the copies in project repos are downstream.** Each repo carries a real copy rather than a symlink, because a cloud session clones that repo on its own. A link into a sibling checkout would dangle there, and the skill would silently not exist in the one place it can't be fixed by hand. So edit this file, then copy it out; never edit a repo's copy directly, or the next sync overwrites it.
 
-The one deliberate exception is **zen-term**, whose flow genuinely differs — SwiftPM commands, a stretch of its life with no remote, and a GUI handover runbook. It keeps its own adaptation and is not overwritten by a sync.
-
-Adapt the project-specific commands (check command, ticket tracker, review skill) to whatever repo this runs in. The defaults below assume a repo with a `check` script, GitHub Copilot reviews, a `/code-review` skill, and Linear tickets — substitute the local equivalents if they differ.
+**Every repo gets the same copy. No repo gets a bespoke version.** Nothing below names an ecosystem, a package manager, or a tracker. Where a step needs a project-specific command, it says how to find it in the repo rather than assuming one. If you hit something that seems to need a local fork of this file, that is a gap in this file: say so and fix it here.
 
 ## 1. Full local check
 
-Run the repo's full check (e.g. `pnpm check` — format + lint + typecheck) and its test/coverage gate.
+Find the repo's own check command before running anything. Look in its `CLAUDE.md` or `AGENTS.md` first, then its build manifest or task runner, then its CI workflow, which names the commands that have to pass anyway. Ask me if none of those settle it. Never assume an ecosystem's conventional command.
+
+Run whatever that resolves to: format, lint, typecheck, and the test or coverage gate.
 
 - If anything fails, fix it and re-run until green. Catch issues locally so they don't burn a CI run.
 - Do not push until the check is fully green.
+- Where the repo ships docs that describe the code you changed, check they still match. A stale doc is a defect the diff introduced.
 
 ## 2. Push the branch
 
 Commit and push (`git push -u origin <branch>`). Use the tracker's generated branch name; don't invent one.
 
-This is its own step deliberately. Buried inside the PR step as "confirm the branch is pushed", it stops reading as a discrete action — and becomes something to chain onto another command. Step 9 is where that chaining has already caused a silent CI failure.
+This is its own step deliberately. Buried inside the PR step as "confirm the branch is pushed", it stops reading as a discrete action, and becomes something to chain onto another command. Step 9 is where that chaining has already caused a silent CI failure.
 
 ## 3. Open the PR as a draft
 
@@ -33,42 +34,33 @@ This is its own step deliberately. Buried inside the PR step as "confirm the bra
 
 ## 4. Request a Copilot review
 
-One REST call, with the reviewer login `Copilot`:
-
 ```bash
-gh api -X POST repos/OWNER/REPO/pulls/NNN/requested_reviewers -f 'reviewers[]=Copilot'
+gh pr edit <PR#> --add-reviewer @copilot
 ```
 
-Confirm it registered rather than assuming. The response carries `requested_reviewers`, and a live request shows the Bot there:
+Confirm it registered rather than assuming. `{owner}/{repo}` resolves from the current repo, so this is the same line everywhere:
 
 ```bash
-gh api repos/OWNER/REPO/pulls/NNN --jq '.requested_reviewers[].login'
+gh api 'repos/{owner}/{repo}/pulls/<PR#>' --jq '.requested_reviewers[].login'
 ```
 
-**`gh pr edit --add-reviewer` cannot do this.** It lowercases the login and fails with "Could not resolve user with login 'copilot'". That reads like Copilot is unavailable; it isn't.
+A live request shows `Copilot`. It reviews as `copilot-pull-request-reviewer[bot]`, so the two names are one bot, not a failed request.
 
-**Do not resolve a bot id from `suggestedActors` and call the GraphQL `requestReviews` mutation.** `suggestedActors` returns `copilot-swe-agent`, which is the coding agent, not the reviewer. The mutation accepts its id, returns success, and requests nothing: `reviewRequests` comes back empty and no review ever runs. The reviewer is a different bot, `Copilot`, which reviews as `copilot-pull-request-reviewer`. Reach it through the REST call above. This file prescribed the mutation until 2026-08-02, and it cost two PRs' worth of false "Copilot is broken" diagnosis.
+**Never confirm with `gh pr view --json reviewRequests`.** It omits Bot reviewers and returns `[]` while the request is live.
 
-**Never confirm with `gh pr view --json reviewRequests`.** It omits Bot reviewers and returns `[]` while the request is live. Use the REST field above, or GraphQL with a `... on Bot` fragment.
-
-**A repo with automatic Copilot review enabled produces a review whether or not the request succeeded**, so a review appearing is not evidence the request worked. Confirm from the request's own response.
+**Never write `@copilot` in comment text**, on the PR or in its description. The flag above is the only way to request a review. A mention in prose summons it out of band and re-fires on every edit of the comment carrying it. Read its findings from the review comments and write your triage as prose that does not address it.
 
 It runs async; continue and re-check later.
 
-**Never `@copilot`, in a comment or anywhere else.** The REST call above is the only way to request a review. An `@`-mention summons it out of band, and it re-fires on every edit of the comment that carries it. Read its findings from the review comments and write your triage as ordinary prose that does not address it. This holds for every comment on the PR, the description included.
+## 5. Run /code-review
 
-## 5. Run /code-review — I run this, not you
+Run `/code-review` against the branch diff and capture its findings. Effort follows the global rule: low or medium by default, high only for a large or risky diff. Don't hand this back to me; it is yours to run.
 
-**Stop here and ask me to run it.** `/code-review` is user-triggered and billed; a session cannot invoke it — not via the Skill tool, not via Bash, not via a Workflow. Don't try, and don't treat the failure as a bug to route around.
+**Use `/code-review`, not a PR-review variant.** The PR from step 3 is a draft, and the plugin `/code-review:code-review` checks draft state first and declines without reviewing. The working diff covers the same code, because step 2 pushed the branch the PR was opened from.
 
-Say plainly that you're blocked on this and what to run:
+**`/code-review ultra` is the one I have to run.** It launches a multi-agent cloud review and is billed, so a session cannot start it. Don't stop and ask for it by default. Note it as an option when the diff is genuinely large or risky, then carry on without it unless I say to wait.
 
-- `/code-review` for the working diff
-- `/code-review ultra` for a multi-agent cloud review of the branch, or `/code-review ultra <PR#>` for the PR opened in step 3
-
-Then **wait** for the findings before starting step 7. Step 6 is Copilot's, runs on its own clock, and should proceed while you wait — fetch its comments as soon as they land. It is steps 7–10 that block, because the triage in step 8 needs both sources in front of it.
-
-If I decline or say to skip it, continue with Copilot's review as the only source and **say so in the step 7 output**. What you must never do is run your own review pass and present it as `/code-review`'s findings — name which review actually produced each finding.
+Never run your own review pass and present it as `/code-review`'s findings. Name which review produced each finding.
 
 ## 6. Pull down Copilot's comments
 
@@ -80,31 +72,31 @@ Merge Copilot's comments and `/code-review`'s findings into a single list. De-du
 
 ## 8. Triage each finding
 
-For every finding, recommend one of: **fix**, **mitigate**, or **ignore** — each with an explicit one-line reason.
+For every finding, recommend one of: **fix**, **mitigate**, or **ignore**, each with an explicit one-line reason.
 
 - **Default to fixing.** Do not leave tech debt.
-- **Mitigate** only when a full fix is out of scope for this PR — capture the residual as a tracked follow-up, never a silent gap.
-- **Ignore** only when the finding is wrong or genuinely not worth it — say why.
+- **Mitigate** only when a full fix is out of scope for this PR. Capture the residual as a tracked follow-up, never a silent gap.
+- **Ignore** only when the finding is wrong or genuinely not worth it. Say why.
 
 Present the triage table to me, apply the agreed fixes, and re-run step 1 until green.
 
-## 9. Push the fixes, then mark ready — as two separate actions
+## 9. Push the fixes, then mark ready, as two separate actions
 
 **Push, let the push register, and only then mark the PR ready. Never chain them** (`git push && gh pr ready`).
 
-Both emit a webhook — `synchronize` and `ready_for_review`. Fired in the same instant they land in the same CI concurrency group, so one cancels the other, and the survivor is often the `synchronize` run, whose payload still says `draft: true` and therefore skips every job. The PR then shows skipped checks, which look like passes at a glance, with no CI having run at all. It is a failure that reports success.
+Both emit a webhook, `synchronize` and `ready_for_review`. Fired in the same instant they land in the same CI concurrency group, so one cancels the other, and the survivor is often the `synchronize` run, whose payload still says `draft: true` and therefore skips every job. The PR then shows skipped checks, which look like passes at a glance, with no CI having run at all. It is a failure that reports success.
 
-Keying the concurrency group on `github.event.action` fixes it repo-side, but don't assume that's configured — separate the two actions regardless.
+Keying the concurrency group on `github.event.action` fixes it repo-side, but don't assume that's configured. Separate the two actions regardless.
 
 After marking ready, **confirm CI actually started** (`gh pr checks` or the run list). "Skipping" is not "passing". If nothing ran, close and reopen the PR to fire a clean `reopened` event rather than pushing an empty commit.
 
 ## 10. Close out
 
-- **Let the tracker move the ticket.** Where the tracker has a PR integration (Linear does, via the ticket id in the branch/PR), marking the PR ready moves it to **In Review** on its own. Don't write that status by hand — a manual move is a second copy of a transition the integration owns, and it drifts the moment the automation changes.
+- **Let the tracker move the ticket.** Where the tracker has a PR integration (Linear does, via the ticket id in the branch/PR), marking the PR ready moves it to **In Review** on its own. Don't write that status by hand. A manual move is a second copy of a transition the integration owns, and it drifts the moment the automation changes.
 - **Move it yourself only when nothing else will:** no PR (a local-only ship), or a tracker with no PR integration. Note which case applies.
 - **Tracking ticket:** update it with any scope changes uncovered during the build. If no ticket exists, note that and skip.
 - **Never merge.** Shipping ends at "ready for review"; merge only on an explicit instruction to merge.
 
-Report the final state: PR link, CI status (from an actual check, not an assumption), ticket status, and the triage summary. Say plainly what was verified and what wasn't — a green CI is not a substitute for anything that needed eyes on a screen.
+Report the final state: PR link, CI status (from an actual check, not an assumption), ticket status, and the triage summary. Say plainly what was verified and what wasn't. A green CI is not a substitute for anything that needed eyes on a screen.
 
 If the change has manual checks, invoke the global `interactive-runbook` skill and work through them with me one at a time before declaring the shipping run complete. Do not substitute an unattended driver or print the whole checklist and leave it as a handoff.
