@@ -17,6 +17,10 @@ main   = claude
 path   = ~/Dev/zen-octo
 main   = claude
 
+[Zen Review]
+path   = ~/Dev/zen-review
+main   = claude
+
 [Cohaus]
 path   = ~/Dev/cohaus
 main   = claude
@@ -47,7 +51,3 @@ main   = Claude
 [Dot Files]
 path   = ~/Dev/drucial-dots
 main   = "nvim ."
-
-[Zen Review]
-path   = ~/Dev/zen-review
-main   = claude
