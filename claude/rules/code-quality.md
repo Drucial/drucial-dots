@@ -30,25 +30,20 @@ own code quality doc.
 
 ## Comments
 
-Applies to new comments. Don't retrofit old repos. Same voice rules as any
-other writing: no em-dashes, no strong adverbs.
+Applies to new comments. Don't retrofit old repos. The voice rules in CLAUDE.md
+apply here too.
 
-- WHY only, never WHAT. If a comment explains what the next line does, delete
-  it or rename the thing.
-- Comment the code, not the work. No session narration, no review-speak, no
-  documenting missteps or superseded approaches. If it only makes sense next
-  to the PR, it doesn't belong in the file.
-- Terse and infrequent. Digestible code gets no comment. The target register:
+- One line. Two is the ceiling. Needing more means the code is unclear or the
+  rationale belongs in a doc.
+- WHY only, never WHAT. If it explains the next line, delete it or rename the
+  thing.
+- Digestible code gets no comment. The target register:
   `// else a newer toggle of this edge owns the layout`.
-- Two or three lines is the ceiling. Needing a paragraph is a signal, not a
-  style problem: the code is unclear, or the rationale belongs in a doc or a
-  ticket. Fix the code or move the prose.
-- A deviation from the standard path earns one: state the constraint and the
-  cost of breaking it, then stop. Concurrency guards, external contracts
-  invisible at the call site, and safety justifications qualify. Design
-  rationale essays and caps-lock emphasis don't.
-- Ticket references only when the ticket holds context the comment can't carry
-  (a repro, a measurement). Never as decoration.
+- Comment the code, not the work. No session narration, no review-speak, no
+  documenting missteps.
+- A deviation from the standard path earns one: the constraint and the cost of
+  breaking it, then stop.
+- Ticket references only when the ticket holds a repro or a measurement.
 
 ## No defer markers
 

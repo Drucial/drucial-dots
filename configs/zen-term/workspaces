@@ -7,12 +7,14 @@ main   = claude
 
 [ZenTerm Website]
 path   = ~/Dev/zen-term-website
-main   = nvim
-right  = claude
-bottom = shell
+main   = claude
 
 [Zen Linear]
 path   = ~/Dev/zen-linear
+main   = claude
+
+[Zen Octo]
+path   = ~/Dev/zen-octo
 main   = claude
 
 [Cohaus]
@@ -45,3 +47,7 @@ main   = Claude
 [Dot Files]
 path   = ~/Dev/drucial-dots
 main   = "nvim ."
+
+[Zen Review]
+path   = ~/Dev/zen-review
+main   = claude
