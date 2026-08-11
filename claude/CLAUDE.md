@@ -47,9 +47,9 @@ Three parts, in order. Skip 2 or 3 when there's nothing to put in them.
 
 1. A short paragraph: what's in the PR, and what was verified. What ran, what
    it showed. Never "tested thoroughly" or "works as expected."
-2. A terse list of mentionable changes. Behavior or UI that changes in
+2. Changes: A terse list of mentionable changes. Behavior or UI that changes in
    production goes here.
-3. Notes for the reviewer: how to test it, anything duplicated, where to find
+3. Notes: how to test it, anything duplicated, where to find
    the changes. List or paragraph, whichever is shorter.
 
 No file-by-file table. GitHub already shows the diff.

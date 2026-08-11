@@ -5,10 +5,6 @@
 path   = ~/Dev/zen-term
 main   = claude
 
-[ZenTerm Website]
-path   = ~/Dev/zen-term-website
-main   = claude
-
 [Zen Linear]
 path   = ~/Dev/zen-linear
 main   = claude
@@ -21,32 +17,25 @@ main   = claude
 path   = ~/Dev/zen-review
 main   = claude
 
-[Cohaus]
-path   = ~/Dev/cohaus
-main   = claude
-
 [Craftwork]
 path   = ~/Dev/craftwork
 main   = claude
 
-[Reecv-v2]
-path   = ~/Dev/reecv-v2
+[Cohaus]
+path   = ~/Dev/cohaus
 main   = claude
 
-[Wire]
-path   = ~/Dev/wire
-main   = nvim
-right  = claude
-bottom = shell
-focus  = main
-
-[Drucial App]
-path   = ~/Dev/drucial-app
+[ZenTerm Website]
+path   = ~/Dev/zen-term-website
 main   = claude
 
 [Praxis-Labs]
 path   = ~/Dev/praxis-labs
 main   = Claude
+
+[Drucial App]
+path   = ~/Dev/drucial-app
+main   = claude
 
 [Dot Files]
 path   = ~/Dev/drucial-dots

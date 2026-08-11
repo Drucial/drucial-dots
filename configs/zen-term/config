@@ -3,10 +3,10 @@ float = order:5 title:Yazi key:cmd+y icon:folder command:yazi width:0.9 height:0
 float = order:1 title:"Open Nvim" key:cmd+e icon:neovim command:nvim persist:dir
 float = order:6 title:"Open BTOP" key:cmd+m icon:gauge command:btop dir:~ persist:window toolbar:false
 float = order:3 title:"Open Linear" key:cmd+l icon:linear command:zen-linear persist:window
-float = order:4 title:"Zen Octo" key:cmd+o icon:github command:zen-octo git:true persist:window
+float = order:4 title:"Zen Octo" key:cmd+o icon:github command:zen-octo git:true persist:dir
 
-window-chrome = true
-hide-toolbar-buttons = new-tab,split-h,split-v,bottom-drawer,right-drawer,focus-mode,command-palette,diff-viewer
+window-chrome = false
+hide-toolbar-buttons = new-tab,split-h,split-v,focus-mode,command-palette,diff-viewer
 backdrop-alpha = 0.5
 
 cursor-style = block

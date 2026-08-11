@@ -98,3 +98,7 @@ Inline brevity doesn't govern documentation. Different job, different rules.
   internal bookkeeping can stay green while the thing it produces is broken.
   Drive the actual control, endpoint, or output a user hits. State-only tests
   give false confidence where it costs the most to be wrong.
+- Extract a test helper the second time it is wanted, not the third. Copying it
+  once is how three copies happen, and by then they have drifted into three
+  subtly different fixtures that each carry their own bug. Share the setup every
+  caller needs; leave the parts one package alone wants where they are.
