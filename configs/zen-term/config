@@ -1,12 +1,13 @@
 float = order:2 title:"Open Lazygit" key:cmd+g icon:git command:lazygit height:0.78 git:true persist:dir
-float = order:5 title:Yazi key:cmd+y icon:folder command:yazi width:0.9 height:0.9 persist:dir toolbar:false
+float = order:6 title:Yazi key:cmd+y icon:folder command:yazi width:0.9 height:0.9 persist:dir toolbar:false
 float = order:1 title:"Open Nvim" key:cmd+e icon:neovim command:nvim persist:dir
-float = order:6 title:"Open BTOP" key:cmd+m icon:gauge command:btop dir:~ persist:window toolbar:false
+float = order:7 title:"Open BTOP" key:cmd+m icon:gauge command:btop dir:~ persist:window toolbar:false
 float = order:3 title:"Open Linear" key:cmd+l icon:linear command:zen-linear persist:window
-float = order:4 title:"Zen Octo" key:cmd+o icon:github command:zen-octo git:true persist:dir
+float = order:4 title:"Zen Octo" key:cmd+o icon:github command:zen-octo git:true persist:window
+float = order:5 title:"Open Zen Review" key:cmd+r icon:list.bullet.rectangle command:zen-review git:true persist:dir toolbar:false
 
 window-chrome = false
-hide-toolbar-buttons = new-tab,split-h,split-v,focus-mode,command-palette,diff-viewer
+hide-toolbar-buttons = new-tab,split-h,split-v,bottom-drawer,right-drawer,scratch,focus-mode,command-palette,diff-viewer
 backdrop-alpha = 0.5
 
 cursor-style = block
@@ -20,6 +21,10 @@ keybind = nav_down=ctrl+j
 keybind = nav_left=ctrl+h
 keybind = nav_right=ctrl+l
 keybind = nav_up=ctrl+k
+keybind = resize_down=cmd+ctrl+j
+keybind = resize_left=cmd+ctrl+h
+keybind = resize_right=cmd+ctrl+l
+keybind = resize_up=cmd+ctrl+k
 keybind = search_selection=none
 keybind = toggle_focus_mode=cmd+enter
 background-alpha = 1

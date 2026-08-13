@@ -73,3 +73,4 @@ minor edits to text I already approved.
 
 - Don't modify generated files (`*.gen.*`, `*.generated.*`).
 - Don't bundle tangential improvements into a focused task. Mention them separately.
+- DO NOT WRITE A CODE COMMENT WITHOUT FOLLOWING THE GUIDELINES IN @code-comments.md
