@@ -8,6 +8,8 @@ timestamp_format = "3:04 PM"
 image_protocol = "kitty"
 max_image_rows = 20
 max_image_cols = 60
+emoji_images = "auto"
+emoji_cells = 2
 
 [sidebar]
 hide_inactive_after_days = 30
@@ -21,6 +23,14 @@ typing_indicators = true
 enabled = true
 on_mention = true
 on_dm = true
+# on_mention misses <!subteam^…>, so usergroup pings ride in here by raw ID.
+# Slack sends them bare, without the |@handle, so "@eng" would not match.
+on_keyword = [
+  "bug",
+  "drew",
+  "S06Q6S8JWG1", # @eng usergroup
+  "S09H8UC399S", # @design usergroup
+]
 
 [cache]
 message_retention_days = 30
@@ -31,4 +41,4 @@ max_image_cache_mb = 200
 [workspaces.T04HKQW9TPT]
 sidebar_width = 30
 theme = "Rosé Pine Moon Dark"
-version_ts = "1786709855"
+version_ts = "1786721871"
