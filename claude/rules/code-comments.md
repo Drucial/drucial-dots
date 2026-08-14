@@ -12,11 +12,14 @@ In that case consider whether or not the code needs a better implementation
 or refactor
 
 - Inline comments stay short.
-- One or too lines MAXIMUM. This is not a suggestion.
-- Doc comments are the only exception to this rule. They should still be
-  equally terse and concise.
+- Two lines MAXIMUM. This is not a suggestion.
+- Doc comments get four, and no more. They are not an exception to concision,
+  they are a longer sentence about a contract.
+- Nothing earns an exception. Not a load-bearing workaround, not a subtle
+  invariant, not a file header. The cap is the whole rule.
 - If a long comment is needed, it indicates that the code quality is likely bad
   or the implementation is misguided. Fix the code, not the comment.
+- A comment at the cap is at the cap, not a target. Most want one line.
 
 Do:
 
