@@ -7,9 +7,11 @@ own code quality doc.
 ## Anti-defaults (counter common Claude tendencies)
 
 - No premature abstractions. Three similar lines beats a helper used once.
+  Tests are the exception: extract at the second copy, not the third.
 - Don't add features or improvements beyond what was asked.
 - Don't refactor adjacent code while fixing a bug.
-- No dead code or commented-out blocks.
+- No dead code or commented-out blocks. Unreachable code is dead. A branch you
+  haven't needed yet is not.
 
 ## Reuse before build
 
@@ -38,6 +40,13 @@ own code quality doc.
   issues in the same change.
 - Genuinely out-of-scope future work belongs in a tracker, never as a comment
   in the code.
+
+## Failure modes
+
+- A check that can fail must fail loudly. A silent pass is worse than no check,
+  because it reads as coverage.
+- Never discard an error stream to keep output clean. Route it where a person
+  will see it.
 
 ## Testing
 

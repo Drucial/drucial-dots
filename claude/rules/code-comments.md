@@ -6,17 +6,20 @@ Favor extreme concision over grammatical correctness.
 
 ## When to write comments
 
-! Default to not writing a code comment at all. !
+**Default to not writing a code comment at all.**
 Only reach for a comment when the code cannot express intent or reasoning.
-In that case consider whether or not the code needs a better implementation
-or refactor
+In that case consider whether the code needs a better implementation
+or refactor.
 
 - Inline comments stay short.
 - Two lines MAXIMUM. This is not a suggestion.
+- Count lines as written, and keep each inside the file's usual width. One
+  300-character line is not one line, it is the cap dodged.
 - Doc comments get four, and no more. They are not an exception to concision,
   they are a longer sentence about a contract.
 - Nothing earns an exception. Not a load-bearing workaround, not a subtle
-  invariant, not a file header. The cap is the whole rule.
+  invariant, not a file header. A header is a doc comment, capped at four like
+  any other. The cap is the whole rule.
 - If a long comment is needed, it indicates that the code quality is likely bad
   or the implementation is misguided. Fix the code, not the comment.
 - A comment at the cap is at the cap, not a target. Most want one line.
