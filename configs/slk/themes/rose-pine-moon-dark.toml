@@ -1,0 +1,23 @@
+# Rosé Pine Moon accents on the darker Rosé Pine (main) base.
+# Chrome (rail, sidebar, status bar) sits flat on the base rather than sunken.
+name = "Rosé Pine Moon Dark"
+
+[colors]
+primary = "#c4a7e7"
+accent = "#c4a7e7"
+warning = "#f6c177"
+error = "#eb6f92"
+background = "#191724"
+surface = "#1f1d2e"
+compose_insert_bg = "#191724"
+surface_dark = "#191724"
+text = "#e0def4"
+text_muted = "#908caa"
+border = "#403d52"
+sidebar_background = "#191724"
+sidebar_text = "#e0def4"
+sidebar_text_muted = "#908caa"
+rail_background = "#191724"
+selection_bg_focused = "#332d41"
+selection_bg_unfocused = "#26233a"
+selection_foreground = "#c4a7e7"

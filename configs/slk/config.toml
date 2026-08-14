@@ -1,0 +1,34 @@
+[general]
+default_workspace = "T04HKQW9TPT"
+use_slack_sections = true
+
+[appearance]
+theme = "Rosé Pine Moon Dark"
+timestamp_format = "3:04 PM"
+image_protocol = "kitty"
+max_image_rows = 20
+max_image_cols = 60
+
+[sidebar]
+hide_inactive_after_days = 30
+
+[animations]
+enabled = true
+smooth_scrolling = true
+typing_indicators = true
+
+[notifications]
+enabled = true
+on_mention = true
+on_dm = true
+
+[cache]
+message_retention_days = 30
+max_db_size_mb = 500
+max_image_cache_mb = 200
+
+# Craftwork
+[workspaces.T04HKQW9TPT]
+sidebar_width = 30
+theme = "Rosé Pine Moon Dark"
+version_ts = "1786709855"
