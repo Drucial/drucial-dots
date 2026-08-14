@@ -98,6 +98,12 @@
             "command": "$HOME/.claude/hooks/check-primitives.sh",
             "timeout": 5000,
             "statusMessage": "Checking for existing primitives..."
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/cap-comments.sh",
+            "timeout": 5000,
+            "statusMessage": "Checking comment length..."
           }
         ]
       },

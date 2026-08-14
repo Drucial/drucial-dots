@@ -64,9 +64,7 @@ if echo "$CONTENT" | grep -qE '(mongodb|postgres|mysql|redis|amqp|smtp)(\+[a-z]+
   MATCHES="$MATCHES connection string with credentials;"
 fi
 
-# Generic password/secret/token assignments with literal string values
-# Matches: password = "actual_value", SECRET_KEY: 'actual_value', api_token="actual_value"
-# Excludes: env var references like process.env.*, os.environ.*, ${...}, getenv(...)
+# Literal credential assignments, minus env lookups (process.env, getenv, ${...}).
 if echo "$CONTENT" | grep -qiE '(password|secret|token|api_key|apikey|api_secret)[[:space:]]*[=:][[:space:]]*["\x27][^"\x27]{8,}["\x27]' && \
    ! echo "$CONTENT" | grep -qiE '(password|secret|token|api_key|apikey|api_secret)[[:space:]]*[=:][[:space:]]*["\x27]?(process\.env|os\.environ|getenv|\$\{|ENV\[|env\()'; then
   MATCHES="$MATCHES hardcoded credential;"

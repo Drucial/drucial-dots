@@ -1,34 +1,8 @@
 #!/usr/bin/env bash
-# kitty-agent-state — reflect this Claude pane's state in the kitty tab title.
-#
-# Registered on SessionStart, UserPromptSubmit, PostToolUse, Notification, and
-# SessionEnd. Prepends a small status dot to THIS Claude pane's tab title and
-# tints the tab's text so a glance at the tab bar tells you which project has an
-# agent and what it wants:
-#   ● blue   agent present / working   (SessionStart, UserPromptSubmit, PostToolUse)
-#   ● green  your turn / idle          (Notification: idle_prompt)
-#   ● red    blocked on permission     (Notification: permission_prompt)
-#   (no dot) no agent                  (SessionEnd)
-#
-# PostToolUse is the "working" heartbeat: after you approve a permission the agent
-# resumes and runs a tool, which flips red back to blue — without it, a red dot
-# would hang until your next prompt.
-#
-# Why a monochrome "●" + a tinted tab foreground rather than a color emoji: the
-# kitty tab bar can't color an individual character, and color emoji are
-# emoji-width and read chunky. A text-glyph dot stays small; the color comes from
-# set-tab-color's active/inactive fg — lighter than a full-tab background wash.
-#
-# The project name comes from the hook's cwd, so the tab always shows a clean
-# label regardless of what Claude writes into its live OSC title.
-#
-# Deliberately NOT wired to the Stop event: Stop fires whenever Claude ends a
-# foreground turn — including when it hands work to a background workflow/task —
-# so it false-flagged "your turn" while the agent was still busy. idle_prompt is
-# the only event that means "genuinely idle, awaiting you."
-#
-# No-ops cleanly when Claude runs outside kitty (env vars absent) so it's safe
-# to leave registered everywhere.
+# Prepends a status dot to this Claude pane's kitty tab and tints the tab text:
+# blue working, green your turn, red blocked, no dot when no agent is present.
+# PostToolUse is the working heartbeat that flips red back to blue on approval.
+# Not on Stop: it fires when work moves to the background and false-flags idle.
 
 set -uo pipefail
 

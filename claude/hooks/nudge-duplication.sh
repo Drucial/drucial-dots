@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
-# nudge-duplication.sh — PostToolUse on Edit|Write
-#
-# After an edit, scan the recent diff (or just-modified file) for repeated
-# JSX/util patterns. If a pattern appears 3+ times, nudge for extraction.
-# Threshold-based to avoid noise.
+# PostToolUse on Edit|Write. Scans the recent diff for repeated JSX/util
+# patterns and nudges extraction once one appears 3+ times.
 
 set -euo pipefail
 

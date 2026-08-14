@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
-# Blocks dangerous shell commands: push to protected branches, force push,
-# destructive operations. PreToolUse hook for Bash operations.
-# Exit 2 = block. Exit 0 = allow.
-#
-# Configurable via env:
-#   CLAUDE_PROTECTED_BRANCHES  comma list (default: derived from git + main,master)
+# PreToolUse on Bash. Blocks protected-branch push, force push, rm -rf, DROP, dd.
+# Exit 2 blocks. CLAUDE_PROTECTED_BRANCHES overrides the derived branch list.
 
 set -uo pipefail
 
@@ -61,8 +57,7 @@ if contains_cmd '(^|[;&|()]+[[:space:]]*)git[[:space:]]+push'; then
 fi
 
 # ── Destructive filesystem operations ───────────────────────────────────
-# rm -rf targeting root, home, $HOME, $VAR (any unresolved expansion), or parent traversal.
-# We normalise quotes before matching so "my folder", '$HOME/trash', etc. Are all inspected.
+# Quotes are stripped first so '$HOME/trash' and "my folder" are both inspected.
 CMD_NOQUOTE=$(printf '%s' "$COMMAND" | tr -d "'\"")
 if printf '%s' "$CMD_NOQUOTE" | grep -qE 'rm[[:space:]]+(-[a-zA-Z]*[[:space:]]+)*-?[a-zA-Z]*r[a-zA-Z]*f[a-zA-Z]*[[:space:]]+(/([[:space:]]|\*|$)|~|\$HOME|\$[A-Za-z_][A-Za-z0-9_]*|\.\./\.\.)' ; then
   emit_deny "Blocked: recursive force-delete on /, ~, \$HOME, an unresolved \$VAR, or .../.. Path. Specify a concrete safe target."
@@ -103,9 +98,8 @@ if contains_cmd '(curl|wget)[[:space:]].*\|[[:space:]]*(sudo[[:space:]]+)?(bash|
   emit_deny "Blocked: piping downloaded content directly to a shell is dangerous."
 fi
 
-# Disk / partition. Note: only REDIRECTIONS to /dev/ are destructive. `2>/dev/null` is not.
-# Pattern matches: `>[ ]*/dev/<something>` but NOT `2>/dev/null` or `&>/dev/null` style for fd-null.
-# Strategy: match `>` optionally with whitespace, followed by /dev/<name>, EXCLUDING /dev/null and /dev/stderr/stdout.
+# Only redirection INTO a device destroys data, so fd-null forms like 2>/dev/null
+# and the harmless pseudo-devices are excluded by the second grep.
 if printf '%s' "$COMMAND" | grep -qE '(^|[^0-9&])>[[:space:]]*/dev/[a-zA-Z][a-zA-Z0-9]*' \
    && ! printf '%s' "$COMMAND" | grep -qE '>[[:space:]]*/dev/(null|stdout|stderr|tty|zero|random|urandom)([[:space:]]|$)' ; then
   emit_deny "Blocked: redirection into a raw device file can destroy data."

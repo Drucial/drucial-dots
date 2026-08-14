@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
-# check-primitives.sh — PreToolUse on Edit|Write
-#
-# When Claude is about to write a NEW component file in components/ui/, scan
-# the existing components/ui/ for primitives that match common synonyms.
-# If matches found, return a system message nudging reuse. NOT a block.
+# PreToolUse on Edit|Write. When a new components/ui/ file is about to be
+# written, scans the existing dir for primitives matching common name synonyms.
+# Nudges reuse on stderr. Never blocks.
 
 set -eo pipefail
 

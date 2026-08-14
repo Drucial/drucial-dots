@@ -1,9 +1,7 @@
 #!/bin/bash
-# Auto-formats files after Claude edits them.
-# PostToolUse hook for Edit|Write.
-# Silent on success. All formatter stdout and stderr is redirected so the
-# hook contributes zero tokens on the common path. Auto-detects formatters
-# (requires both the binary AND a config file).
+# PostToolUse on Edit|Write. Auto-formats the edited file, silent on success.
+# A formatter runs only when both its binary and a config file are present.
+# All formatter output is swallowed so the common path costs zero tokens.
 
 # Requires jq for JSON parsing.
 if ! command -v jq >/dev/null 2>&1; then

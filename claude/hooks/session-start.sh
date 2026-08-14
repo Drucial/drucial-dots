@@ -1,10 +1,7 @@
 #!/bin/bash
-# Injects dynamic project context at session start.
-#
-# Default (minimal): branch + dirty/clean indicator. ~5-10 tokens.
-# Set DOTCLAUDE_SESSION_VERBOSE=1 to also emit last commit, file count,
-# staged status, stash count, and active PR info. ~30-90 tokens, plus
-# a network round-trip if `gh` is installed.
+# Injects project context at session start: branch plus dirty flag, ~5-10 tokens.
+# DOTCLAUDE_SESSION_VERBOSE=1 adds commit, counts, stash and PR info at ~30-90
+# tokens, plus a network round-trip when gh is installed.
 
 # Bail early if not in a git repo (nothing useful to inject).
 git rev-parse --git-dir >/dev/null 2>&1 || exit 0
