@@ -29,6 +29,6 @@ keybind = resize_up=cmd+ctrl+k
 keybind = search_selection=none
 keybind = toggle_focus_mode=cmd+enter
 background-alpha = 1
-attention-toast = sticky
-completion-toast = sticky
+attention-toast = auto
+completion-toast = auto
 toast-duration = 5
