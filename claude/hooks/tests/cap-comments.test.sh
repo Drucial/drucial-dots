@@ -143,6 +143,41 @@ assert_deny "unterminated over-cap block denied" Edit /p/a.ts \
  * three
  * four'
 
+assert_deny "run split by a blank line denied" Edit /p/a.go \
+'// first paragraph line one
+// first paragraph line two
+
+// second paragraph line one
+// second paragraph line two
+func f() {}'
+
+assert_deny "run split by two blank lines denied" Edit /p/a.go \
+'// one
+// two
+
+
+// three
+func f() {}'
+
+assert_allow "a blank line between comment and code still ends the run" Edit /p/a.go \
+'// one
+// two
+
+func f() {}
+
+// three
+// four
+func g() {}'
+
+assert_deny "shell run split by a blank line denied" Edit /p/run.sh \
+$'echo hi\n\n# one\n# two\n\n# three\necho bye'
+
+assert_allow "blanks between two 1-line comments pass" Edit /p/a.go \
+'// one
+
+// two
+func f() {}'
+
 assert_allow "html 4-line comment passes" Edit /p/a.html \
 '<!--
   a note

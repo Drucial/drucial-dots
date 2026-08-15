@@ -47,6 +47,8 @@ Don't:
   sentence.
 - Let a comment drift from the implementation. One that contradicts the code is
   worse than none. Update or delete it in the same change.
+- Split one comment across a blank line to get two runs under the cap. Nothing
+  but air between them means it is one comment, and the cap counts it as one.
 
 ### Files, APIs, and contracts
 

@@ -125,7 +125,7 @@ function has_close(l, on_open_line,   rest) {
 }
 
 function report_marker(l, n) {
-  printf "marker\t%d\t%d\t0\t%s\n", n, n, sample(l)
+  printf "marker\t%d\t%d\t0\t1\t%s\n", n, n, sample(l)
 }
 
 function flush_run(   cap, kind) {
@@ -134,13 +134,13 @@ function flush_run(   cap, kind) {
   # A file header is a doc comment; languages without block syntax still get one.
   if (AT_FILE_TOP && (run_start == 1 || (run_start == 2 && shebang))) { cap = 4; kind = "header" }
   if (run_len > cap && !(ALLOW_LICENSE && run_start <= 5 && is_license(run_buf)))
-    printf "%s\t%d\t%d\t%d\t%s\n", kind, run_start, run_start + run_len - 1, cap, run_first
-  run_len = 0; run_buf = ""; run_first = ""
+    printf "%s\t%d\t%d\t%d\t%d\t%s\n", kind, run_start, run_end, cap, run_len, run_first
+  run_len = 0; run_end = 0; run_buf = ""; run_first = ""
 }
 
 function close_block(end_line) {
   if (block_len > 4 && !(ALLOW_LICENSE && block_start <= 5 && is_license(block_buf)))
-    printf "doc\t%d\t%d\t4\t%s\n", block_start, end_line, block_first
+    printf "doc\t%d\t%d\t4\t%d\t%s\n", block_start, end_line, end_line - block_start + 1, block_first
   in_block = 0; block_buf = ""
 }
 
@@ -170,10 +170,14 @@ function close_block(end_line) {
 
   if (LINE_RE != "" && line ~ LINE_RE) {
     if (run_len == 0) { run_start = NR; run_first = sample(line) }
-    run_len++; run_buf = run_buf "\n" line
+    run_len++; run_end = NR; run_buf = run_buf "\n" line
     if (has_marker(line)) report_marker(line, NR)
     next
   }
+
+  # A blank line does not end a comment. Two runs under the cap with nothing but
+  # air between them are one comment, and the blanks are not counted.
+  if (run_len > 0 && line ~ /^[ \t]*$/) next
 
   flush_run()
 
@@ -211,14 +215,14 @@ REASON="Comment cap exceeded in $BASE ($WHERE):"
 shown=0
 extra=0
 TAB="$(printf '\t')"
-while IFS="$TAB" read -r kind start end cap first; do
+while IFS="$TAB" read -r kind start end cap count first; do
   [ -z "$kind" ] && continue
   if [ "$shown" -ge 8 ]; then extra=$((extra + 1)); continue; fi
   shown=$((shown + 1))
   case "$kind" in
-    inline) what="inline comment run of $((end - start + 1)) lines, cap is $cap" ;;
-    doc)    what="doc comment of $((end - start + 1)) lines, cap is $cap" ;;
-    header) what="file header of $((end - start + 1)) lines, cap is $cap" ;;
+    inline) what="inline comment run of $count lines, cap is $cap" ;;
+    doc)    what="doc comment of $count lines, cap is $cap" ;;
+    header) what="file header of $count lines, cap is $cap" ;;
     marker) what="defer marker" ;;
   esac
   if [ "$start" = "$end" ]; then
@@ -237,6 +241,6 @@ EOF
 
 REASON="$REASON
 
-Shorten or delete them, then retry. Per $RULES: inline comments 2 lines, doc comments 4 lines, no TODO/FIXME/HACK/XXX/TEMP/REMOVEME. Nothing earns an exception — a comment that won't fit means the code needs fixing, not a longer comment."
+Shorten or delete them, then retry. Per $RULES: inline comments 2 lines, doc comments 4 lines, no TODO/FIXME/HACK/XXX/TEMP/REMOVEME. A blank line does not start a new comment, so splitting one run into two under the cap counts as one run. Nothing earns an exception — a comment that won't fit means the code needs fixing, not a longer comment."
 
 deny "$REASON"
