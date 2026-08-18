@@ -1,6 +1,6 @@
 ---
 name: ship-feature
-description: Run Drew's complete feature shipping process in Codex, including checks, draft PR creation, Copilot review, Codex review, triage, fixes, and handoff. Use when a completed feature is ready to ship.
+description: Run Drew's complete feature shipping process in Codex, including checks, draft PR creation, Codex review, triage, fixes, and handoff. Use when a completed feature is ready to ship.
 ---
 
 # Ship a completed feature
