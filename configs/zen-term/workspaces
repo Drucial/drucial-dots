@@ -17,6 +17,11 @@ main   = claude
 path   = ~/Dev/zen-review
 main   = claude
 
+[Zen Notes]
+path   = ~/Dev/zen-notes
+main   = claude
+right  = zen-notes
+
 [Craftwork]
 path   = ~/Dev/craftwork
 main   = claude
