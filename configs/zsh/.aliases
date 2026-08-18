@@ -15,7 +15,7 @@ alias fs='fzf --ansi --disabled --delimiter : --bind "start:reload:rg --column -
 alias configs="custom_picker"                                                                # Picker: Browse and edit dotfiles in ~/.config
 alias fp="custom_picker ~/Dev --cd"                                                          # Picker: Jump into a project under ~/Dev and open nvim
 alias ip='ipconfig getifaddr en0 | tee >(pbcopy)'                                            # Network: Print and copy local IP (en0)
-alias notes='nvim ~/notes'                                                                   # Neovim: Open notes directory
+alias notes='zen-notes'                                                                   # Neovim: Open notes directory
 alias clean='mole'                                                                           # Mole: Find storage hogs and clean up disk space
 
 #------
