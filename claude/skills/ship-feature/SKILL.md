@@ -1,6 +1,6 @@
 ---
 name: ship-feature
-description: Run my feature-complete PR process: full local check, push, open a draft PR, gather Copilot + /code-review findings, triage them (fix / mitigate / ignore, no tech debt), apply, push again, then mark the PR ready for review. Invoke when a feature build is complete and ready to ship.
+description: Run my feature-complete PR process: full local check, push, open a draft PR, gather /code-review findings, triage them (fix / mitigate / ignore, no tech debt), apply, push again, then mark the PR ready for review. Invoke when a feature build is complete and ready to ship.
 ---
 
 # Ship a completed feature
@@ -27,54 +27,14 @@ Confirm you are on a feature branch first. If the work sits on the default branc
 
 Commit and push (`git push -u origin <branch>`). Use the tracker's generated branch name; don't invent one.
 
-This is its own step deliberately. Buried inside the PR step as "confirm the branch is pushed", it stops reading as a discrete action, and becomes something to chain onto another command. Step 9 is where that chaining has already caused a silent CI failure.
+This is its own step deliberately. Buried inside the PR step as "confirm the branch is pushed", it stops reading as a discrete action, and becomes something to chain onto another command. Step 6 is where that chaining has already caused a silent CI failure.
 
 ## 3. Open the PR as a draft
 
 - Open the PR **as a draft**, so review happens before a full CI run is spent (especially where CI is gated to skip drafts).
 - Title and body reference every tracking ticket the PR closes, so the tracker auto-links them.
 
-## 4. Request a Copilot review
-
-One line, on gh 2.96 or newer:
-
-```bash
-gh pr edit <PR#> --add-reviewer @copilot
-```
-
-**The `@` is load-bearing.** Without it gh resolves `copilot` as a user login, fails, and exits 1.
-
-On older gh or GitHub Enterprise Server, the REST call. It needs the bot's full login, `[bot]` suffix included:
-
-```bash
-gh api -X POST 'repos/{owner}/{repo}/pulls/<PR#>/requested_reviewers' \
-  -f 'reviewers[]=copilot-pull-request-reviewer[bot]'
-```
-
-**Confirm with GraphQL. Nothing else can tell you.**
-
-```bash
-gh api graphql -f query='{repository(owner:"OWNER",name:"NAME"){pullRequest(number:PR){
-  reviewRequests(first:20){nodes{requestedReviewer{... on Bot{login} ... on User{login}}}}}}}'
-```
-
-A live request shows as `copilot-pull-request-reviewer`.
-
-**Neither the response body nor the exit code proves anything.** `requested_reviewers` comes back empty from a request that worked, and a REST GET of the same path is empty too while the request is live: the bot is never in either. And `reviewers[]=Copilot` returns 200, writes nothing, and exits 0. Read the GraphQL confirmation or you cannot tell a landed request from a silent no-op.
-
-This file prescribed `reviewers[]=Copilot` until 2026-08-11 and it never once worked. It also carried a folk explanation for the empty array, that the reviewer had already submitted, which taught every session reading it to report a silent failure as success.
-
-**Cancelling takes a different name again.** `DELETE` on the same path wants the bare `Copilot`; the `[bot]` form 422s, because it resolves to a Bot node and the endpoint demands a User.
-
-**Never use the `requestReviews` GraphQL mutation with an id from `suggestedActors`.** That lookup returns `copilot-swe-agent`, the coding agent, not the reviewer; the mutation accepts its id, reports success, and requests nothing. This is narrower than the blanket ban on GraphQL that stood here until 2026-08-11, which was wrong: `gh pr edit` uses `requestReviewsByLogin` under the hood, and a GraphQL read is the only working confirmation.
-
-**Never confirm with `gh pr view --json reviewRequests`.** Same root cause: it omits Bot reviewers and returns `[]` while the request is live.
-
-**Never write `@copilot` in comment text**, on the PR or in its description. A mention in prose summons it out of band and re-fires on every edit of the comment carrying it. Read its findings from the review comments and write your triage as prose that does not address it.
-
-It runs async; continue and re-check later.
-
-## 5. Run /code-review, which I type, not you
+## 4. Run /code-review, which I type, not you
 
 **Stop here and ask me.** `/code-review` is marked `disable-model-invocation`. The Skill tool refuses it with "cannot be used with Skill tool", and no other route works either. The same holds for `/code-review ultra`. Don't try, and don't treat the refusal as a bug to route around.
 
@@ -87,33 +47,9 @@ Say plainly that you're blocked and what to type:
 
 **Do not substitute your own agent pass.** Fanning out finder agents over the diff and presenting the result is the exact failure this step exists to prevent.
 
-Step 6 proceeds while you wait; Copilot runs on its own clock. Steps 7 to 10 block, because the triage in step 8 needs both sources. If I decline or say skip, continue with Copilot as the only source and **say so in the step 7 output**. Name which review produced each finding.
+Everything after this blocks on it: `/code-review` is the only source of findings. If I decline or say skip, say so plainly and go straight to step 6 with nothing to triage.
 
-## 6. Pull down Copilot's review
-
-Copilot writes to two places and you need both. Line comments:
-
-```bash
-gh api 'repos/{owner}/{repo}/pulls/<PR#>/comments' --jq '.[] | "\(.path):\(.line) \(.body)"'
-```
-
-And the review body, which carries its summary and per-file notes:
-
-```bash
-gh api 'repos/{owner}/{repo}/pulls/<PR#>/reviews' --jq '.[] | select(.user.login=="copilot-pull-request-reviewer[bot]") | .body'
-```
-
-**Zero line comments does not mean zero findings.** A review commonly lands with an empty `comments` array and everything in the review body. Read both before concluding Copilot flagged nothing.
-
-The body states how many files it reviewed. If that falls short of the changed file count, say so in step 7 rather than treating the review as complete coverage.
-
-Re-check if nothing is posted yet; it runs async.
-
-## 7. Review the combined findings
-
-Merge Copilot's comments and `/code-review`'s findings into a single list. De-duplicate where both flag the same thing.
-
-## 8. Triage each finding
+## 5. Triage each finding
 
 For every finding, recommend one of: **fix**, **mitigate**, or **ignore**, each with an explicit one-line reason.
 
@@ -123,7 +59,7 @@ For every finding, recommend one of: **fix**, **mitigate**, or **ignore**, each 
 
 Present the triage table to me, apply the agreed fixes, and re-run step 1 until green.
 
-## 9. Push the fixes, then mark ready, as two separate actions
+## 6. Push the fixes, then mark ready, as two separate actions
 
 **Push, let the push register, and only then mark the PR ready. Never chain them** (`git push && gh pr ready`).
 
@@ -133,7 +69,7 @@ Keying the concurrency group on `github.event.action` fixes it repo-side, but do
 
 After marking ready, **confirm CI actually started** (`gh pr checks` or the run list). "Skipping" is not "passing". If nothing ran, close and reopen the PR to fire a clean `reopened` event rather than pushing an empty commit.
 
-## 10. Close out
+## 7. Close out
 
 - **Let the tracker move the ticket.** Where the tracker has a PR integration (Linear does, via the ticket id in the branch/PR), marking the PR ready moves it to **In Review** on its own. Don't write that status by hand. A manual move is a second copy of a transition the integration owns, and it drifts the moment the automation changes.
 - **Move it yourself only when nothing else will:** no PR (a local-only ship), or a tracker with no PR integration. Note which case applies.

@@ -201,6 +201,19 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/check-comment-diff.sh",
+            "timeout": 10000,
+            "statusMessage": "Checking comments in the working tree..."
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
