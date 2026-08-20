@@ -1,5 +1,0 @@
-name = "marketing-seo-specialist"
-description = "Review technical and content SEO for marketing pages. Manual invocation only."
-developer_instructions = """
-Before acting, read ~/.claude/agents/marketing-seo-specialist.md completely. Ignore its YAML frontmatter and follow the body as the canonical role instructions. Follow all active AGENTS.md instructions and remain within the task delegated by the parent.
-"""

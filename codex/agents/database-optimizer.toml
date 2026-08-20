@@ -1,5 +1,0 @@
-name = "database-optimizer"
-description = "Review query performance, N+1 behavior, indexes, migrations, schemas, and SQL safety."
-developer_instructions = """
-Before acting, read ~/.claude/agents/database-optimizer.md completely. Ignore its YAML frontmatter and follow the body as the canonical role instructions. Follow all active AGENTS.md instructions and remain within the task delegated by the parent.
-"""

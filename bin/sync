@@ -5,8 +5,8 @@ usage() {
   cat <<'EOF'
 Usage: bin/sync [options]
 Make this machine match the dotfiles: install package dependencies (Homebrew),
-symlink every config into ~/.config, link Claude and Codex config, and set up
-home-level symlinks. Idempotent — re-run any time to apply only what's new or
+symlink every config into ~/.config, and set up home-level symlinks.
+Idempotent — re-run any time to apply only what's new or
 missing.
 
 Options:
@@ -124,39 +124,7 @@ sync_configs() {
   done
 }
 
-# 3. Claude config -> ~/.claude ----------------------------------------------
-sync_claude() {
-  section "Claude → ~/.claude"
-  local install="$REPO_ROOT/claude/install"
-  if [ ! -x "$install" ]; then
-    echo "⚠ $install not found or not executable — skipping."
-    return 0
-  fi
-  local args=()
-  $force && args+=(-f)
-  $dryrun && args+=(-n)
-  $verbose && args+=(-v)
-  # bash 3.2 treats "${args[@]}" on an empty array as unbound under `set -u`.
-  "$install" ${args[@]+"${args[@]}"}
-}
-
-# 4. Codex config -> ~/.codex and ~/.agents ----------------------------------
-sync_codex() {
-  section "Codex → ~/.codex + ~/.agents"
-  local install="$REPO_ROOT/codex/install"
-  if [ ! -x "$install" ]; then
-    echo "⚠ $install not found or not executable — skipping."
-    return 0
-  fi
-  local args=()
-  $force && args+=(-f)
-  $dryrun && args+=(-n)
-  $verbose && args+=(-v)
-  # bash 3.2 treats "${args[@]}" on an empty array as unbound under `set -u`.
-  "$install" ${args[@]+"${args[@]}"}
-}
-
-# 5. Home-level symlinks ------------------------------------------------------
+# 3. Home-level symlinks ------------------------------------------------------
 sync_home() {
   section "Home symlinks"
   # dst::src — extend as needed.
@@ -172,8 +140,6 @@ sync_home() {
 
 sync_packages
 sync_configs
-sync_claude
-sync_codex
 sync_home
 
 echo

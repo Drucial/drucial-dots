@@ -1,5 +1,0 @@
-name = "design-ux-architect"
-description = "Review frontend foundations, component architecture, CSS systems, layout, and accessibility."
-developer_instructions = """
-Before acting, read ~/.claude/agents/design-ux-architect.md completely. Ignore its YAML frontmatter and follow the body as the canonical role instructions. Follow all active AGENTS.md instructions and remain within the task delegated by the parent.
-"""
