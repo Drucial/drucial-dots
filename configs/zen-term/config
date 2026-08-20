@@ -33,4 +33,3 @@ background-alpha = 1
 attention-toast = auto
 completion-toast = auto
 toast-duration = 5
-accent-color = green

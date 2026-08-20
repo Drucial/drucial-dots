@@ -1,83 +1,131 @@
 # drucial-dots
 
-My personal dotfiles. App configs live under `configs/` and get symlinked into `~/.config` (or `$XDG_CONFIG_HOME`); their package dependencies are declared in Brewfiles. One command, `bin/sync`, installs and links everything.
+My personal dotfiles. App configs live under `configs/` and get symlinked into
+`~/.config` (or `$XDG_CONFIG_HOME`). Packages come from one curated `Brewfile`
+at the repo root. `bin/dots` is the only script.
 
 ## Layout
 
 ```
-configs/     app configs (symlinked into ~/.config) + per-config Brewfiles
-bin/sync     installs packages + links everything (idempotent)
-bin/Brewfile base manifest: taps, fonts, shared/configless tooling
+configs/      app configs, symlinked into ~/.config
+Brewfile      curated package manifest, one section per config
+bin/dots      install / add / migrate / remove / brew
+bin/dots.test.sh   drives every subcommand against a throwaway copy
 ```
 
 ### `configs/`
 
-| Config          | App           |
-| --------------- | ------------- |
-| `atuin/`        | shell history |
-| `btop/`         | system monitor |
-| `diffnav/`      | git diff TUI |
+| Config          | App                    |
+| --------------- | ---------------------- |
+| `atuin/`        | shell history          |
+| `btop/`         | system monitor         |
+| `diffnav/`      | git diff TUI           |
 | `eza/`          | `ls` replacement theme |
-| `gh-dash/`      | GitHub TUI |
-| `git/`          | git config + ignore |
-| `kitty/`        | terminal |
-| `lazygit/`      | git TUI |
-| `nvim/`         | editor (LazyVim) |
-| `posting/`      | API client |
-| `rainfrog/`     | database TUI |
-| `tuicr/`        | TUI code review |
-| `yabai/`        | window manager |
-| `yazi/`         | file manager |
-| `zen-term/`     | terminal |
-| `zsh/`          | shell |
-| `starship.toml` | prompt |
+| `gh-dash/`      | GitHub TUI             |
+| `git/`          | git config + ignore    |
+| `kitty/`        | terminal               |
+| `lazygit/`      | git TUI                |
+| `nvim/`         | editor (LazyVim)       |
+| `posting/`      | API client             |
+| `rainfrog/`     | database TUI           |
+| `slk/`          | Slack TUI              |
+| `starship.toml` | prompt                 |
+| `tuicr/`        | TUI code review        |
+| `yabai/`        | window manager         |
+| `yazi/`         | file manager           |
+| `zen-linear/`   | Linear TUI             |
+| `zen-term/`     | terminal               |
+| `zsh/`          | shell                  |
 
 ## Bootstrap
 
 ```sh
 git clone https://github.com/Drucial/drucial-dots.git ~/Dev/drucial-dots
 cd ~/Dev/drucial-dots
-bin/sync          # install packages + link every config + ~/.zshrc
+bin/dots install    # symlink every config, plus ~/.zshrc and ~/.zprofile
+bin/dots brew       # install the packages
 ```
 
-That's the whole setup. On a machine without Homebrew (Linux, etc.) `bin/sync`
-prints a notice and skips package install, still linking every config.
+`install` never stops on the first problem. It works through every config, then
+prints a summary and exits non-zero if anything was left unresolved:
 
-### `bin/sync`
+```
+▶ Summary
+  Linked       19
+  Already ok    0
+  Unresolved    1
 
-Makes the machine match the repo. Idempotent — re-run any time and only the new
-or missing pieces are applied.
+  Unresolved — nothing at these paths was changed:
+
+    ✖ ~/.config/ghostty
+      a real directory, not a link
+      bin/dots migrate ghostty   adopt it into the repo
+```
+
+A real directory in the way is never overwritten, with or without `-f`. Adopt it
+with `migrate`, or move it aside. `-f` replaces symlinks and drifted files only,
+and there is no backup.
+
+The script resolves the repo root from its own location, so the clone can live
+anywhere. Without Homebrew, `bin/dots brew` prints a notice and does nothing;
+configs still link.
+
+## Commands
 
 ```sh
-bin/sync        # full sync
-bin/sync -n     # dry-run (incl. `brew bundle check`), changes nothing
-bin/sync -f     # force-replace existing files/links
-bin/sync -v     # verbose
+bin/dots install            # link everything
+bin/dots add <name>         # scaffold a new config in the repo, link it out
+bin/dots migrate <name>...  # adopt ~/.config/<name> into the repo, link it back
+bin/dots remove <name>      # unlink, delete from the repo, offer to drop packages
+bin/dots brew               # install the Brewfile
+bin/dots brew -c            # check it instead
 ```
 
-It (1) installs packages via `brew bundle`, (2) symlinks every `configs/*` into
-`~/.config`, and (3) sets up home-level symlinks (`~/.zshrc`). The script
-resolves the repo root from its own location, so it works whether you clone to
-`~/Dev`, `~/dotfiles`, or anywhere else.
+Options go anywhere: `-n` dry-run, `-f` force, `-v` verbose, `-y` skip
+`remove`'s confirmation prompt.
 
-## Package manifests (Brewfiles)
+`add` is for a tool you're configuring from scratch. If `~/.config/<name>`
+already exists, use `migrate` — it moves the real files into the repo and links
+them back, so nothing is lost. `remove` refuses anything that isn't a symlink
+into this repo, and never runs `brew uninstall`.
 
-Dependencies are declared in `brew bundle` syntax and split by ownership:
+## Brewfile
 
-- **`configs/<tool>/Brewfile`** — packages a single config owns (e.g.
-  `configs/yazi/Brewfile` lists `yazi` + its preview deps `ffmpeg`, `sevenzip`, …).
-- **`bin/Brewfile`** — taps, fonts, shared CLIs (`fzf`, `ripgrep`, `fd`, …), and
-  configless tooling. Also holds a commented `REVIEW` section of one-off/experimental
-  packages — uncomment to include them on a fresh machine.
+One file at the repo root, in `brew bundle` syntax, grouped by owner:
 
-`bin/sync` concatenates `bin/Brewfile` with every `configs/*/Brewfile` and pipes the
-result to `brew bundle`. To add a dependency, drop a line in the owning config's
-Brewfile (or `bin/Brewfile`) and re-run `bin/sync`.
+```
+# --- shared ---
+brew "fzf"
+brew "ripgrep"
 
-Note: casks are macOS-only; on Linux-with-Homebrew `brew bundle` skips them.
+# --- config: yazi ---
+brew "yazi"
+brew "ffmpeg"
+```
+
+`add` and `migrate` create a config's section and seed it if the name resolves
+to a formula or cask. `remove` offers to drop it.
+
+`bin/dots brew -c` fails on a section naming a config that doesn't exist, and
+lists configs that declare no packages without failing — `gh-dash`, `tuicr`,
+`zen-linear`, and `zen-term` install nothing through Homebrew. An unfamiliar
+name on that list means a section is missing. It then asks Homebrew whether the
+manifest is satisfied.
+
+`gh-dash` is a `gh` extension rather than a formula:
+`gh extension install dlvhdr/gh-dash`.
 
 ## Convention
 
-Configs live in this repo and are symlinked out — never copied. To make a change,
-edit the file under its real path (e.g. `configs/nvim/lua/...`) and commit. The
-symlink in `~/.config/nvim` picks it up automatically.
+Configs are symlinked out, never copied. Edit the file under its real path
+(`configs/nvim/lua/...`) and commit — the symlink picks it up.
+
+## Tests
+
+```sh
+bash bin/dots.test.sh
+```
+
+Copies the working tree to a temp dir, points `HOME` and `XDG_CONFIG_HOME` at
+scratch dirs, and drives all five subcommands through the real CLI. Touches
+nothing on the machine.

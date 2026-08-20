@@ -45,3 +45,9 @@ main   = claude
 [Dot Files]
 path   = ~/Dev/drucial-dots
 main   = "nvim ."
+
+[Agent Kit]
+path   = ~/Dev/agent-kit
+main   = nvim
+right  = claude
+focus  = right

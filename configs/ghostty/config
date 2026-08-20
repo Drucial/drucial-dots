@@ -1,0 +1,52 @@
+# ghostty, matched to zen-term
+#
+# Mirrors ~/.config/zen-term/config so the two terminals look the same side by side.
+# Ghostty reads this only at process start: ⌘Q and relaunch to apply changes.
+
+# ── Font ──
+font-family = JetBrainsMono Nerd Font Mono
+font-size = 14
+
+# ── Cursor ──
+cursor-style = block
+cursor-style-blink = true
+
+# ── Input ──
+macos-option-as-alt = true
+mouse-scroll-multiplier = precision:1.5,discrete:3
+
+# ── Rosé Pine Moon, matched to zen-term's built-in ──
+# Set explicitly rather than `theme = "Rose Pine Moon"`: ghostty's bundled Moon uses
+# background #232136, zen-term uses #191724, so the theme name alone leaves the two
+# backgrounds visibly different.
+background = #191724
+foreground = #e0def4
+cursor-color = #6b6790
+selection-background = #403d52
+palette = 0=#393552
+palette = 1=#eb6f92
+palette = 2=#3e8fb0
+palette = 3=#f6c177
+palette = 4=#9ccfd8
+palette = 5=#c4a7e7
+palette = 6=#ea9a97
+palette = 7=#e0def4
+palette = 8=#6e6a86
+palette = 9=#eb6f92
+palette = 10=#3e8fb0
+palette = 11=#f6c177
+palette = 12=#9ccfd8
+palette = 13=#c4a7e7
+palette = 14=#ea9a97
+palette = 15=#e0def4
+
+# ── Padding: zen-term's window-gutter 8 + pane-gap 8 ──
+window-padding-x = 8
+window-padding-y = 8
+
+# ── Chrome: matches zen-term's `window-chrome = false` ──
+# `tabs` folds the tab strip into the titlebar. Not `hidden`: that hides the titlebar,
+# and the native tab strip lives there, so ⌘T would still open tabs you cannot see or
+# click, and the titlebar would stop dragging the window.
+macos-titlebar-style = tabs
+macos-window-buttons = hidden
