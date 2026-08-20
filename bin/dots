@@ -1,0 +1,411 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: bin/dots <command> [options] [args]
+
+Commands:
+  install              Link every config into ~/.config, plus home-level dotfiles
+  add <name>           Scaffold a new config in the repo and link it out
+  migrate <name>...    Adopt existing ~/.config/<name> into the repo, link it back
+  remove <name>        Unlink, delete from the repo, offer to drop its packages
+  brew [-c]            Install the root Brewfile; -c checks it instead
+
+Options (place before positional args):
+  -f   Force: replace existing links and drifted files. Never touches directories.
+  -n   Dry-run: print what would happen, change nothing
+  -v   Verbose
+  -y   remove: skip the Brewfile confirmation prompt
+  -h   Help
+
+Configs live in configs/ and are symlinked out, never copied. Packages live in
+the root Brewfile under `# --- config: <name> ---` sections, which add, migrate,
+and remove maintain. Every command reports a summary and exits non-zero if
+anything was left unresolved.
+EOF
+}
+
+# --- Resolve repo root from THIS script's location (follow symlinks) ---
+SCRIPT="${BASH_SOURCE[0]}"
+while [ -L "$SCRIPT" ]; do
+  link_target="$(readlink "$SCRIPT")"
+  case "$link_target" in
+    /*) SCRIPT="$link_target" ;;
+    *)  SCRIPT="$(cd "$(dirname "$SCRIPT")" && pwd)/$link_target" ;;
+  esac
+done
+REPO_ROOT="$(cd "$(dirname "$SCRIPT")/.." && pwd -P)"
+CONFIGS="$REPO_ROOT/configs"
+BREWFILE="$REPO_ROOT/Brewfile"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+
+# Targets outside $CONFIG_DIR, as dst::src. Sources point at the repo, so these
+# don't depend on the ~/.config links existing first.
+HOME_LINKS=(
+  "$HOME/.zshrc::$CONFIGS/zsh/.zshrc"
+  "$HOME/.zprofile::$CONFIGS/zsh/.zprofile"
+)
+
+force=false
+dryrun=false
+verbose=false
+assume_yes=false
+check_only=false
+
+LINKED=()
+OK=()
+FAILED=()
+
+msg(){ $verbose && echo "$@" || true; }
+section(){ echo; echo "▶ $*"; }
+die(){ echo "✖ $*" >&2; exit 1; }
+tilde(){ local t='~'; echo "${1/#$HOME/$t}"; }
+
+# Record a conflict: destination, what's in the way, how to resolve it.
+fail(){ FAILED+=("$1"$'\t'"$2"$'\t'"$3"); }
+
+# 1. Linking -------------------------------------------------------------------
+
+# Symlink $1 -> $2. Idempotent, and never aborts the caller's loop: conflicts
+# are recorded for the summary rather than raised.
+link_path() {
+  local src="$1" dst="$2"
+  if [ ! -e "$src" ]; then
+    fail "$dst" "source missing: $(tilde "$src")" "nothing in the repo to link here"
+    return 0
+  fi
+  # Compare inodes, not readlink strings — a case-insensitive filesystem hands
+  # back the path as it was typed, so /Users/x/dev and /Users/x/Dev both resolve.
+  if [ -e "$dst" ] && [ "$dst" -ef "$src" ]; then
+    OK+=("$dst")
+    msg "✓ Already linked: $(tilde "$dst")"
+    return 0
+  fi
+  if [ -e "$dst" ] || [ -L "$dst" ]; then
+    if [ -d "$dst" ] && [ ! -L "$dst" ]; then
+      fail "$dst" "a real directory, not a link" \
+        "bin/dots migrate $(basename "$dst")   adopt it into the repo"
+      return 0
+    fi
+    if ! $force; then
+      if [ -L "$dst" ]; then
+        fail "$dst" "symlink to $(readlink "$dst")" "bin/dots install -f   replaces links"
+      else
+        fail "$dst" "a real file, not a link — an app wrote it in place" \
+          "diff it against $(tilde "$src"), then bin/dots install -f (no backup)"
+      fi
+      return 0
+    fi
+    # -f overwrites with no backup, and a real file here holds the only copy of
+    # whatever drifted into it.
+    [ -L "$dst" ] || echo "⚠ Overwriting a real file: $(tilde "$dst")" >&2
+  fi
+  if $dryrun; then
+    echo "DRY-RUN: ln -sfn \"$src\" \"$dst\""
+    LINKED+=("$dst")
+    return 0
+  fi
+  mkdir -p "$(dirname "$dst")"
+  ln -sfn "$src" "$dst"
+  LINKED+=("$dst")
+  msg "→ Linked: $(tilde "$dst")"
+}
+
+summary() {
+  section "Summary"
+  printf '  Linked      %3d\n' "${#LINKED[@]}"
+  printf '  Already ok  %3d\n' "${#OK[@]}"
+  printf '  Unresolved  %3d\n' "${#FAILED[@]}"
+  if [ "${#FAILED[@]}" -eq 0 ]; then
+    echo
+    echo "✓ Done."
+    return 0
+  fi
+  echo
+  echo "  Unresolved — nothing at these paths was changed:"
+  local entry dst reason remedy
+  for entry in "${FAILED[@]}"; do
+    IFS=$'\t' read -r dst reason remedy <<< "$entry"
+    echo
+    echo "    ✖ $(tilde "$dst")"
+    echo "      $reason"
+    echo "      $remedy"
+  done
+  echo
+  return 1
+}
+
+# 2. Brewfile sections ---------------------------------------------------------
+
+brew_has_section(){ grep -qxF "# --- config: $1 ---" "$BREWFILE"; }
+
+brew_section_body() {
+  awk -v n="$1" '$0=="# --- config: "n" ---"{f=1;next} /^# --- /{f=0} f' "$BREWFILE"
+}
+
+# Insert a section above the review block if there is one, else at the end.
+brew_add_section() {
+  local name="$1" body="${2:-}" block tmp
+  block="# --- config: $name ---"
+  [ -n "$body" ] && block="$block"$'\n'"$body"
+  tmp="$(mktemp)"
+  awk -v blk="$block" '
+    /^# --- review ---$/ && !placed { print blk; print ""; placed=1 }
+    { print }
+    END { if (!placed) { print ""; print blk } }
+  ' "$BREWFILE" > "$tmp"
+  mv "$tmp" "$BREWFILE"
+}
+
+brew_drop_section() {
+  local tmp
+  tmp="$(mktemp)"
+  awk -v n="$1" '
+    $0=="# --- config: "n" ---" { f=1; next }
+    /^# --- / { f=0 }
+    !f { print }
+  ' "$BREWFILE" > "$tmp"
+  mv "$tmp" "$BREWFILE"
+}
+
+# Give a config a Brewfile section, seeded from Homebrew if the name resolves.
+register_packages() {
+  local name="$1" body=""
+  if brew_has_section "$name"; then
+    msg "✓ Brewfile section exists: $name"
+    return 0
+  fi
+  if command -v brew >/dev/null 2>&1; then
+    if brew info --formula "$name" >/dev/null 2>&1; then
+      body="brew \"$name\""
+    elif brew info --cask "$name" >/dev/null 2>&1; then
+      body="cask \"$name\""
+    fi
+  fi
+  if $dryrun; then
+    echo "DRY-RUN: add Brewfile section for $name"
+    return 0
+  fi
+  brew_add_section "$name" "$body"
+  if [ -n "$body" ]; then
+    echo "→ Brewfile: added section $name, seeded $body"
+  else
+    echo "→ Brewfile: added empty section $name — put its packages there"
+  fi
+}
+
+# 3. Commands ------------------------------------------------------------------
+
+cmd_install() {
+  local src pair rc=0
+  section "Configs → $(tilde "$CONFIG_DIR")"
+  for src in "$CONFIGS"/*; do
+    link_path "$src" "$CONFIG_DIR/$(basename "$src")"
+  done
+  section "Home symlinks"
+  for pair in "${HOME_LINKS[@]}"; do
+    link_path "${pair##*::}" "${pair%%::*}"
+  done
+  summary || rc=1
+  echo "  Packages are separate — run \`bin/dots brew\` to install them."
+  return $rc
+}
+
+cmd_add() {
+  local name="${1:-}"
+  [ -n "$name" ] || die "add: needs a config name"
+  [ ! -e "$CONFIGS/$name" ] || die "configs/$name already exists — \`bin/dots install\` links it."
+  if [ -e "$CONFIG_DIR/$name" ] || [ -L "$CONFIG_DIR/$name" ]; then
+    die "$(tilde "$CONFIG_DIR/$name") already exists — \`bin/dots migrate $name\` adopts it."
+  fi
+  section "Add $name"
+  if $dryrun; then
+    echo "DRY-RUN: mkdir -p \"$CONFIGS/$name\""
+  else
+    mkdir -p "$CONFIGS/$name"
+    echo "→ Created: configs/$name"
+  fi
+  link_path "$CONFIGS/$name" "$CONFIG_DIR/$name"
+  register_packages "$name"
+  summary
+}
+
+cmd_migrate() {
+  [ $# -gt 0 ] || die "migrate: needs one or more config names"
+  section "Migrate → configs/"
+  local name src dst
+  for name in "$@"; do
+    src="$CONFIG_DIR/$name"
+    dst="$CONFIGS/$name"
+    if [ -L "$src" ]; then
+      fail "$src" "already a symlink to $(readlink "$src")" "nothing to migrate"
+      continue
+    fi
+    if [ ! -e "$src" ]; then
+      fail "$src" "no such path" "check the name, or \`bin/dots add $name\` to start fresh"
+      continue
+    fi
+    if [ -e "$dst" ]; then
+      fail "$src" "configs/$name already exists in the repo" "diff the two and remove one side"
+      continue
+    fi
+    if $dryrun; then
+      echo "DRY-RUN: mv \"$src\" \"$dst\" && ln -s \"$dst\" \"$src\""
+      LINKED+=("$src")
+      register_packages "$name"
+      continue
+    fi
+    mv "$src" "$dst"
+    echo "→ Moved into repo: configs/$name"
+    link_path "$dst" "$src"
+    register_packages "$name"
+  done
+  summary
+}
+
+cmd_remove() {
+  local name="${1:-}"
+  [ -n "$name" ] || die "remove: needs a config name"
+  local link="$CONFIG_DIR/$name" dir="$CONFIGS/$name" body reply
+  section "Remove $name"
+
+  if [ -L "$link" ]; then
+    if [ ! "$link" -ef "$dir" ]; then
+      die "$(tilde "$link") points outside this repo ($(readlink "$link")). Remove it by hand."
+    fi
+    if $dryrun; then
+      echo "DRY-RUN: rm \"$link\""
+    else
+      rm "$link"
+      echo "→ Unlinked: $(tilde "$link")"
+    fi
+  elif [ -e "$link" ]; then
+    die "$(tilde "$link") is a real path, not a link into this repo. Remove it by hand."
+  else
+    echo "✓ Nothing linked at $(tilde "$link")"
+  fi
+
+  if [ ! -e "$dir" ]; then
+    echo "✓ No configs/$name in the repo"
+  elif $dryrun; then
+    echo "DRY-RUN: git rm -r \"configs/$name\""
+  elif [ -n "$(git -C "$REPO_ROOT" ls-files -- "$dir")" ]; then
+    git -C "$REPO_ROOT" rm -rq "$dir"
+    echo "→ git rm: configs/$name"
+  else
+    rm -r -f -- "$dir"
+    echo "→ Deleted (untracked): configs/$name"
+  fi
+
+  if ! brew_has_section "$name"; then
+    echo "✓ No Brewfile section for $name"
+    return 0
+  fi
+  if $dryrun; then
+    echo "DRY-RUN: drop Brewfile section $name"
+    return 0
+  fi
+  body="$(brew_section_body "$name" | sed '/^[[:space:]]*$/d')"
+  echo
+  echo "  Brewfile section \`$name\` owns:"
+  if [ -n "$body" ]; then echo "$body" | sed 's/^/    /'; else echo "    (nothing)"; fi
+  echo "  Nothing is uninstalled — this only edits the Brewfile."
+  if $assume_yes; then
+    reply=y
+  else
+    read -r -p "  Drop the section? [y/N] " reply || reply=n
+  fi
+  case "$reply" in
+    [yY]*) brew_drop_section "$name"; echo "→ Brewfile: dropped section $name" ;;
+    *)     echo "✓ Brewfile section kept" ;;
+  esac
+}
+
+cmd_brew() {
+  section "Packages"
+  if $check_only; then
+    brew_check
+    return $?
+  fi
+  if ! command -v brew >/dev/null 2>&1; then
+    echo "⚠ Homebrew not found — skipping. Configs link fine without it."
+    return 0
+  fi
+  if $dryrun; then
+    brew bundle check --file="$BREWFILE" --verbose --no-upgrade || true
+  else
+    brew bundle install --file="$BREWFILE" --no-upgrade
+  fi
+}
+
+# Cross-check configs/ against the Brewfile's section markers, then ask Homebrew
+# whether the manifest is satisfied.
+brew_check() {
+  local rc=0 name src missing=() orphan=()
+  for src in "$CONFIGS"/*; do
+    name="$(basename "$src")"
+    brew_has_section "$name" || missing+=("$name")
+  done
+  while IFS= read -r name; do
+    [ -e "$CONFIGS/$name" ] || orphan+=("$name")
+  done < <(sed -n 's/^# --- config: \(.*\) ---$/\1/p' "$BREWFILE")
+
+  # Not an error — some configs genuinely install nothing. Listed so an
+  # unexpected name is visible.
+  if [ "${#missing[@]}" -gt 0 ]; then
+    echo "· Configs that declare no packages:"
+    printf '    %s\n' "${missing[@]}"
+  fi
+  if [ "${#orphan[@]}" -gt 0 ]; then
+    rc=1
+    echo "✖ Brewfile sections with no config:"
+    printf '    %s\n' "${orphan[@]}"
+    echo "  Drop them, or run \`bin/dots add <name>\`."
+  fi
+  [ "${#orphan[@]}" -eq 0 ] && echo "✓ Every Brewfile section has a config."
+
+  echo
+  if command -v brew >/dev/null 2>&1; then
+    brew bundle check --file="$BREWFILE" --verbose --no-upgrade || rc=1
+  else
+    echo "⚠ Homebrew not found — package check skipped."
+  fi
+  return $rc
+}
+
+# 4. Dispatch ------------------------------------------------------------------
+
+cmd="${1:-}"
+[ $# -gt 0 ] && shift
+case "$cmd" in
+  install|add|migrate|remove|brew) ;;
+  ""|-h|--help|help) usage; exit 0 ;;
+  *) echo "✖ Unknown command: $cmd" >&2; echo >&2; usage >&2; exit 2 ;;
+esac
+
+# getopts stops at the first positional, so alternate between it and collecting
+# args — `remove foo -y` has to work, not just `remove -y foo`.
+positional=()
+while [ $# -gt 0 ]; do
+  OPTIND=1
+  while getopts ":fnvych" opt; do
+    case "$opt" in
+      f) force=true ;;
+      n) dryrun=true ;;
+      v) verbose=true ;;
+      y) assume_yes=true ;;
+      c) check_only=true ;;
+      h) usage; exit 0 ;;
+      \?) echo "✖ Unknown option: -$OPTARG" >&2; exit 2 ;;
+    esac
+  done
+  shift $((OPTIND - 1))
+  if [ $# -gt 0 ]; then
+    positional+=("$1")
+    shift
+  fi
+done
+set -- ${positional[@]+"${positional[@]}"}
+
+"cmd_$cmd" "$@"
