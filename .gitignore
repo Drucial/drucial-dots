@@ -2,7 +2,7 @@ configs/zsh/secrets
 configs/zsh/.secrets
 .zcompdump
 .zsh_history
-.DS_STORE
+.DS_Store
 configs/zsh/.zcompdump
 
 # rainfrog: track the .example, keep the real config (DB connection details) local
