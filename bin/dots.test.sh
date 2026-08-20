@@ -95,6 +95,16 @@ run add scratchpad
 check "refuses to re-add"       '[ $rc -ne 0 ]'
 check "points at install"       'grep -q "bin/dots install" "$out"'
 
+# A name Homebrew knows seeds a package line, making the inserted block
+# multi-line — the case that broke `awk -v`.
+if command -v brew >/dev/null 2>&1; then
+  run add tree
+  check "exits 0 on a seeded section" '[ $rc -eq 0 ]'
+  check "seeds the package"           'grep -q "seeded" "$out"'
+  check "writes marker and body" \
+    '[ "$(grep -A1 -xF "# --- config: tree ---" "$WORK/repo/Brewfile" | tail -1)" = "brew \"tree\"" ]'
+fi
+
 echo "migrate"
 mkdir -p "$XDG_CONFIG_HOME/adopted" && echo hi > "$XDG_CONFIG_HOME/adopted/x.conf"
 run migrate adopted nope
@@ -105,7 +115,11 @@ check "adds a Brewfile section"          'grep -qxF "# --- config: adopted ---" 
 check "names the bad one"                'grep -q "nope" "$out"'
 check "the good one still went through"  'grep -qE "^  Linked +1$" "$out"'
 run migrate adopted
-check "refuses an existing symlink"      '[ $rc -eq 1 ]'
+check "re-running is a no-op"            '[ $rc -eq 0 ]'
+check "counts it already ok"             'grep -qE "^  Already ok +1$" "$out"'
+ln -s /tmp "$XDG_CONFIG_HOME/outside"
+run migrate outside
+check "refuses a link outside the repo"  '[ $rc -eq 1 ] && [ "$(readlink "$XDG_CONFIG_HOME/outside")" = /tmp ]'
 
 echo "brew -c"
 run_nobrew brew -c

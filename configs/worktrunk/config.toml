@@ -1,0 +1,46 @@
+# ~/.config/worktrunk/config.toml
+# User-global wt config. Project-specific overrides go in <repo>/.config/wt.toml.
+
+# Worktrees as siblings of the main repo: ~/Dev/craftwork.feat-foo, etc.
+worktree-path = "{{ repo_path }}/../{{ repo }}.{{ branch | sanitize }}"
+
+[merge]
+squash = true
+commit = true
+
+[list]
+summary = true
+
+# ----------------------------------------------------------------------------
+# Hooks
+# ----------------------------------------------------------------------------
+
+# After creating/switching INTO a freshly-created worktree, copy gitignored
+# files from the main checkout: .env*, node_modules, .next, etc. This is what
+# makes craftwork's .env (synced to disk by the 1Password app) and pre-built
+# node_modules show up automatically in the new worktree.
+[post-start]
+copy-ignored = "wt step copy-ignored"
+
+# ----------------------------------------------------------------------------
+# Aliases — invoked as `wt <name> [args]`
+# ----------------------------------------------------------------------------
+# Template vars: {{ branch }}, {{ worktree_path }}, {{ default_branch }},
+#                {{ repo }}, {{ repo_path }}, {{ args }}
+# Filters: | sanitize, | hash_port
+
+[aliases]
+
+# Print the deterministic dev-server port for the current worktree.
+# Useful if you ever want to run two craftwork dev servers at once and
+# manually set PORT=$(wt port) before `pnpm dev`.
+port = "echo {{ branch | hash_port }}"
+
+# Open localhost at this worktree's hash_port in the default browser.
+open = "open http://localhost:{{ branch | hash_port }}"
+
+# Commits since this worktree's branch diverged from main.
+log = "git log --oneline {{ default_branch }}..HEAD"
+
+# Status across all worktrees (shortcut for `wt list`).
+ls = "wt list"

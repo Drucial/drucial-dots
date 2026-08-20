@@ -148,12 +148,13 @@ brew_section_body() {
 brew_add_section() {
   local name="$1" body="${2:-}" block tmp
   block="# --- config: $name ---"
-  [ -n "$body" ] && block="$block"$'\n'"$body"
+  if [ -n "$body" ]; then block="$block"$'\n'"$body"; fi
   tmp="$(mktemp)"
-  awk -v blk="$block" '
-    /^# --- review ---$/ && !placed { print blk; print ""; placed=1 }
+  # Passed through the environment, not -v: awk rejects a newline in a -v value.
+  BLOCK="$block" awk '
+    /^# --- review ---$/ && !placed { print ENVIRON["BLOCK"]; print ""; placed=1 }
     { print }
-    END { if (!placed) { print ""; print blk } }
+    END { if (!placed) { print ""; print ENVIRON["BLOCK"] } }
   ' "$BREWFILE" > "$tmp"
   mv "$tmp" "$BREWFILE"
 }
@@ -239,7 +240,14 @@ cmd_migrate() {
     src="$CONFIG_DIR/$name"
     dst="$CONFIGS/$name"
     if [ -L "$src" ]; then
-      fail "$src" "already a symlink to $(readlink "$src")" "nothing to migrate"
+      # Already migrated. Re-check the Brewfile section so a run that died
+      # partway can be resumed.
+      if [ "$src" -ef "$dst" ]; then
+        OK+=("$src")
+        register_packages "$name"
+        continue
+      fi
+      fail "$src" "a symlink to $(readlink "$src"), outside this repo" "resolve it by hand"
       continue
     fi
     if [ ! -e "$src" ]; then

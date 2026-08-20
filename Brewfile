@@ -88,3 +88,9 @@ brew "chafa"
 # --- config: zsh ---
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
+
+# --- config: worktrunk ---
+brew "worktrunk"
+
+# --- config: ghostty ---
+cask "ghostty"
