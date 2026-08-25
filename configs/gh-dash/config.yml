@@ -77,29 +77,6 @@ theme:
     table:
       showSeparator: true
       compact: false
-  colors:
-    text:
-      primary: "#e0def4"
-      secondary: "#c4a7e7"
-      inverted: "#232136"
-      faint: "#a5a1bc"
-      warning: "#f6c177"
-      success: "#9ccfd8"
-      error: "#eb6f92"
-      actor: "#ea9a97"
-    background:
-      selected: "#2a283e"
-    border:
-      primary: "#56526e"
-      secondary: "#44415a"
-      faint: "#393552"
-    icon:
-      newcontributor: "#9ccfd8"
-      contributor: "#ea9a97"
-      collaborator: "#f6c177"
-      member: "#c4a7e7"
-      owner: "#eb6f92"
-      unknownrole: "#6e6a86"
 pager:
   diff: diffnav
 confirmQuit: false
