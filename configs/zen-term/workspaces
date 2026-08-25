@@ -32,7 +32,10 @@ main   = claude
 
 [ZenTerm Website]
 path   = ~/Dev/zen-term-website
-main   = claude
+main   = nvim
+right  = claude
+bottom = "pnpm dev"
+focus  = right
 
 [Praxis-Labs]
 path   = ~/Dev/praxis-labs
