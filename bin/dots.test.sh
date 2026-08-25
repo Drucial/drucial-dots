@@ -72,14 +72,14 @@ run install
 echo "install — conflict is non-blocking"
 rm "$XDG_CONFIG_HOME/btop"
 mkdir -p "$XDG_CONFIG_HOME/btop" && echo drift > "$XDG_CONFIG_HOME/btop/real.conf"
-rm "$XDG_CONFIG_HOME/eza"
+rm "$XDG_CONFIG_HOME/diffnav"
 run install
 check "exits 1"                    '[ $rc -eq 1 ]'
 check "reports one unresolved"     'grep -qE "^  Unresolved +1$" "$out"'
 check "names the conflict"         'grep -q "btop" "$out"'
 check "suggests migrate"           'grep -q "bin/dots migrate btop" "$out"'
 check "leaves the real dir alone"  '[ -f "$XDG_CONFIG_HOME/btop/real.conf" ]'
-check "still links the others"     '[ "$XDG_CONFIG_HOME/eza" -ef "$WORK/repo/configs/eza" ]'
+check "still links the others"     '[ "$XDG_CONFIG_HOME/diffnav" -ef "$WORK/repo/configs/diffnav" ]'
 run install -f
 check "-f still refuses a directory" '[ $rc -eq 1 ] && [ -f "$XDG_CONFIG_HOME/btop/real.conf" ]'
 
