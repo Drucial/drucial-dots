@@ -103,6 +103,23 @@ return {
 		lazy = true,
 		priority = 1000,
 	},
+	-- Families ZenTerm's catalog added alongside zen-theme.nvim.
+	{
+		"savq/melange-nvim",
+		name = "melange",
+		lazy = true,
+		priority = 1000,
+	},
+	{
+		"nyoom-engineering/oxocarbon.nvim",
+		lazy = true,
+		priority = 1000,
+	},
+	{
+		"datsfilipe/vesper.nvim",
+		lazy = true,
+		priority = 1000,
+	},
 	{
 		"rose-pine/neovim",
 		name = "rose-pine",
