@@ -94,3 +94,9 @@ brew "worktrunk"
 
 # --- config: ghostty ---
 cask "ghostty"
+
+# --- config: hypr ---
+
+# --- config: mise ---
+# Arch gets mise from pacman; this is the macOS side.
+brew "mise"

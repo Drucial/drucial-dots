@@ -8,10 +8,14 @@ at the repo root. `bin/dots` is the only script.
 
 ```
 configs/      app configs, symlinked into ~/.config
+docs/         notes on anything a config file cannot explain itself
 Brewfile      curated package manifest, one section per config
 bin/dots      install / add / migrate / remove / brew
 bin/dots.test.sh   drives every subcommand against a throwaway copy
 ```
+
+Neovim's colorscheme comes from an external theme switcher rather than from
+this repo — see [docs/nvim-themes.md](docs/nvim-themes.md).
 
 ### `configs/`
 
@@ -23,15 +27,17 @@ bin/dots.test.sh   drives every subcommand against a throwaway copy
 | `eza/`          | `ls` replacement theme |
 | `gh-dash/`      | GitHub TUI             |
 | `git/`          | git config + ignore    |
+| `hypr/`         | Hyprland (Linux only)  |
 | `kitty/`        | terminal               |
 | `lazygit/`      | git TUI                |
+| `mise/`         | tool versions          |
 | `nvim/`         | editor (LazyVim)       |
 | `posting/`      | API client             |
 | `rainfrog/`     | database TUI           |
 | `slk/`          | Slack TUI              |
 | `starship.toml` | prompt                 |
 | `tuicr/`        | TUI code review        |
-| `yabai/`        | window manager         |
+| `yabai/`        | window manager (macOS) |
 | `yazi/`         | file manager           |
 | `zen-linear/`   | Linear TUI             |
 | `zen-term/`     | terminal               |

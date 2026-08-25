@@ -1,0 +1,10 @@
+[tools]
+claude = "latest"
+codex = "latest"
+gh = "latest"
+go = "latest"
+node = "26.7.0"
+opencode = "latest"
+pnpm = "latest"
+ruff = "latest"
+stylua = "latest"
