@@ -18,6 +18,27 @@ local function trunc(trunc_width, trunc_len, hide_width, max_length, no_ellipsis
   end
 end
 
+-- Pull a foreground color off the first highlight group that defines one.
+-- Returns a function so lualine re-resolves it on every draw: Omarchy theme
+-- switches then repaint the statusline without a restart, which a fixed palette
+-- table (rose-pine's, previously) could not do.
+local function hl_fg(...)
+  local names = { ... }
+  return function()
+    for _, name in ipairs(names) do
+      local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = name, link = false })
+      if ok and hl.fg then
+        return { fg = string.format("#%06x", hl.fg) }
+      end
+    end
+    return {}
+  end
+end
+
+local accent = hl_fg("Function", "Identifier", "Special")
+local alt_accent = hl_fg("Statement", "Keyword", "Function")
+local muted = hl_fg("Comment", "NonText")
+
 return {
   "nvim-lualine/lualine.nvim",
   event = "VeryLazy",
@@ -35,9 +56,6 @@ return {
     -- PERF: we don't need this lualine require madness 🤷
     local lualine_require = require("lualine_require")
     lualine_require.require = require
-
-    -- Get rose-pine colors
-    local palette = require("rose-pine.palette")
 
     -- Custom icons (replacing LazyVim.config.icons)
     local icons = {
@@ -97,7 +115,7 @@ return {
               return vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
             end,
             padding = { left = 1, right = 1 },
-            color = { fg = palette.rose },
+            color = accent,
           },
         },
 
@@ -118,7 +136,7 @@ return {
               return connected
             end,
             padding = { left = 1, right = 0 },
-            color = { fg = palette.iris or palette.rose },
+            color = alt_accent,
           },
           {
             function()
@@ -133,7 +151,7 @@ return {
               return filepath == "." and "" or filepath .. "/"
             end,
             padding = { left = 1, right = 1 },
-            color = { fg = palette.muted },
+            color = muted,
           },
           {
             function()
@@ -144,13 +162,13 @@ return {
               return "→"
             end,
             padding = { left = 0, right = 0 },
-            color = { fg = palette.muted },
+            color = muted,
           },
           {
             "filename",
             path = 0, -- Just the filename, no path
             padding = { left = 1, right = 1 },
-            color = { fg = palette.muted },
+            color = muted,
             cond = function()
               -- Hide filename in terminal mode
               return vim.bo.buftype ~= "terminal"
@@ -163,7 +181,7 @@ return {
             icon = { "" },
             fmt = trunc(80, 20, 60, 30), -- Adjust these values as needed
             padding = { left = 1, right = 1 },
-            color = { fg = palette.rose },
+            color = accent,
           },
         },
         lualine_y = {
@@ -184,7 +202,7 @@ return {
                 }
               end
             end,
-            color = { fg = palette.muted },
+            color = muted,
           },
         },
         lualine_z = {

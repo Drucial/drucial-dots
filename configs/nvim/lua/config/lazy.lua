@@ -14,6 +14,19 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Omarchy regenerates a LazyVim colorscheme spec on every `omarchy theme set`.
+-- Link it into lua/plugins/ so lazy imports it as a normal spec: the link is
+-- followed by lazy's change detection, so swapping themes fires LazyReload and
+-- plugins/omarchy-theme-hotreload.lua applies it without restarting nvim.
+-- Absent on non-Omarchy machines, in which case no link is made and the config
+-- falls back to install.colorscheme below.
+local uv = vim.uv or vim.loop
+local omarchy_theme = vim.env.HOME .. "/.local/state/omarchy/current/theme/neovim.lua"
+local theme_link = vim.fn.stdpath("config") .. "/lua/plugins/theme.lua"
+if uv.fs_stat(omarchy_theme) and not uv.fs_lstat(theme_link) then
+  uv.fs_symlink(omarchy_theme, theme_link)
+end
+
 require("lazy").setup({
   spec = {
     -- add LazyVim and import its plugins
@@ -36,6 +49,9 @@ require("lazy").setup({
     border = "rounded",
   },
   install = { colorscheme = { "tokyonight", "habamax" } },
+  -- Every `omarchy theme set` rewrites theme.lua, which trips change detection.
+  -- Reload, but without popping a "Config Change Detected" notification.
+  change_detection = { notify = false },
   checker = {
     enabled = true, -- check for plugin updates periodically
     notify = false, -- notify on update

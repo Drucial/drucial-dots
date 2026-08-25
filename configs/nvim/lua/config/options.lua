@@ -35,3 +35,7 @@ opt.breakindent = true
 -- Silence all bells (no macOS funk sound on unmapped keys in neovide)
 opt.belloff = "all"
 opt.visualbell = false
+
+-- Rounded float borders. Set here rather than in a colorscheme's config so it
+-- survives Omarchy theme switches.
+opt.winborder = "rounded"

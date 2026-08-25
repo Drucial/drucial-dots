@@ -6,3 +6,7 @@ debug
 foo.*
 *.log
 data
+
+# Symlink to the active Omarchy theme's generated spec, created by
+# lua/config/lazy.lua. Machine-local: the target only exists on Omarchy.
+lua/plugins/theme.lua
