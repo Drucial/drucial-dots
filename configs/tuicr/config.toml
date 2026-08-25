@@ -1,4 +1,3 @@
-theme = "rose-pine-moon"
 
 diff_view = "side-by-side"
 ignore_whitespace = false
@@ -21,7 +20,7 @@ comment_types = [
   { id = "suggestion", definition = "possible improvements" },
   { id = "issue", definition = "problems to fix" },
   { id = "praise", definition = "positive feedback" },
-  { id = "nit", label = "nitpick", definition = "small optional tweaks", color = "#f6c177" },
+  { id = "nit", label = "nitpick", definition = "small optional tweaks" },
 ]
 
 [forge]
