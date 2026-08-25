@@ -9,7 +9,6 @@ float = order:5 title:"Open Slack" key:cmd+s icon:slack command:slk persist:wind
 float = order:6 title:"Zen Notes" key:cmd+k icon:bolt command:zen-notes persist:window toolbar:false
 
 window-chrome = false
-hide-toolbar-buttons = new-tab,split-h,split-v,bottom-drawer,right-drawer,scratch,focus-mode,command-palette,diff-viewer
 backdrop-alpha = 0.7
 
 cursor-style = block
@@ -33,3 +32,5 @@ background-alpha = 1
 attention-toast = auto
 completion-toast = auto
 toast-duration = 5
+theme = rose-pine-zen
+hide-toolbar-buttons = new-tab,split-h,split-v,bottom-drawer,right-drawer,scratch,focus-mode,command-palette,diff-viewer
