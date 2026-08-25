@@ -104,6 +104,17 @@ return {
 		priority = 1000,
 	},
 	-- Families ZenTerm's catalog added alongside zen-theme.nvim.
+	-- Aura keeps its colors at packages/neovim/colors rather than the repo root, so lazy's
+	-- colorscheme loader cannot find them and lazy = true would fail E185. It has to load
+	-- eagerly to append its own rtp; the config body is the whole cost.
+	{
+		"daltonmenezes/aura-theme",
+		lazy = false,
+		priority = 1000,
+		config = function(plugin)
+			vim.opt.rtp:append(plugin.dir .. "/packages/neovim")
+		end,
+	},
 	{
 		"savq/melange-nvim",
 		name = "melange",
