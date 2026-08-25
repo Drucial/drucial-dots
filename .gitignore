@@ -7,3 +7,7 @@ configs/zsh/.zcompdump
 
 # rainfrog: track the .example, keep the real config (DB connection details) local
 configs/rainfrog/rainfrog_config.toml
+
+# `omarchy refresh` and our own pre-edit backups drop these next to the file
+# they copy. configs/hypr is ~/.config/hypr, so they land inside the repo.
+*.bak.*

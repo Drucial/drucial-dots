@@ -33,9 +33,18 @@ require("default.hypr.toggles")
 -- floating tools like btop are unaffected by this.
 o.window("com\\.mitchellh\\.ghostty", { workspace = "1" })
 
--- Pin Chromium to workspace 2. Matched in full, so Omarchy web apps
+-- Pin browsers to workspace 2. Matched in full, so Omarchy web apps
 -- (class: chrome-<site>-Default) are not affected.
+o.window("zen", { workspace = "2" })
 o.window("(google-)?[cC]hrom(e|ium)", { workspace = "2" })
 
 -- Pin the ChatGPT desktop app (openai-codex-desktop) to workspace 3.
 o.window("chatgpt", { workspace = "3" })
+
+-- Pin the Slack desktop app to workspace 4.
+o.window("slack", { workspace = "4" })
+
+-- Pin the Superhuman web app to workspace 6. Chromium derives the app-id from
+-- the URL, so a compose/mailto window gets a different suffix than the inbox
+-- one -- match any of them.
+o.window("chrome-mail\\.superhuman\\.com.*-Default", { workspace = "6" })
