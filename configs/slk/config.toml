@@ -3,7 +3,6 @@ default_workspace = "T04HKQW9TPT"
 use_slack_sections = true
 
 [appearance]
-theme = "Rosé Pine Moon Dark"
 timestamp_format = "3:04 PM"
 image_protocol = "kitty"
 max_image_rows = 20
@@ -40,5 +39,4 @@ max_image_cache_mb = 200
 # Craftwork
 [workspaces.T04HKQW9TPT]
 sidebar_width = 30
-theme = "Rosé Pine Moon Dark"
 version_ts = "1787440057"
