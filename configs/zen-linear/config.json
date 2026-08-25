@@ -10,10 +10,7 @@
   "density": "comfortable",
   "group_by": "status",
   "subgroup_by": "",
-  "sort_by": [
-    "status",
-    "priority"
-  ],
+  "sort_by": ["status", "priority"],
   "rounded_borders": true,
   "workspaces": [
     {
@@ -21,19 +18,15 @@
       "api_key_env": "LINEAR_API_KEY_CRAFTWORK"
     },
     {
-      "name": "Zenterm",
-      "api_key_env": "LINEAR_API_KEY_ZENTERM"
+      "name": "Praxis Labs",
+      "api_key_env": "LINEAR_API_KEY_PRAXIS_LABS"
     },
     {
       "name": "CoHaus",
       "api_key_env": "LINEAR_API_KEY_COHAUS"
-    },
-    {
-      "name": "Praxis Labs",
-      "api_key_env": "LINEAR_API_KEY_PRAXIS_LABS"
     }
   ],
-  "default_workspace": "Zenterm",
+  "default_workspace": "Praxis Labs",
   "agent_provider": "claude",
   "agent_sandbox": "enabled",
   "agent_model": "",

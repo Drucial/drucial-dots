@@ -5,7 +5,7 @@ return {
   --   "knubie/vim-kitty-navigator",
   -- },
   {
-    "zen-term/zen-navigator.nvim",
+    "praxis-labs-io/zen-navigator.nvim",
     event = "VeryLazy",
     -- Keymaps live in lua/config/keymaps.lua (normal + terminal), so the plugin only
     -- wires the VimEnter/VimLeave "is-vim" autocmds here.
