@@ -86,6 +86,23 @@ return {
 		lazy = true,
 		priority = 1000,
 	},
+	-- ZenTerm's catalog names these three and Omarchy never did, so they arrive with
+	-- zen-theme.nvim rather than with a theme switcher.
+	{
+		"shaunsingh/nord.nvim",
+		lazy = true,
+		priority = 1000,
+	},
+	{
+		"Mofiqul/dracula.nvim",
+		lazy = true,
+		priority = 1000,
+	},
+	{
+		"maxmx03/solarized.nvim",
+		lazy = true,
+		priority = 1000,
+	},
 	{
 		"rose-pine/neovim",
 		name = "rose-pine",

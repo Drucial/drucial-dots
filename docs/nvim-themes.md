@@ -1,10 +1,11 @@
 # Neovim theme switching
 
-Neovim's colorscheme is not set in this repo. An external theme switcher writes
-a LazyVim spec, and nvim picks it up — live, without a restart. Today that
-switcher is Omarchy; the same contract is open to ZenTerm.
+Neovim's colorscheme is not set in this repo. Something outside it decides, and
+nvim picks the choice up live, without a restart. Two things do, by different
+routes: Omarchy on Linux writes a LazyVim spec, and ZenTerm on the mac publishes
+a theme file that a plugin reads.
 
-## The contract
+## Omarchy: the generated-spec contract
 
 Three steps. Only the first two belong to the switcher.
 
@@ -54,12 +55,35 @@ rather than merged, so it cannot override the generated one.
 The check is on the link, not on Omarchy. Any switcher that writes
 `lua/plugins/theme.lua` takes over automatically, with no edit here.
 
-## Adding ZenTerm
+## ZenTerm: the published-theme contract
 
-Steps 1 and 2 are the whole job. ZenTerm's catalog is
-`Sources/ZenTerm/Themes/*.ghostty`; most entries already have a matching plugin
-in `all-themes.lua` — catppuccin, everforest, gruvbox, kanagawa, rose-pine,
-tokyonight. Dracula, Nord and Solarized would need adding there.
+ZenTerm does not write a lua spec. It publishes the theme it resolved to
+`~/Library/Application Support/ZenTerm/theme.json`, and
+[zen-theme.nvim](https://github.com/praxis-labs-io/zen-theme.nvim) reads it, watches
+it, and applies a colorscheme to match. Nothing is symlinked and
+`lua/plugins/theme.lua` is not involved.
 
-The one change needed in this repo: `lua/config/lazy.lua` hardcodes the Omarchy
-source path. It needs to try ZenTerm's state path first and fall back.
+Each ZenTerm theme names its colorscheme in its own `.ghostty` file:
+
+```
+nvim-colorscheme = kanagawa-dragon
+```
+
+Every bundled theme carries one, so the mapping lives with the theme rather than
+here. A theme of my own in `~/.config/zen-term/themes/` takes one line and is mapped
+too. The full payload is documented in `docs/nvim-theme-protocol.md` in the zen-term
+repo.
+
+| File | Role |
+| ---- | ---- |
+| `lua/plugins/zen-theme.lua` | The plugin spec. `event = "VimEnter"` so it applies after LazyVim has selected its own colorscheme, rather than racing it |
+| `lua/plugins/all-themes.lua` | Also declares nord, dracula and solarized, which ZenTerm's catalog names and Omarchy never did |
+| `lua/plugins/rose-pine.lua` | Its fallback still seeds a colorscheme at startup, which zen-theme then overrides |
+
+The two switchers coexist. There is no Omarchy on the mac, so no `theme.lua`
+symlink is made and `rose-pine.lua` seeds rose-pine-moon; zen-theme replaces it at
+VimEnter with whatever ZenTerm is wearing. On Linux there is no ZenTerm, the plugin
+spec skips itself, and Omarchy's path is untouched.
+
+The spec points at a local clone at `~/Dev/zen-theme.nvim` and skips itself when that
+is absent. Point it at `zen-term/zen-theme.nvim` once the repo is public.
