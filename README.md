@@ -24,7 +24,6 @@ this repo — see [docs/nvim-themes.md](docs/nvim-themes.md).
 | `atuin/`        | shell history          |
 | `btop/`         | system monitor         |
 | `diffnav/`      | git diff TUI           |
-| `eza/`          | `ls` replacement theme |
 | `gh-dash/`      | GitHub TUI             |
 | `git/`          | git config + ignore    |
 | `hypr/`         | Hyprland (Linux only)  |

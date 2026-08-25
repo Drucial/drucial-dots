@@ -13,6 +13,7 @@ brew "fd"
 brew "bat"
 brew "zoxide"
 brew "lsd"
+brew "eza"
 
 brew "gh"
 brew "jq"
@@ -45,9 +46,6 @@ brew "btop"
 
 # --- config: diffnav ---
 brew "dlvhdr/formulae/diffnav"
-
-# --- config: eza ---
-brew "eza"
 
 # --- config: git ---
 brew "git-delta"
