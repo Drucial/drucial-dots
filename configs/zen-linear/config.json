@@ -6,7 +6,7 @@
   "search_debounce": "200ms",
   "log_file": "/Users/drucial/.zen-linear/app.log",
   "log_level": "debug",
-  "theme": "rose_pine_moon",
+  "theme": "terminal",
   "density": "comfortable",
   "group_by": "status",
   "subgroup_by": "",
