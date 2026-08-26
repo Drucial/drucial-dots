@@ -45,22 +45,27 @@ git -C "$WORK/repo" add -A >/dev/null 2>&1
 git -C "$WORK/repo" -c user.email=t@example.com -c user.name=t commit -qm init >/dev/null 2>&1
 
 n_configs="$(find "$WORK/repo/configs" -maxdepth 1 -mindepth 1 | wc -l | tr -d ' ')"
+# Read the HOME_LINKS count out of the script rather than hardcoding it, so
+# adding a home-level dotfile doesn't silently break the totals below.
+n_home="$(sed -n '/^HOME_LINKS=(/,/^)/p' "$WORK/repo/bin/dots" | grep -c '::')"
+n_links=$((n_configs + n_home))
 
 echo "install — clean machine"
 run install
 check "exits 0"            '[ $rc -eq 0 ]'
-check "links every config" "[ \$(grep -cE '^  Linked +$((n_configs + 2))\$' \"\$out\") -eq 1 ]"
+check "links every config" "[ \$(grep -cE '^  Linked +$n_links\$' \"\$out\") -eq 1 ]"
 check "links a directory config" '[ "$XDG_CONFIG_HOME/nvim" -ef "$WORK/repo/configs/nvim" ]'
 check "links a loose file config" '[ "$XDG_CONFIG_HOME/starship.toml" -ef "$WORK/repo/configs/starship.toml" ]'
 check "~/.zshrc points at the repo, not through ~/.config" \
   '[ "$HOME/.zshrc" -ef "$WORK/repo/configs/zsh/.zshrc" ] && case "$(readlink "$HOME/.zshrc")" in */configs/zsh/.zshrc) true ;; *) false ;; esac'
 check "~/.zprofile is linked"      '[ -L "$HOME/.zprofile" ]'
+check "~/.bash_aliases is linked"  '[ "$HOME/.bash_aliases" -ef "$WORK/repo/configs/bash/.bash_aliases" ]'
 
 echo "install — idempotent"
 run install
 check "exits 0"                    '[ $rc -eq 0 ]'
 check "links nothing new"          'grep -qE "^  Linked +0$" "$out"'
-check "counts them already ok"     "grep -qE '^  Already ok +$((n_configs + 2))\$' \"\$out\""
+check "counts them already ok"     "grep -qE '^  Already ok +$n_links\$' \"\$out\""
 
 echo "install -n — read-only"
 rm "$XDG_CONFIG_HOME/btop"

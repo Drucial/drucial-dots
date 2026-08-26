@@ -45,6 +45,7 @@ CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 HOME_LINKS=(
   "$HOME/.zshrc::$CONFIGS/zsh/.zshrc"
   "$HOME/.zprofile::$CONFIGS/zsh/.zprofile"
+  "$HOME/.bash_aliases::$CONFIGS/bash/.bash_aliases"
 )
 
 force=false

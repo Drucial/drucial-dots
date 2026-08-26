@@ -47,6 +47,8 @@ brew "btop"
 # --- config: diffnav ---
 brew "dlvhdr/formulae/diffnav"
 
+# --- config: bash ---
+
 # --- config: git ---
 brew "git-delta"
 
