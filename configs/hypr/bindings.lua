@@ -70,3 +70,8 @@ o.bind("SUPER + SHIFT + S", "Slack", { launch = "slack", focus = "^slack$" })
 -- of an ordinary browser window with Superhuman open in a tab.
 o.bind("SUPER + SHIFT + E", "Superhuman",
   "omarchy-launch-or-focus 'chrome-mail\\.superhuman\\.com.*-Default' 'omarchy-launch-webapp https://mail.superhuman.com'")
+
+-- Linear, run as a chromium web app. Pinned to workspace 5 in hyprland.lua.
+-- Same raw-command form as Superhuman, for the same reason.
+o.bind("SUPER + SHIFT + L", "Linear",
+  "omarchy-launch-or-focus 'chrome-linear\\.app.*-Default' 'omarchy-launch-webapp https://linear.app'")

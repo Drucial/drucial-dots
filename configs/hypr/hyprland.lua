@@ -48,3 +48,6 @@ o.window("slack", { workspace = "4" })
 -- the URL, so a compose/mailto window gets a different suffix than the inbox
 -- one -- match any of them.
 o.window("chrome-mail\\.superhuman\\.com.*-Default", { workspace = "6" })
+
+-- Pin the Linear web app to workspace 5.
+o.window("chrome-linear\\.app.*-Default", { workspace = "5" })
