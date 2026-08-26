@@ -4,20 +4,11 @@
 -- startup (rose-pine.lua's spec on this machine), and only VimEnter is reliably after
 -- that, so this gets the last word instead of racing it.
 --
--- Pointed at the local clone and skipped when it is absent, so a machine without it
--- starts clean rather than failing to clone. Swap to "zen-term/zen-theme.nvim" once the
--- repo is public.
-local uv = vim.uv or vim.loop
-local dir = vim.env.HOME .. "/Dev/zen-theme.nvim"
-
-if not uv.fs_stat(dir) then
-  return {}
-end
-
+-- Inert off ZenTerm: with no published theme file to read, setup() returns and every
+-- colorscheme choice is left alone, so this spec is portable to the Linux machines.
 return {
   {
-    "zen-theme.nvim",
-    dir = dir,
+    "praxis-labs-io/zen-theme.nvim",
     event = "VimEnter",
     opts = {},
   },

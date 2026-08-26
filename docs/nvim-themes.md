@@ -85,5 +85,6 @@ symlink is made and `rose-pine.lua` seeds rose-pine-moon; zen-theme replaces it 
 VimEnter with whatever ZenTerm is wearing. On Linux there is no ZenTerm, the plugin
 spec skips itself, and Omarchy's path is untouched.
 
-The spec points at a local clone at `~/Dev/zen-theme.nvim` and skips itself when that
-is absent. Point it at `zen-term/zen-theme.nvim` once the repo is public.
+The plugin lives at
+[praxis-labs-io/zen-theme.nvim](https://github.com/praxis-labs-io/zen-theme.nvim), so the spec
+is an ordinary remote one and the config carries to a fresh machine.
