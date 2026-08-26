@@ -115,6 +115,47 @@ return {
 			vim.opt.rtp:append(plugin.dir .. "/packages/neovim")
 		end,
 	},
+	-- Zenbones is Lush-based, but lush.nvim is optional: compat mode uses the precompiled
+	-- colorschemes instead, which is all we need since ZenTerm names them directly.
+	{
+		"zenbones-theme/zenbones.nvim",
+		lazy = true,
+		priority = 1000,
+		init = function()
+			vim.g.zenbones_compat = 1
+		end,
+	},
+	{
+		"projekt0n/github-nvim-theme",
+		lazy = true,
+		priority = 1000,
+	},
+	{
+		"webhooked/kanso.nvim",
+		lazy = true,
+		priority = 1000,
+	},
+	{
+		"sainnhe/gruvbox-material",
+		lazy = true,
+		priority = 1000,
+	},
+	{
+		"cocopon/iceberg.vim",
+		lazy = true,
+		priority = 1000,
+	},
+	{
+		"nanotech/jellybeans.vim",
+		lazy = true,
+		priority = 1000,
+	},
+	{
+		"bluz71/vim-moonfly-colors",
+		name = "moonfly",
+		lazy = true,
+		priority = 1000,
+	},
 	{
 		"savq/melange-nvim",
 		name = "melange",
