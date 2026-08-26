@@ -104,17 +104,6 @@ return {
 		priority = 1000,
 	},
 	-- Families ZenTerm's catalog added alongside zen-theme.nvim.
-	-- Aura keeps its colors at packages/neovim/colors rather than the repo root, so lazy's
-	-- colorscheme loader cannot find them and lazy = true would fail E185. It has to load
-	-- eagerly to append its own rtp; the config body is the whole cost.
-	{
-		"daltonmenezes/aura-theme",
-		lazy = false,
-		priority = 1000,
-		config = function(plugin)
-			vim.opt.rtp:append(plugin.dir .. "/packages/neovim")
-		end,
-	},
 	-- Zenbones is Lush-based, but lush.nvim is optional: compat mode uses the precompiled
 	-- colorschemes instead, which is all we need since ZenTerm names them directly.
 	{
