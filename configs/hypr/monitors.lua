@@ -1,8 +1,16 @@
 -- See https://wiki.hypr.land/Configuring/Basics/Monitors/
 -- List current monitors and supported resolutions with: hyprctl monitors all
 
-local omarchy_gdk_scale = 1
-local omarchy_monitor_scale = 1.25
+-- Scaling is per-machine, so it is not committed here. A machine that needs
+-- something other than the defaults below drops a table at
+-- ~/.local/state/hypr/machine.lua returning { gdk_scale = N, monitor_scale = N }.
+-- That path is first on Omarchy's Lua module path and sits outside this repo,
+-- so a clone on another machine just gets the defaults.
+local require_optional = require("default.hypr.require_optional")
+local machine = require_optional.module("hypr.machine") or {}
+
+local omarchy_gdk_scale = machine.gdk_scale or 1
+local omarchy_monitor_scale = machine.monitor_scale or 1.25
 
 hl.env("GDK_SCALE", tostring(omarchy_gdk_scale))
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = omarchy_monitor_scale })

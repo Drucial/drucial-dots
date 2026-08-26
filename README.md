@@ -17,6 +17,11 @@ bin/dots.test.sh   drives every subcommand against a throwaway copy
 Neovim's colorscheme comes from an external theme switcher rather than from
 this repo — see [docs/nvim-themes.md](docs/nvim-themes.md).
 
+Display scaling is per-machine, so `hypr/monitors.lua` reads it from
+`~/.local/state/hypr/machine.lua` when that file exists and falls back to
+committed defaults when it doesn't. Nothing else in `configs/` is
+machine-specific.
+
 ### `configs/`
 
 | Config          | App                    |
