@@ -49,5 +49,9 @@ o.window("chrome-mail\\.superhuman\\.com.*-Default", { workspace = "4" })
 -- Pin the Slack desktop app to workspace 6.
 o.window("slack", { workspace = "6" })
 
+-- Pin Spotify to workspace 10. Reports a capitalized class, unlike the other
+-- desktop apps here.
+o.window("[sS]potify", { workspace = "10" })
+
 -- Pin the Linear web app to workspace 5.
 o.window("chrome-linear\\.app.*-Default", { workspace = "5" })

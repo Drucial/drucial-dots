@@ -75,3 +75,7 @@ o.bind("SUPER + SHIFT + E", "Superhuman",
 -- Same raw-command form as Superhuman, for the same reason.
 o.bind("SUPER + SHIFT + L", "Linear",
   "omarchy-launch-or-focus 'chrome-linear\\.app.*-Default' 'omarchy-launch-webapp https://linear.app'")
+
+-- Spotify. Pinned to workspace 10 in hyprland.lua. The focus pattern is matched
+-- case-insensitively, so the capitalized class still resolves.
+o.bind("SUPER + SHIFT + M", "Spotify", { launch = "spotify", focus = "^spotify$" })
