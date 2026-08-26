@@ -61,10 +61,10 @@ o.bind("SUPER + SHIFT + F", "File manager", { launch = "nautilus", focus = "^org
 -- so no unbind is needed. Pinned to workspace 3 in hyprland.lua.
 o.bind("SUPER + SHIFT + A", "ChatGPT", { launch = "chatgpt", focus = "^chatgpt$" })
 
--- Slack desktop app. Pinned to workspace 4 in hyprland.lua.
+-- Slack desktop app. Pinned to workspace 6 in hyprland.lua.
 o.bind("SUPER + SHIFT + S", "Slack", { launch = "slack", focus = "^slack$" })
 
--- Superhuman, run as a chromium web app. Pinned to workspace 6 in hyprland.lua.
+-- Superhuman, run as a chromium web app. Pinned to workspace 4 in hyprland.lua.
 -- Raw command string rather than { webapp = ..., focus = true }: that form uses
 -- the description as the focus pattern, and "Superhuman" also matches the title
 -- of an ordinary browser window with Superhuman open in a tab.
