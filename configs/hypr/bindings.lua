@@ -97,6 +97,7 @@ hl.unbind("SUPER + SHIFT + ALT + X") -- X Post
 -- Preinstalled apps uninstalled with `omarchy pkg drop`.
 hl.unbind("SUPER + SHIFT + ALT + M") -- Music TUI (cliamp)
 hl.unbind("SUPER + SHIFT + W")       -- Omawrite
+hl.unbind("SUPER + SHIFT + O")       -- Obsidian
 
 -- Spotify (was: Omarchy's default "Music", which launches spotify but does
 -- not focus an existing window). Pinned to workspace 10 in hyprland.lua.
