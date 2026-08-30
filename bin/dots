@@ -52,6 +52,16 @@ HOME_LINKS=(
   "$HOME/.bash_aliases::$CONFIGS/bash/.bash_aliases"
 )
 
+# NoDisplay overrides that hide menu entries belonging to packages that cannot
+# be uninstalled, because half the desktop depends on them. Same basename as the
+# entry in /usr/share/applications, which is what shadows it. Linked one file at
+# a time: the directory also holds web app launchers that Omarchy writes itself.
+APPS_DIR="$HOME/.local/share/applications"
+for entry in "$REPO_ROOT/desktop-entries"/*.desktop; do
+  [ -e "$entry" ] || continue
+  HOME_LINKS+=("$APPS_DIR/$(basename "$entry")::$entry")
+done
+
 # One per platform, as path::label. add and migrate open a section in every one
 # so a config stays addressable from whichever machine runs remove later.
 MANIFESTS=(

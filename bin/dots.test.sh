@@ -46,9 +46,11 @@ git -C "$WORK/repo" -c user.email=t@example.com -c user.name=t commit -qm init >
 
 n_configs="$(find "$WORK/repo/configs" -maxdepth 1 -mindepth 1 | wc -l | tr -d ' ')"
 # Read the HOME_LINKS count out of the script rather than hardcoding it, so
-# adding a home-level dotfile doesn't silently break the totals below.
+# adding a home-level dotfile doesn't silently break the totals below. The
+# desktop entries append to the same array from a directory, so count them too.
 n_home="$(sed -n '/^HOME_LINKS=(/,/^)/p' "$WORK/repo/bin/dots" | grep -c '::')"
-n_links=$((n_configs + n_home))
+n_desktop="$(find "$WORK/repo/desktop-entries" -maxdepth 1 -name '*.desktop' | wc -l | tr -d ' ')"
+n_links=$((n_configs + n_home + n_desktop))
 
 echo "install — clean machine"
 run install

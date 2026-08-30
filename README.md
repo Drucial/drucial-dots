@@ -9,6 +9,7 @@ only script.
 
 ```
 configs/      app configs, symlinked into ~/.config
+desktop-entries/  overrides that hide junk from the Linux apps menu
 docs/         notes on anything a config file cannot explain itself
 Brewfile      curated package manifest for macOS, one section per config
 Archfile      the same for Omarchy, installed with yay
@@ -18,6 +19,14 @@ bin/dots.test.sh   drives every subcommand against a throwaway copy
 
 Neovim's colorscheme comes from an external theme switcher rather than from
 this repo — see [docs/nvim-themes.md](docs/nvim-themes.md).
+
+`desktop-entries/` holds `.desktop` files that shadow the ones in
+`/usr/share/applications`, setting `NoDisplay=true` to keep menu clutter out of
+the launcher. They exist because the owning packages — avahi, hwloc, v4l-utils —
+are dependencies of half the desktop and cannot be uninstalled. Each one links
+into `~/.local/share/applications` individually rather than the directory being
+symlinked whole, because Omarchy writes its own web app launchers there. Drop a
+new file in and `bin/dots install` picks it up.
 
 Display scaling is per-machine, so `hypr/monitors.lua` reads it from
 `~/.local/state/hypr/machine.lua` when that file exists and falls back to
