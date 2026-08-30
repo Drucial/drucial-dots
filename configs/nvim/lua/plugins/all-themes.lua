@@ -153,6 +153,9 @@ return {
 	},
 	{
 		"nyoom-engineering/oxocarbon.nvim",
+		-- Its rockspec pulls fennel to compile fnl/, but the repo ships the
+		-- built lua/ and colors/. Skip the luarocks build lazy infers from it.
+		build = false,
 		lazy = true,
 		priority = 1000,
 	},
