@@ -1,16 +1,18 @@
 # drucial-dots
 
 My personal dotfiles. App configs live under `configs/` and get symlinked into
-`~/.config` (or `$XDG_CONFIG_HOME`). Packages come from one curated `Brewfile`
-at the repo root. `bin/dots` is the only script.
+`~/.config` (or `$XDG_CONFIG_HOME`). Packages come from two curated manifests at
+the repo root — `Brewfile` on macOS, `Archfile` on Omarchy. `bin/dots` is the
+only script.
 
 ## Layout
 
 ```
 configs/      app configs, symlinked into ~/.config
 docs/         notes on anything a config file cannot explain itself
-Brewfile      curated package manifest, one section per config
-bin/dots      install / add / migrate / remove / brew
+Brewfile      curated package manifest for macOS, one section per config
+Archfile      the same for Omarchy, installed with yay
+bin/dots      install / add / migrate / remove / brew / pac
 bin/dots.test.sh   drives every subcommand against a throwaway copy
 ```
 
@@ -27,6 +29,7 @@ machine-specific.
 | Config          | App                    |
 | --------------- | ---------------------- |
 | `atuin/`        | shell history          |
+| `bash/`         | bash rc + aliases      |
 | `btop/`         | system monitor         |
 | `diffnav/`      | git diff TUI           |
 | `gh-dash/`      | GitHub TUI             |
@@ -41,6 +44,7 @@ machine-specific.
 | `slk/`          | Slack TUI              |
 | `starship.toml` | prompt                 |
 | `tuicr/`        | TUI code review        |
+| `worktrunk/`    | git worktree manager   |
 | `yabai/`        | window manager (macOS) |
 | `yazi/`         | file manager           |
 | `zen-linear/`   | Linear TUI             |
@@ -52,9 +56,15 @@ machine-specific.
 ```sh
 git clone https://github.com/Drucial/drucial-dots.git ~/Dev/drucial-dots
 cd ~/Dev/drucial-dots
-bin/dots install    # symlink every config, plus ~/.zshrc and ~/.zprofile
-bin/dots brew       # install the packages
+bin/dots install    # symlink every config, plus the home-level dotfiles
+bin/dots brew       # macOS: install the packages
+bin/dots pac        # Omarchy: install the packages
 ```
+
+`install` also links `~/.zshrc`, `~/.zprofile`, `~/.bashrc`, and
+`~/.bash_aliases`. `~/.bashrc` is tracked because it is a one-time `/etc/skel`
+seed that Omarchy never updates again — without it, nothing sources the
+aliases.
 
 `install` never stops on the first problem. It works through every config, then
 prints a summary and exits non-zero if anything was left unresolved:
@@ -89,6 +99,8 @@ bin/dots migrate <name>...  # adopt ~/.config/<name> into the repo, link it back
 bin/dots remove <name>      # unlink, delete from the repo, offer to drop packages
 bin/dots brew               # install the Brewfile
 bin/dots brew -c            # check it instead
+bin/dots pac                # install the Archfile with yay
+bin/dots pac -c             # check it instead
 ```
 
 Options go anywhere: `-n` dry-run, `-f` force, `-v` verbose, `-y` skip
@@ -113,8 +125,11 @@ brew "yazi"
 brew "ffmpeg"
 ```
 
-`add` and `migrate` create a config's section and seed it if the name resolves
-to a formula or cask. `remove` offers to drop it.
+`add` and `migrate` create a config's section in **both** manifests and seed
+whichever one the current machine can resolve the name against — Homebrew for
+the Brewfile, pacman's sync db for the Archfile. `remove` shows what each owns
+and drops both on one confirmation. Keeping them in step means a config added on
+the mac is still addressable from the Arch box, and the reverse.
 
 `bin/dots brew -c` fails on a section naming a config that doesn't exist, and
 lists configs that declare no packages without failing — `gh-dash`, `tuicr`,
@@ -124,6 +139,29 @@ manifest is satisfied.
 
 `gh-dash` is a `gh` extension rather than a formula:
 `gh extension install dlvhdr/gh-dash`.
+
+## Archfile
+
+Same section grammar, one bare package name per line, installed with
+`yay -S --needed` so the official repos and the AUR are covered alike:
+
+```
+# --- shared ---
+1password
+zen-browser-bin
+
+# --- config: yazi ---
+yazi
+chafa
+```
+
+It assumes an Omarchy base install and does not restate the ~200 packages in
+`/usr/share/omarchy/install/*.packages`. That is why `bin/dots pac -c` lists many
+more configs as declaring no packages than the Brewfile does — most of them are
+already covered by that base.
+
+`pac -c` then asks pacman which of the names the Archfile lists are missing, and
+exits non-zero if any are.
 
 ## Convention
 

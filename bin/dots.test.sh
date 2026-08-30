@@ -60,6 +60,7 @@ check "~/.zshrc points at the repo, not through ~/.config" \
   '[ "$HOME/.zshrc" -ef "$WORK/repo/configs/zsh/.zshrc" ] && case "$(readlink "$HOME/.zshrc")" in */configs/zsh/.zshrc) true ;; *) false ;; esac'
 check "~/.zprofile is linked"      '[ -L "$HOME/.zprofile" ]'
 check "~/.bash_aliases is linked"  '[ "$HOME/.bash_aliases" -ef "$WORK/repo/configs/bash/.bash_aliases" ]'
+check "~/.bashrc is linked"        '[ "$HOME/.bashrc" -ef "$WORK/repo/configs/bash/.bashrc" ]'
 
 echo "install — idempotent"
 run install
@@ -94,8 +95,9 @@ check "exits 0"                 '[ $rc -eq 0 ]'
 check "creates the repo dir"    '[ -d "$WORK/repo/configs/scratchpad" ]'
 check "links it out"            '[ "$XDG_CONFIG_HOME/scratchpad" -ef "$WORK/repo/configs/scratchpad" ]'
 check "adds a Brewfile section" 'grep -qxF "# --- config: scratchpad ---" "$WORK/repo/Brewfile"'
+check "adds an Archfile section" 'grep -qxF "# --- config: scratchpad ---" "$WORK/repo/Archfile"'
 check "keeps existing sections intact" \
-  'grep -qxF "# --- config: yazi ---" "$WORK/repo/Brewfile"'
+  'grep -qxF "# --- config: yazi ---" "$WORK/repo/Brewfile" && grep -qxF "# --- config: yazi ---" "$WORK/repo/Archfile"'
 run add scratchpad
 check "refuses to re-add"       '[ $rc -ne 0 ]'
 check "points at install"       'grep -q "bin/dots install" "$out"'
@@ -110,6 +112,17 @@ if command -v brew >/dev/null 2>&1; then
     '[ "$(grep -A1 -xF "# --- config: tree ---" "$WORK/repo/Brewfile" | tail -1)" = "brew \"tree\"" ]'
 fi
 
+# The pacman-side counterpart: a name in the sync db seeds a body, so the block
+# awk inserts is multi-line here too. jq is picked because it is installed, which
+# keeps the `pac -c` run further down passing.
+if command -v pacman >/dev/null 2>&1; then
+  run add jq
+  check "exits 0 on a seeded Archfile section" '[ $rc -eq 0 ]'
+  check "seeds the package"                    'grep -q "seeded" "$out"'
+  check "writes marker and body" \
+    '[ "$(grep -A1 -xF "# --- config: jq ---" "$WORK/repo/Archfile" | tail -1)" = jq ]'
+fi
+
 echo "migrate"
 mkdir -p "$XDG_CONFIG_HOME/adopted" && echo hi > "$XDG_CONFIG_HOME/adopted/x.conf"
 run migrate adopted nope
@@ -117,6 +130,7 @@ check "exits 1 for the missing name"     '[ $rc -eq 1 ]'
 check "moves content into the repo"      '[ "$(cat "$WORK/repo/configs/adopted/x.conf")" = hi ]'
 check "links it back"                    '[ "$XDG_CONFIG_HOME/adopted" -ef "$WORK/repo/configs/adopted" ]'
 check "adds a Brewfile section"          'grep -qxF "# --- config: adopted ---" "$WORK/repo/Brewfile"'
+check "adds an Archfile section"         'grep -qxF "# --- config: adopted ---" "$WORK/repo/Archfile"'
 check "names the bad one"                'grep -q "nope" "$out"'
 check "the good one still went through"  'grep -qE "^  Linked +1$" "$out"'
 run migrate adopted
@@ -142,14 +156,43 @@ sed -i.bak2 '/^# --- config: ghost ---$/d' "$WORK/repo/Brewfile"
 run_nobrew brew
 check "brew install is a no-op without Homebrew" '[ $rc -eq 0 ] && grep -q "Homebrew not found" "$out"'
 
+echo "pac -c"
+run_nobrew pac -c
+check "exits 0 when sections match configs" '[ $rc -eq 0 ]'
+check "omits a config that has a section"   '! grep -qx "    adopted" "$out"'
+sed -i.bak3 '/^# --- config: adopted ---$/d' "$WORK/repo/Archfile"
+run_nobrew pac -c
+check "lists a config with no section" 'grep -q "declare no packages" "$out" && grep -qx "    adopted" "$out"'
+check "declaring nothing is not a failure" '[ $rc -eq 0 ]'
+echo "# --- config: ghost ---" >> "$WORK/repo/Archfile"
+run_nobrew pac -c
+check "flags a section with no config"      'grep -q "sections with no config" "$out" && grep -qx "    ghost" "$out"'
+check "exits non-zero on an orphan section" '[ $rc -ne 0 ]'
+sed -i.bak4 '/^# --- config: ghost ---$/d' "$WORK/repo/Archfile"
+echo "definitely-not-a-package" >> "$WORK/repo/Archfile"
+run_nobrew pac -c
+if command -v pacman >/dev/null 2>&1; then
+  check "flags a package that is not installed" \
+    'grep -q "not installed" "$out" && grep -qx "    definitely-not-a-package" "$out" && [ $rc -ne 0 ]'
+fi
+sed -i.bak5 '/^definitely-not-a-package$/d' "$WORK/repo/Archfile"
+run_nobrew pac -n
+if command -v yay >/dev/null 2>&1; then
+  check "pac -n names the install without running it" \
+    '[ $rc -eq 0 ] && grep -q "DRY-RUN: yay -S --needed .*zen-browser-bin" "$out"'
+else
+  check "pac install is a no-op without yay" '[ $rc -eq 0 ] && grep -q "yay not found" "$out"'
+fi
+
 echo "remove"
 run remove scratchpad -y
 check "exits 0"                  '[ $rc -eq 0 ]'
 check "drops the link"           '[ ! -e "$XDG_CONFIG_HOME/scratchpad" ] && [ ! -L "$XDG_CONFIG_HOME/scratchpad" ]'
 check "drops the repo dir"       '[ ! -e "$WORK/repo/configs/scratchpad" ]'
-check "drops the section"        '! grep -qxF "# --- config: scratchpad ---" "$WORK/repo/Brewfile"'
+check "drops the Brewfile section" '! grep -qxF "# --- config: scratchpad ---" "$WORK/repo/Brewfile"'
+check "drops the Archfile section" '! grep -qxF "# --- config: scratchpad ---" "$WORK/repo/Archfile"'
 check "leaves neighbours intact" 'grep -qxF "# --- config: yazi ---" "$WORK/repo/Brewfile" && grep -qxF "# --- config: zsh ---" "$WORK/repo/Brewfile"'
-check "keeps yazi packages"      '[ "$(grep -c "^brew \"ffmpeg\"$" "$WORK/repo/Brewfile")" -eq 1 ]'
+check "keeps yazi packages"      '[ "$(grep -c "^brew \"ffmpeg\"$" "$WORK/repo/Brewfile")" -eq 1 ] && [ "$(grep -c "^chafa$" "$WORK/repo/Archfile")" -eq 1 ]'
 
 mkdir -p "$XDG_CONFIG_HOME/foreign"
 run remove foreign -y

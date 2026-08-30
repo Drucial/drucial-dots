@@ -11,18 +11,20 @@ Commands:
   migrate <name>...    Adopt existing ~/.config/<name> into the repo, link it back
   remove <name>        Unlink, delete from the repo, offer to drop its packages
   brew [-c]            Install the root Brewfile; -c checks it instead
+  pac [-c]             Install the root Archfile with yay; -c checks it instead
 
 Options (place before positional args):
   -f   Force: replace existing links and drifted files. Never touches directories.
   -n   Dry-run: print what would happen, change nothing
   -v   Verbose
-  -y   remove: skip the Brewfile confirmation prompt
+  -y   remove: skip the confirmation prompt
   -h   Help
 
 Configs live in configs/ and are symlinked out, never copied. Packages live in
-the root Brewfile under `# --- config: <name> ---` sections, which add, migrate,
-and remove maintain. Every command reports a summary and exits non-zero if
-anything was left unresolved.
+two manifests -- Brewfile for macOS, Archfile for Omarchy -- under
+`# --- config: <name> ---` sections, which add, migrate, and remove maintain in
+both. Every command reports a summary and exits non-zero if anything was left
+unresolved.
 EOF
 }
 
@@ -38,6 +40,7 @@ done
 REPO_ROOT="$(cd "$(dirname "$SCRIPT")/.." && pwd -P)"
 CONFIGS="$REPO_ROOT/configs"
 BREWFILE="$REPO_ROOT/Brewfile"
+ARCHFILE="$REPO_ROOT/Archfile"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 
 # Targets outside $CONFIG_DIR, as dst::src. Sources point at the repo, so these
@@ -47,6 +50,13 @@ HOME_LINKS=(
   "$HOME/.zprofile::$CONFIGS/zsh/.zprofile"
   "$HOME/.bashrc::$CONFIGS/bash/.bashrc"
   "$HOME/.bash_aliases::$CONFIGS/bash/.bash_aliases"
+)
+
+# One per platform, as path::label. add and migrate open a section in every one
+# so a config stays addressable from whichever machine runs remove later.
+MANIFESTS=(
+  "$BREWFILE::Brewfile"
+  "$ARCHFILE::Archfile"
 )
 
 force=false
@@ -138,17 +148,20 @@ summary() {
   return 1
 }
 
-# 2. Brewfile sections ---------------------------------------------------------
+# 2. Package manifests ---------------------------------------------------------
 
-brew_has_section(){ grep -qxF "# --- config: $1 ---" "$BREWFILE"; }
+# Both manifests share one grammar: a `# --- config: <name> ---` marker owns
+# every line up to the next `# --- ` marker. Each helper takes the file to act on.
 
-brew_section_body() {
-  awk -v n="$1" '$0=="# --- config: "n" ---"{f=1;next} /^# --- /{f=0} f' "$BREWFILE"
+manifest_has_section(){ grep -qxF "# --- config: $2 ---" "$1"; }
+
+manifest_section_body() {
+  awk -v n="$2" '$0=="# --- config: "n" ---"{f=1;next} /^# --- /{f=0} f' "$1"
 }
 
 # Insert a section above the review block if there is one, else at the end.
-brew_add_section() {
-  local name="$1" body="${2:-}" block tmp
+manifest_add_section() {
+  local file="$1" name="$2" body="${3:-}" block tmp
   block="# --- config: $name ---"
   if [ -n "$body" ]; then block="$block"$'\n'"$body"; fi
   tmp="$(mktemp)"
@@ -157,45 +170,102 @@ brew_add_section() {
     /^# --- review ---$/ && !placed { print ENVIRON["BLOCK"]; print ""; placed=1 }
     { print }
     END { if (!placed) { print ""; print ENVIRON["BLOCK"] } }
-  ' "$BREWFILE" > "$tmp"
-  mv "$tmp" "$BREWFILE"
+  ' "$file" > "$tmp"
+  mv "$tmp" "$file"
 }
 
-brew_drop_section() {
+manifest_drop_section() {
   local tmp
   tmp="$(mktemp)"
-  awk -v n="$1" '
+  awk -v n="$2" '
     $0=="# --- config: "n" ---" { f=1; next }
     /^# --- / { f=0 }
     !f { print }
-  ' "$BREWFILE" > "$tmp"
-  mv "$tmp" "$BREWFILE"
+  ' "$1" > "$tmp"
+  mv "$tmp" "$1"
 }
 
-# Give a config a Brewfile section, seeded from Homebrew if the name resolves.
-register_packages() {
-  local name="$1" body=""
-  if brew_has_section "$name"; then
-    msg "✓ Brewfile section exists: $name"
-    return 0
+# What a new section starts with, asked of the platform's package manager. A name
+# it doesn't know yields an empty section, which is the prompt to fill it by hand.
+brew_seed() {
+  command -v brew >/dev/null 2>&1 || return 0
+  if brew info --formula "$1" >/dev/null 2>&1; then
+    echo "brew \"$1\""
+  elif brew info --cask "$1" >/dev/null 2>&1; then
+    echo "cask \"$1\""
   fi
-  if command -v brew >/dev/null 2>&1; then
-    if brew info --formula "$name" >/dev/null 2>&1; then
-      body="brew \"$name\""
-    elif brew info --cask "$name" >/dev/null 2>&1; then
-      body="cask \"$name\""
-    fi
+}
+
+# pacman's local sync db only. Reaching the AUR needs the network and is slow
+# enough to stall `add`.
+pac_seed() {
+  command -v pacman >/dev/null 2>&1 || return 0
+  pacman -Si "$1" >/dev/null 2>&1 && echo "$1"
+}
+
+register_section() {
+  local file="$1" label="$2" name="$3" body="$4"
+  if manifest_has_section "$file" "$name"; then
+    msg "✓ $label section exists: $name"
+    return 0
   fi
   if $dryrun; then
-    echo "DRY-RUN: add Brewfile section for $name"
+    echo "DRY-RUN: add $label section for $name"
     return 0
   fi
-  brew_add_section "$name" "$body"
+  manifest_add_section "$file" "$name" "$body"
   if [ -n "$body" ]; then
-    echo "→ Brewfile: added section $name, seeded $body"
+    echo "→ $label: added section $name, seeded $body"
   else
-    echo "→ Brewfile: added empty section $name — put its packages there"
+    echo "→ $label: added empty section $name — put its packages there"
   fi
+}
+
+# Give a config a section in every manifest, seeded where the name resolves.
+register_packages() {
+  local name="$1"
+  register_section "$BREWFILE" Brewfile "$name" "$(brew_seed "$name")"
+  register_section "$ARCHFILE" Archfile "$name" "$(pac_seed "$name")"
+}
+
+# Show what every manifest gives the config, then drop it from all of them on one
+# confirmation. Nothing is uninstalled — this only edits the files.
+drop_sections() {
+  local name="$1" pair file label body reply found=false
+  for pair in "${MANIFESTS[@]}"; do
+    file="${pair%%::*}"; label="${pair##*::}"
+    if ! manifest_has_section "$file" "$name"; then
+      echo "✓ No $label section for $name"
+      continue
+    fi
+    found=true
+    if $dryrun; then
+      echo "DRY-RUN: drop $label section $name"
+      continue
+    fi
+    body="$(manifest_section_body "$file" "$name" | sed '/^[[:space:]]*$/d')"
+    echo
+    echo "  $label section \`$name\` owns:"
+    if [ -n "$body" ]; then echo "$body" | sed 's/^/    /'; else echo "    (nothing)"; fi
+  done
+  { $found && ! $dryrun; } || return 0
+
+  echo "  Nothing is uninstalled — this only edits the manifests."
+  if $assume_yes; then
+    reply=y
+  else
+    read -r -p "  Drop the sections? [y/N] " reply || reply=n
+  fi
+  case "$reply" in
+    [yY]*) ;;
+    *) echo "✓ Sections kept"; return 0 ;;
+  esac
+  for pair in "${MANIFESTS[@]}"; do
+    file="${pair%%::*}"; label="${pair##*::}"
+    manifest_has_section "$file" "$name" || continue
+    manifest_drop_section "$file" "$name"
+    echo "→ $label: dropped section $name"
+  done
 }
 
 # 3. Commands ------------------------------------------------------------------
@@ -211,7 +281,11 @@ cmd_install() {
     link_path "${pair##*::}" "${pair%%::*}"
   done
   summary || rc=1
-  echo "  Packages are separate — run \`bin/dots brew\` to install them."
+  if command -v pacman >/dev/null 2>&1; then
+    echo "  Packages are separate — run \`bin/dots pac\` to install them."
+  else
+    echo "  Packages are separate — run \`bin/dots brew\` to install them."
+  fi
   return $rc
 }
 
@@ -308,28 +382,7 @@ cmd_remove() {
     echo "→ Deleted (untracked): configs/$name"
   fi
 
-  if ! brew_has_section "$name"; then
-    echo "✓ No Brewfile section for $name"
-    return 0
-  fi
-  if $dryrun; then
-    echo "DRY-RUN: drop Brewfile section $name"
-    return 0
-  fi
-  body="$(brew_section_body "$name" | sed '/^[[:space:]]*$/d')"
-  echo
-  echo "  Brewfile section \`$name\` owns:"
-  if [ -n "$body" ]; then echo "$body" | sed 's/^/    /'; else echo "    (nothing)"; fi
-  echo "  Nothing is uninstalled — this only edits the Brewfile."
-  if $assume_yes; then
-    reply=y
-  else
-    read -r -p "  Drop the section? [y/N] " reply || reply=n
-  fi
-  case "$reply" in
-    [yY]*) brew_drop_section "$name"; echo "→ Brewfile: dropped section $name" ;;
-    *)     echo "✓ Brewfile section kept" ;;
-  esac
+  drop_sections "$name"
 }
 
 cmd_brew() {
@@ -349,17 +402,16 @@ cmd_brew() {
   fi
 }
 
-# Cross-check configs/ against the Brewfile's section markers, then ask Homebrew
-# whether the manifest is satisfied.
-brew_check() {
-  local rc=0 name src missing=() orphan=()
+# Cross-check configs/ against one manifest's section markers.
+manifest_check_sections() {
+  local file="$1" label="$2" rc=0 name src missing=() orphan=()
   for src in "$CONFIGS"/*; do
     name="$(basename "$src")"
-    brew_has_section "$name" || missing+=("$name")
+    manifest_has_section "$file" "$name" || missing+=("$name")
   done
   while IFS= read -r name; do
     [ -e "$CONFIGS/$name" ] || orphan+=("$name")
-  done < <(sed -n 's/^# --- config: \(.*\) ---$/\1/p' "$BREWFILE")
+  done < <(sed -n 's/^# --- config: \(.*\) ---$/\1/p' "$file")
 
   # Not an error — some configs genuinely install nothing. Listed so an
   # unexpected name is visible.
@@ -369,12 +421,19 @@ brew_check() {
   fi
   if [ "${#orphan[@]}" -gt 0 ]; then
     rc=1
-    echo "✖ Brewfile sections with no config:"
+    echo "✖ $label sections with no config:"
     printf '    %s\n' "${orphan[@]}"
     echo "  Drop them, or run \`bin/dots add <name>\`."
+  else
+    echo "✓ Every $label section has a config."
   fi
-  [ "${#orphan[@]}" -eq 0 ] && echo "✓ Every Brewfile section has a config."
+  return $rc
+}
 
+# Ask Homebrew whether the Brewfile is satisfied.
+brew_check() {
+  local rc=0
+  manifest_check_sections "$BREWFILE" Brewfile || rc=1
   echo
   if command -v brew >/dev/null 2>&1; then
     brew bundle check --file="$BREWFILE" --verbose --no-upgrade || rc=1
@@ -384,12 +443,64 @@ brew_check() {
   return $rc
 }
 
+# Package names from the Archfile: one per line, comments and blanks dropped.
+arch_packages() {
+  sed -e 's/#.*//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' "$ARCHFILE" | grep -v '^$'
+}
+
+cmd_pac() {
+  local pkg pkgs=()
+  section "Packages"
+  if $check_only; then
+    pac_check
+    return $?
+  fi
+  if ! command -v yay >/dev/null 2>&1; then
+    echo "⚠ yay not found — skipping. Configs link fine without it."
+    return 0
+  fi
+  while IFS= read -r pkg; do pkgs+=("$pkg"); done < <(arch_packages)
+  if [ "${#pkgs[@]}" -eq 0 ]; then
+    echo "✓ Archfile names no packages."
+    return 0
+  fi
+  if $dryrun; then
+    echo "DRY-RUN: yay -S --needed ${pkgs[*]}"
+    return 0
+  fi
+  yay -S --needed "${pkgs[@]}"
+}
+
+# Cross-check configs/ against the Archfile, then ask pacman which of the names
+# it lists are not installed.
+pac_check() {
+  local rc=0 pkg missing=()
+  manifest_check_sections "$ARCHFILE" Archfile || rc=1
+  echo
+  if ! command -v pacman >/dev/null 2>&1; then
+    echo "⚠ pacman not found — package check skipped."
+    return $rc
+  fi
+  while IFS= read -r pkg; do
+    pacman -Qq "$pkg" >/dev/null 2>&1 || missing+=("$pkg")
+  done < <(arch_packages)
+  if [ "${#missing[@]}" -gt 0 ]; then
+    rc=1
+    echo "✖ Archfile packages not installed:"
+    printf '    %s\n' "${missing[@]}"
+    echo "  Install them with \`bin/dots pac\`."
+  else
+    echo "✓ Every Archfile package is installed."
+  fi
+  return $rc
+}
+
 # 4. Dispatch ------------------------------------------------------------------
 
 cmd="${1:-}"
 [ $# -gt 0 ] && shift
 case "$cmd" in
-  install|add|migrate|remove|brew) ;;
+  install|add|migrate|remove|brew|pac) ;;
   ""|-h|--help|help) usage; exit 0 ;;
   *) echo "✖ Unknown command: $cmd" >&2; echo >&2; usage >&2; exit 2 ;;
 esac

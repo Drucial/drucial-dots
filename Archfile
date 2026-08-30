@@ -1,0 +1,36 @@
+# Curated package manifest for `bin/dots pac`, the Arch counterpart to Brewfile.
+# Sections map to configs/<name>/ and are maintained by add|migrate|remove.
+#
+# One package name per line, installed with `yay -S --needed`, which covers the
+# official repos and the AUR alike. Assumes an Omarchy base install: the 200-odd
+# packages in /usr/share/omarchy/install/*.packages are not restated here.
+
+# --- shared ---
+# Apps and tooling no single config owns.
+
+1password
+1password-cli
+zen-browser-bin
+slack-desktop
+spotify
+openai-codex-desktop
+minecraft-launcher
+
+tailscale
+
+mongodb-bin
+mongodb-tools-bin
+mongosh-bin
+valkey
+
+# --- config: ghostty ---
+ghostty
+
+# --- config: worktrunk ---
+worktrunk
+
+# --- config: yazi ---
+yazi
+chafa
+resvg
+7zip
