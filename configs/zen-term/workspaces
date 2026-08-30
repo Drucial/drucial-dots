@@ -54,3 +54,7 @@ path   = ~/Dev/agent-kit
 main   = nvim
 right  = claude
 focus  = right
+
+[Zen YouTube]
+path   = ~/Dev/zen-youtube
+main   = Claude

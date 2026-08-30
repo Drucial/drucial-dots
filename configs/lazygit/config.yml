@@ -1,9 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/jesseduffield/lazygit/master/schema/config.json
-git:
-  pagers:
-    - colorArg: always
-      pager: delta --paging=never --syntax-theme base16-256 --file-decoration-style=""
 gui:
+  theme:
+    selectedLineBgColor:
+      - black
+    activeBorderColor:
+      - blue
   nerdFontsVersion: "3"
   filterMode: fuzzy
   showNumstatInFilesView: true
