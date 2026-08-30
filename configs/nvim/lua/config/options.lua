@@ -2,6 +2,8 @@
 -- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- Add any additional options here
 
+require("config.remote_clipboard").setup()
+
 local opt = vim.opt
 
 local local_bin = vim.fn.expand("~/.local/bin")

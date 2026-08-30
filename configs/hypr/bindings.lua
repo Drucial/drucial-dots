@@ -56,18 +56,24 @@ o.bind("SUPER + SHIFT + B", "Browser", { launch = "zen-browser", focus = "^zen$"
 hl.unbind("SUPER + SHIFT + F")
 o.bind("SUPER + SHIFT + F", "File manager", { launch = "nautilus", focus = "^org\\.gnome\\.Nautilus$" })
 
--- ChatGPT desktop app. SUPER+SHIFT+A is Omarchy's default key for ChatGPT, but
--- as a web app -- that binding is inactive here since preinstalls were removed,
--- so no unbind is needed. Pinned to workspace 3 in hyprland.lua.
+-- ChatGPT desktop app (openai-codex-desktop). Omarchy's default binds the same
+-- key to chatgpt.com as a chromium web app, and Hyprland fires the first bind
+-- that matches, so this needs the unbind to win.
+-- Pinned to workspace 3 in hyprland.lua.
+hl.unbind("SUPER + SHIFT + A")
 o.bind("SUPER + SHIFT + A", "ChatGPT", { launch = "chatgpt", focus = "^chatgpt$" })
 
--- Slack desktop app. Pinned to workspace 6 in hyprland.lua.
+-- Slack desktop app (was: Omarchy's default "Google Maps" webapp).
+-- Pinned to workspace 6 in hyprland.lua.
+hl.unbind("SUPER + SHIFT + S")
 o.bind("SUPER + SHIFT + S", "Slack", { launch = "slack", focus = "^slack$" })
 
--- Superhuman, run as a chromium web app. Pinned to workspace 4 in hyprland.lua.
+-- Superhuman, run as a chromium web app (was: Omarchy's default "Email"
+-- webapp on app.hey.com). Pinned to workspace 4 in hyprland.lua.
 -- Raw command string rather than { webapp = ..., focus = true }: that form uses
 -- the description as the focus pattern, and "Superhuman" also matches the title
 -- of an ordinary browser window with Superhuman open in a tab.
+hl.unbind("SUPER + SHIFT + E")
 o.bind("SUPER + SHIFT + E", "Superhuman",
   "omarchy-launch-or-focus 'chrome-mail\\.superhuman\\.com.*-Default' 'omarchy-launch-webapp https://mail.superhuman.com'")
 
@@ -76,6 +82,9 @@ o.bind("SUPER + SHIFT + E", "Superhuman",
 o.bind("SUPER + SHIFT + L", "Linear",
   "omarchy-launch-or-focus 'chrome-linear\\.app.*-Default' 'omarchy-launch-webapp https://linear.app'")
 
--- Spotify. Pinned to workspace 10 in hyprland.lua. The focus pattern is matched
--- case-insensitively, so the capitalized class still resolves.
+-- Spotify (was: Omarchy's default "Music", which launches spotify but does
+-- not focus an existing window). Pinned to workspace 10 in hyprland.lua.
+-- The focus pattern is matched case-insensitively, so the capitalized class
+-- still resolves.
+hl.unbind("SUPER + SHIFT + M")
 o.bind("SUPER + SHIFT + M", "Spotify", { launch = "spotify", focus = "^spotify$" })

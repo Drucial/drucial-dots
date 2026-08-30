@@ -39,6 +39,7 @@ o.window("zen", { workspace = "2" })
 o.window("(google-)?[cC]hrom(e|ium)", { workspace = "2" })
 
 -- Pin the ChatGPT desktop app (openai-codex-desktop) to workspace 3.
+-- Reports a lowercase app-id, despite its .desktop declaring no StartupWMClass.
 o.window("chatgpt", { workspace = "3" })
 
 -- Pin the Superhuman web app to workspace 4. Chromium derives the app-id from
@@ -46,7 +47,8 @@ o.window("chatgpt", { workspace = "3" })
 -- one -- match any of them.
 o.window("chrome-mail\\.superhuman\\.com.*-Default", { workspace = "4" })
 
--- Pin the Slack desktop app to workspace 6.
+-- Pin the Slack desktop app to workspace 6. The Wayland app-id is lowercase
+-- "slack", not the "Slack" its .desktop declares as StartupWMClass.
 o.window("slack", { workspace = "6" })
 
 -- Pin Spotify to workspace 10. Reports a capitalized class, unlike the other
