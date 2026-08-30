@@ -82,6 +82,22 @@ o.bind("SUPER + SHIFT + E", "Superhuman",
 o.bind("SUPER + SHIFT + L", "Linear",
   "omarchy-launch-or-focus 'chrome-linear\\.app.*-Default' 'omarchy-launch-webapp https://linear.app'")
 
+-- Web apps removed with `omarchy webapp remove`. Their launchers are gone, but
+-- the bindings launch the URL directly, so they need unbinding too.
+hl.unbind("SUPER + SHIFT + ALT + A") -- Grok
+hl.unbind("SUPER + SHIFT + C")       -- Calendar (HEY)
+hl.unbind("SUPER + SHIFT + ALT + E") -- New email (HEY)
+hl.unbind("SUPER + SHIFT + Y")       -- YouTube
+hl.unbind("SUPER + SHIFT + ALT + G") -- WhatsApp
+hl.unbind("SUPER + SHIFT + CTRL + G")-- Google Messages
+hl.unbind("SUPER + SHIFT + P")       -- Google Photos
+hl.unbind("SUPER + SHIFT + X")       -- X
+hl.unbind("SUPER + SHIFT + ALT + X") -- X Post
+
+-- Preinstalled apps uninstalled with `omarchy pkg drop`.
+hl.unbind("SUPER + SHIFT + ALT + M") -- Music TUI (cliamp)
+hl.unbind("SUPER + SHIFT + W")       -- Omawrite
+
 -- Spotify (was: Omarchy's default "Music", which launches spotify but does
 -- not focus an existing window). Pinned to workspace 10 in hyprland.lua.
 -- The focus pattern is matched case-insensitively, so the capitalized class
