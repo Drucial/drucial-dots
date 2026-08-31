@@ -66,3 +66,12 @@ o.window("chrome-linear\\.app.*-Default", { workspace = "5" })
 o.window("org\\.omarchy\\.zen-(octo|notes|linear)", { float = true })
 o.window("org\\.omarchy\\.zen-(octo|notes|linear)", { center = true })
 o.window("org\\.omarchy\\.zen-(octo|notes|linear)", { size = { 1100, 750 } })
+
+-- Bigger btop (SUPER + SHIFT + T). Its binding gives it the app-id TUI.btop
+-- rather than the default org.omarchy.btop, so Omarchy's floating-window rules
+-- no longer match it and its 875x600 stops winning -- that size held whether
+-- this rule was declared before or after the defaults. Screen is 1536x960
+-- logical, so this leaves a margin for the bar.
+o.window("TUI\\.btop", { float = true })
+o.window("TUI\\.btop", { center = true })
+o.window("TUI\\.btop", { size = { 1400, 860 } })

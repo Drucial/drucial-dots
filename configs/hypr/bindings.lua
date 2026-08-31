@@ -104,6 +104,11 @@ hl.unbind("SUPER + SHIFT + W")       -- Omawrite
 hl.unbind("SUPER + SHIFT + O")
 o.bind("SUPER + SHIFT + O", "GitHub TUI", { tui = "zen-octo", focus = true })
 
+-- btop (was: SUPER + CTRL + T, Omarchy's "Activity"). Moved onto the same
+-- SUPER + SHIFT + <letter> row as the other TUIs. Resized in hyprland.lua.
+hl.unbind("SUPER + CTRL + T")
+o.bind("SUPER + SHIFT + T", "Activity", "omarchy-launch-tui --app-id=TUI.btop btop")
+
 -- zen-linear, a Linear TUI (was: the Linear chromium web app, above).
 -- Floated in hyprland.lua.
 hl.unbind("SUPER + SHIFT + L")
