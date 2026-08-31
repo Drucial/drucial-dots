@@ -97,7 +97,19 @@ hl.unbind("SUPER + SHIFT + ALT + X") -- X Post
 -- Preinstalled apps uninstalled with `omarchy pkg drop`.
 hl.unbind("SUPER + SHIFT + ALT + M") -- Music TUI (cliamp)
 hl.unbind("SUPER + SHIFT + W")       -- Omawrite
-hl.unbind("SUPER + SHIFT + O")       -- Obsidian
+
+-- zen-octo, a GitHub PR/issue TUI (was: Obsidian, uninstalled with
+-- `omarchy pkg drop`). Left tiled rather than floated: it's a work surface you
+-- sit in, not a panel you glance at. Its app-id is org.omarchy.zen-octo, so the
+-- Ghostty workspace-1 rule in hyprland.lua doesn't pin it.
+hl.unbind("SUPER + SHIFT + O")
+o.bind("SUPER + SHIFT + O", "GitHub TUI", { tui = "zen-octo", focus = true })
+
+-- zen-notes, a notes TUI (was: Omarchy's "Editor", i.e. `omarchy-launch-editor`
+-- with no path -- it always opened nvim in ~, never the cwd, so nothing is lost
+-- by taking the key). Floated in hyprland.lua.
+hl.unbind("SUPER + SHIFT + N")
+o.bind("SUPER + SHIFT + N", "Notes TUI", { tui = "zen-notes", focus = true })
 
 -- Docker TUI (was: the same lazydocker launcher, tiled). Omarchy floats any
 -- terminal whose app-id is TUI.float, so the launcher just needs that app-id.

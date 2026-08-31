@@ -57,3 +57,12 @@ o.window("[sS]potify", { workspace = "10" })
 
 -- Pin the Linear web app to workspace 5.
 o.window("chrome-linear\\.app.*-Default", { workspace = "5" })
+
+-- Float the zen TUIs (SUPER + SHIFT + O and SUPER + SHIFT + N).
+-- Spelled out rather than tagged "+floating-window": this file loads after the
+-- default rules that consume that tag, so tagging here would never match. They
+-- also can't reuse the TUI.float app-id the Docker TUI uses -- their bindings
+-- focus an existing window by app-id, and a shared one would cross-match.
+o.window("org\\.omarchy\\.zen-(octo|notes)", { float = true })
+o.window("org\\.omarchy\\.zen-(octo|notes)", { center = true })
+o.window("org\\.omarchy\\.zen-(octo|notes)", { size = { 1100, 750 } })
