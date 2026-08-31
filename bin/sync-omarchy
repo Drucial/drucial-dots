@@ -50,6 +50,7 @@ APPS_DIR="$HOME/.local/share/applications"
 SHELL_TOML="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/shell.toml"
 BACKGROUND_LINK="$HOME/.local/state/omarchy/current/background"
 THEME_DIR="$HOME/.local/state/omarchy/current/theme"
+BTOP_THEME_LINK="${XDG_CONFIG_HOME:-$HOME/.config}/btop/themes/current.theme"
 
 check_only=false
 dryrun=false
@@ -263,6 +264,32 @@ step_appearance() {
   [ -f "$SHELL_TOML" ] &&
     current_size="$(sed -n 's/^[[:space:]]*base-size[[:space:]]*=[[:space:]]*\([0-9]\+\).*/\1/p' "$SHELL_TOML" | head -1)"
   apply_setting "font size" "$size" "$current_size" write_font_size "$size"
+  link_btop_theme
+}
+
+# btop resolves `color_theme = "current"` through a symlink Omarchy writes once
+# at install and never recreates -- omarchy theme set only signals btop. Linking
+# ~/.config/btop out of this repo drops it, so it is restored here.
+link_btop_theme() {
+  local label="btop theme link" src="$THEME_DIR/btop.theme"
+  if [ "$BTOP_THEME_LINK" -ef "$src" ]; then
+    OK+=("$label")
+    msg "✓ $label"
+    return 0
+  fi
+  if $check_only; then
+    fail "$label" "not linked to $(tilde "$src")" "bin/sync-omarchy   relinks it"
+    return 0
+  fi
+  if $dryrun; then
+    echo "DRY-RUN: ln -snf \"$src\" \"$BTOP_THEME_LINK\""
+    DONE+=("$label")
+    return 0
+  fi
+  mkdir -p "$(dirname "$BTOP_THEME_LINK")"
+  ln -snf "$src" "$BTOP_THEME_LINK"
+  DONE+=("$label")
+  echo "→ $label: $(tilde "$BTOP_THEME_LINK")"
 }
 
 write_font_size() {

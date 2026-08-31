@@ -11,3 +11,7 @@ configs/rainfrog/rainfrog_config.toml
 # `omarchy refresh` and our own pre-edit backups drop these next to the file
 # they copy. configs/hypr is ~/.config/hypr, so they land inside the repo.
 *.bak.*
+
+# btop resolves its Omarchy theme through a symlink into ~/.local/state, which
+# bin/sync-omarchy recreates. Machine-specific, so it is not tracked.
+configs/btop/themes/

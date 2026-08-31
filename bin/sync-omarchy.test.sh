@@ -71,6 +71,8 @@ for noop in yay update-desktop-database; do
 done
 chmod +x "$WORK/stub"/*
 
+touch "$STATE/theme/btop.theme"
+
 # A machine with the Archfile satisfied but nothing from the Omarchyfile applied,
 # so the checks below speak to Omarchy state rather than re-testing bin/dots.
 sed -e 's/#.*//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' "$WORK/repo/Archfile" |
@@ -90,6 +92,7 @@ check "exits 1"                 '[ $rc -eq 1 ]'
 check "reports the theme"       'grep -q "manifest says .Tokyo Night." "$out"'
 check "reports the font"        'grep -q "JetBrainsMono Nerd Font" "$out"'
 check "reports a missing web app" 'grep -q "web app Linear" "$out"'
+check "reports the btop theme link" 'grep -q "btop theme link" "$out"'
 check "reports the TUI"         'grep -q "TUI Zen Octo" "$out"'
 check "changes nothing"         '[ ! -e "$HOME/theme" ] && [ -z "$(ls -A "$APPS")" ]'
 
@@ -108,6 +111,7 @@ check "links the background"     '[ "$(basename "$(readlink "$STATE/background")
 check "installs the web apps"    '[ -e "$APPS/Linear.desktop" ] && [ -e "$APPS/Superhuman.desktop" ]'
 check "installs the TUI"         '[ -e "$APPS/Zen Octo.desktop" ]'
 check "writes the font size"     'grep -q "base-size = 14" "$XDG_CONFIG_HOME/omarchy/shell.toml"'
+check "relinks btop's theme"     '[ "$XDG_CONFIG_HOME/btop/themes/current.theme" -ef "$STATE/theme/btop.theme" ]'
 check "lets the site pick a web app icon" \
   'grep -q "^webapp install Linear https://linear.app  *$" "$HOME/calls.log"'
 check "passes the TUI an absolute icon path" \
