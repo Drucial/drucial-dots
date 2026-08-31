@@ -77,10 +77,9 @@ hl.unbind("SUPER + SHIFT + E")
 o.bind("SUPER + SHIFT + E", "Superhuman",
   "omarchy-launch-or-focus 'chrome-mail\\.superhuman\\.com.*-Default' 'omarchy-launch-webapp https://mail.superhuman.com'")
 
--- Linear, run as a chromium web app. Pinned to workspace 5 in hyprland.lua.
--- Same raw-command form as Superhuman, for the same reason.
-o.bind("SUPER + SHIFT + L", "Linear",
-  "omarchy-launch-or-focus 'chrome-linear\\.app.*-Default' 'omarchy-launch-webapp https://linear.app'")
+-- The Linear web app is still installed and still pinned to workspace 5 in
+-- hyprland.lua, but SUPER + SHIFT + L now opens the zen-linear TUI instead.
+-- Launch it from the apps menu.
 
 -- Web apps removed with `omarchy webapp remove`. Their launchers are gone, but
 -- the bindings launch the URL directly, so they need unbinding too.
@@ -104,6 +103,11 @@ hl.unbind("SUPER + SHIFT + W")       -- Omawrite
 -- Ghostty workspace-1 rule in hyprland.lua doesn't pin it.
 hl.unbind("SUPER + SHIFT + O")
 o.bind("SUPER + SHIFT + O", "GitHub TUI", { tui = "zen-octo", focus = true })
+
+-- zen-linear, a Linear TUI (was: the Linear chromium web app, above).
+-- Floated in hyprland.lua.
+hl.unbind("SUPER + SHIFT + L")
+o.bind("SUPER + SHIFT + L", "Linear TUI", { tui = "zen-linear", focus = true })
 
 -- zen-notes, a notes TUI (was: Omarchy's "Editor", i.e. `omarchy-launch-editor`
 -- with no path -- it always opened nvim in ~, never the cwd, so nothing is lost
