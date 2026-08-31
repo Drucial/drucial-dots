@@ -99,6 +99,14 @@ hl.unbind("SUPER + SHIFT + ALT + M") -- Music TUI (cliamp)
 hl.unbind("SUPER + SHIFT + W")       -- Omawrite
 hl.unbind("SUPER + SHIFT + O")       -- Obsidian
 
+-- Docker TUI (was: the same lazydocker launcher, tiled). Omarchy floats any
+-- terminal whose app-id is TUI.float, so the launcher just needs that app-id.
+-- Raw command string rather than { tui = ... }: that form shell-quotes the whole
+-- value as one argument, which would swallow the --app-id flag.
+hl.unbind("SUPER + SHIFT + D")
+o.bind("SUPER + SHIFT + D", "Docker",
+  "omarchy-launch-tui --app-id=TUI.float omarchy-launch-docker-tui")
+
 -- Spotify (was: Omarchy's default "Music", which launches spotify but does
 -- not focus an existing window). Pinned to workspace 10 in hyprland.lua.
 -- The focus pattern is matched case-insensitively, so the capitalized class
