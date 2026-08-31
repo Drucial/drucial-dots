@@ -83,6 +83,10 @@ bin/dots brew       # install the packages
 Neither carries secrets or app data. 1Password, SSH keys, `gh auth login`, the
 atuin key, and Tailscale are all still done by hand on a new machine.
 
+Configs that only make sense on one platform are skipped rather than linked --
+`yabai` on Linux, `hypr` on macOS. Both keep their sections in both manifests, so
+a config stays addressable from either machine.
+
 `install` also links `~/.zshrc`, `~/.zprofile`, `~/.bashrc`, and
 `~/.bash_aliases`. `~/.bashrc` is tracked because it is a one-time `/etc/skel`
 seed that Omarchy never updates again — without it, nothing sources the
@@ -95,6 +99,7 @@ prints a summary and exits non-zero if anything was left unresolved:
 ▶ Summary
   Linked       19
   Already ok    0
+  Skipped       1
   Unresolved    1
 
   Unresolved — nothing at these paths was changed:

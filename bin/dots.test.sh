@@ -45,6 +45,14 @@ git -C "$WORK/repo" add -A >/dev/null 2>&1
 git -C "$WORK/repo" -c user.email=t@example.com -c user.name=t commit -qm init >/dev/null 2>&1
 
 n_configs="$(find "$WORK/repo/configs" -maxdepth 1 -mindepth 1 | wc -l | tr -d ' ')"
+# Platform-only configs don't link here, so read the skip list out of the script
+# rather than hardcoding a count that differs between macOS and Linux.
+case "$(uname -s)" in
+  Darwin) skip_var=SKIP_DARWIN ;;
+  *)      skip_var=SKIP_LINUX ;;
+esac
+n_skipped="$(sed -n "s/^$skip_var=(\\(.*\\))$/\\1/p" "$WORK/repo/bin/dots" | wc -w | tr -d ' ')"
+n_configs=$((n_configs - n_skipped))
 # Read the HOME_LINKS count out of the script rather than hardcoding it, so
 # adding a home-level dotfile doesn't silently break the totals below. The
 # desktop entries append to the same array from a directory, so count them too.
