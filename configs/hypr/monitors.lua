@@ -9,8 +9,8 @@
 local require_optional = require("default.hypr.require_optional")
 local machine = require_optional.module("hypr.machine") or {}
 
-local omarchy_gdk_scale = machine.gdk_scale or 1
-local omarchy_monitor_scale = machine.monitor_scale or 1.25
+local omarchy_gdk_scale = 1
+local omarchy_monitor_scale = 1
 
 hl.env("GDK_SCALE", tostring(omarchy_gdk_scale))
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = omarchy_monitor_scale })
