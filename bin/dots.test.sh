@@ -22,7 +22,7 @@ check() {
 
 # Run bin/dots, capturing status and output for the checks that follow.
 run() {
-  "$WORK/repo/bin/dots" "$@" > "$WORK/out" 2>&1
+  PATH="$WORK/stub:$PATH" "$WORK/repo/bin/dots" "$@" > "$WORK/out" 2>&1
   rc=$?
   out="$WORK/out"
 }
@@ -30,7 +30,7 @@ run() {
 # As run(), with Homebrew off PATH — isolates the section checks from whatever
 # this machine happens to have installed.
 run_nobrew() {
-  PATH=/usr/bin:/bin "$WORK/repo/bin/dots" "$@" > "$WORK/out" 2>&1
+  PATH="$WORK/stub:/usr/bin:/bin" "$WORK/repo/bin/dots" "$@" > "$WORK/out" 2>&1
   rc=$?
   out="$WORK/out"
 }
@@ -43,6 +43,26 @@ export XDG_CONFIG_HOME="$WORK/config"
 git -C "$WORK/repo" init -q >/dev/null 2>&1
 git -C "$WORK/repo" add -A >/dev/null 2>&1
 git -C "$WORK/repo" -c user.email=t@example.com -c user.name=t commit -qm init >/dev/null 2>&1
+
+# pacman is stubbed so the Archfile checks assert on manifest logic rather than
+# on whatever this machine has installed — against real pacman, `pac -c` fails as
+# soon as the Archfile names a package the developer hasn't got, which is every
+# fresh machine. The stub reads its two answers out of files this script owns.
+mkdir -p "$WORK/stub"
+sed -e 's/#.*//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' "$WORK/repo/Archfile" |
+  grep -v '^$' > "$WORK/pkgs"
+echo jq >> "$WORK/pkgs"          # `add jq` below appends it to the Archfile
+cp "$WORK/pkgs" "$WORK/syncdb"
+cat > "$WORK/stub/pacman" <<'STUB'
+#!/usr/bin/env bash
+case "$1" in
+  -Qq) [ -n "${2:-}" ] || { cat "$PKGS"; exit 0; }; grep -qx "$2" "$PKGS" ;;
+  -Si) grep -qx "${2:-}" "$SYNCDB" ;;
+  *)   exit 0 ;;
+esac
+STUB
+chmod +x "$WORK/stub/pacman"
+export PKGS="$WORK/pkgs" SYNCDB="$WORK/syncdb"
 
 n_configs="$(find "$WORK/repo/configs" -maxdepth 1 -mindepth 1 | wc -l | tr -d ' ')"
 # Platform-only configs don't link here, so read the skip list out of the script
@@ -123,15 +143,12 @@ if command -v brew >/dev/null 2>&1; then
 fi
 
 # The pacman-side counterpart: a name in the sync db seeds a body, so the block
-# awk inserts is multi-line here too. jq is picked because it is installed, which
-# keeps the `pac -c` run further down passing.
-if command -v pacman >/dev/null 2>&1; then
-  run add jq
-  check "exits 0 on a seeded Archfile section" '[ $rc -eq 0 ]'
-  check "seeds the package"                    'grep -q "seeded" "$out"'
-  check "writes marker and body" \
-    '[ "$(grep -A1 -xF "# --- config: jq ---" "$WORK/repo/Archfile" | tail -1)" = jq ]'
-fi
+# awk inserts is multi-line here too.
+run add jq
+check "exits 0 on a seeded Archfile section" '[ $rc -eq 0 ]'
+check "seeds the package"                    'grep -q "seeded" "$out"'
+check "writes marker and body" \
+  '[ "$(grep -A1 -xF "# --- config: jq ---" "$WORK/repo/Archfile" | tail -1)" = jq ]'
 
 echo "migrate"
 mkdir -p "$XDG_CONFIG_HOME/adopted" && echo hi > "$XDG_CONFIG_HOME/adopted/x.conf"
@@ -181,10 +198,8 @@ check "exits non-zero on an orphan section" '[ $rc -ne 0 ]'
 sed -i.bak4 '/^# --- config: ghost ---$/d' "$WORK/repo/Archfile"
 echo "definitely-not-a-package" >> "$WORK/repo/Archfile"
 run_nobrew pac -c
-if command -v pacman >/dev/null 2>&1; then
-  check "flags a package that is not installed" \
-    'grep -q "not installed" "$out" && grep -qx "    definitely-not-a-package" "$out" && [ $rc -ne 0 ]'
-fi
+check "flags a package that is not installed" \
+  'grep -q "not installed" "$out" && grep -qx "    definitely-not-a-package" "$out" && [ $rc -ne 0 ]'
 sed -i.bak5 '/^definitely-not-a-package$/d' "$WORK/repo/Archfile"
 run_nobrew pac -n
 if command -v yay >/dev/null 2>&1; then
