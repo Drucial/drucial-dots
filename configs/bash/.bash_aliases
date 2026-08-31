@@ -10,7 +10,7 @@
 #   h            → Omarchy's `herdr`
 
 #------
-# Apps
+# Appsy
 #------
 
 alias ls="eza -a -1 --color=always --icons=always --group-directories-first"                 # Eza: List files (one-per-line, icons)
@@ -30,6 +30,7 @@ alias x='exit'                                                                  
 alias src='source ~/.bashrc'                                                                 # Bash: Reload .bashrc
 alias e='nvim'                                                                               # Neovim: Launch (arg: optional file/dir)
 alias nvim-bak='NVIM_APPNAME=nvim.bak nvim'                                                  # Neovim: Launch backup config (NVIM_APPNAME=nvim.bak)
+alias y="yazi"
 
 alias ~='cd ~'                                                                               # Shell: Go to home directory
 alias ..='cd ..'                                                                             # Shell: Up one directory
