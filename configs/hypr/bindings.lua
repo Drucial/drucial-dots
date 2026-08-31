@@ -77,13 +77,13 @@ hl.unbind("SUPER + SHIFT + E")
 o.bind("SUPER + SHIFT + E", "Superhuman",
   "omarchy-launch-or-focus 'chrome-mail\\.superhuman\\.com.*-Default' 'omarchy-launch-webapp https://mail.superhuman.com'")
 
--- Linear web app on SUPER + L (was: Omarchy's "Toggle workspace layout").
--- SUPER + SHIFT + L keeps the zen-linear TUI, below. Pinned to workspace 5 in
--- hyprland.lua. Raw command string rather than { webapp = ..., focus = true }:
--- that form uses the description as the focus pattern, and "Linear" also
--- matches the title of an ordinary browser window with Linear open in a tab.
-hl.unbind("SUPER + L")
-o.bind("SUPER + L", "Linear",
+-- Linear web app (was: Omarchy's own binding on the same key, which always
+-- opened a new window). Pinned to workspace 5 in hyprland.lua. Raw command
+-- string rather than { webapp = ..., focus = true }: that form uses the
+-- description as the focus pattern, and "Linear" also matches the title of an
+-- ordinary browser window with Linear open in a tab.
+hl.unbind("SUPER + SHIFT + L")
+o.bind("SUPER + SHIFT + L", "Linear",
   "omarchy-launch-or-focus 'chrome-linear\\.app.*-Default' 'omarchy-launch-webapp https://linear.app'")
 
 -- Web apps removed with `omarchy webapp remove`. Their launchers are gone, but
@@ -115,10 +115,10 @@ hl.unbind("SUPER + CTRL + T")
 o.bind("SUPER + SHIFT + T", "Activity",
   "omarchy-launch-or-focus-tui --app-id=TUI.btop btop")
 
--- zen-linear, a Linear TUI (was: the Linear chromium web app, above).
--- Floated in hyprland.lua.
-hl.unbind("SUPER + SHIFT + L")
-o.bind("SUPER + SHIFT + L", "Linear TUI", { tui = "zen-linear", focus = true })
+-- zen-linear, a Linear TUI. One modifier off the Linear web app above, rather
+-- than on the SUPER + SHIFT + <letter> row the other TUIs share: SUPER + SHIFT
+-- + L belongs to the web app. Floated in hyprland.lua.
+o.bind("SUPER + SHIFT + ALT + L", "Linear TUI", { tui = "zen-linear", focus = true })
 
 -- zen-notes, a notes TUI (was: Omarchy's "Editor", i.e. `omarchy-launch-editor`
 -- with no path -- it always opened nvim in ~, never the cwd, so nothing is lost
