@@ -1,0 +1,87 @@
+# Machine manifest for `bin/sync-omarchy`, the Omarchy counterpart to Archfile.
+#
+# Archfile says which packages to add. This says everything else that makes an
+# Omarchy box mine: appearance, the launchers added on top of the defaults, and
+# what was taken away from them.
+#
+# Sections use the same `# --- <name> ---` grammar as the package manifests: a
+# marker owns every line up to the next one. Blank lines and # comments are
+# dropped. Assumes an Omarchy base install and states only the delta from it.
+
+# --- theme ---
+# `omarchy theme list`. A stock theme needs no install; a git theme goes in
+# `# --- theme repos ---` below.
+
+Tokyo Night
+
+# --- theme repos ---
+# Git themes to install before the theme above is applied, one URL per line.
+# `omarchy theme extras` lists what a machine already has.
+
+# --- background ---
+# Filename inside the current theme's backgrounds/ directory.
+
+0-winding-road.jpg
+
+# --- font ---
+# `omarchy font list`. Must already be installed — the Archfile owns that.
+
+JetBrainsMono Nerd Font
+
+# --- font size ---
+# Bar and shell base size, the one value in ~/.config/omarchy/shell.toml.
+
+14
+
+# --- webapps ---
+# name | url | icon
+#
+# Icon is a URL, a path relative to this repo, or an installed icon name. Leave
+# it empty and Omarchy fetches the site's own apple-touch-icon, which is what
+# these two do — nothing to keep in the repo, and it tracks the real logo.
+
+Linear|https://linear.app|
+Superhuman|https://mail.superhuman.com|
+
+# --- tuis ---
+# name | command | float or tile | icon
+#
+# No site to fetch an icon from, so this one is committed under icons/.
+
+Zen Octo|zen-octo|float|icons/zen-octo.png
+
+# --- removed packages ---
+# Dropped from Omarchy's default set (/usr/share/omarchy/install/*.packages).
+# Applied with `omarchy pkg drop`, which ignores anything already absent. Tested
+# with `pacman -Qq <name>`, which follows provides -- `nvim` looks dropped in a
+# plain diff of the base list, but neovim provides it.
+
+aether
+cliamp
+fcitx5
+fcitx5-qt
+foot
+libreoffice-fresh
+moonlight-qt
+obsidian
+omawrite
+pinta
+xournalpp
+
+# --- removed launchers ---
+# Shipped .desktop entries deleted from the app launcher. Omarchy reinstates
+# every one of these on `omarchy refresh applications`, so they are named here
+# rather than assumed gone.
+
+Basecamp
+Discord
+foot
+Google Contacts
+Google Maps
+Google Messages
+Google Photos
+HEY
+WhatsApp
+X
+YouTube
+Zoom

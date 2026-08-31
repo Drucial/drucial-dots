@@ -1,0 +1,378 @@
+#!/usr/bin/env bash
+# Brings an Omarchy machine up to match this repo in one run: links every
+# config, installs the Archfile packages, then applies the Omarchyfile --
+# theme, font, background, the launchers added on top of Omarchy's defaults,
+# and the packages and launchers dropped from them.
+#
+# Deliberately not `set -e`: every step runs even when an earlier one fails, so
+# one bad package doesn't hide the rest of the report. Failures are collected
+# and raised in the summary instead.
+set -uo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: bin/sync-omarchy [options]
+
+Syncs this Omarchy machine to the repo, in order:
+
+  1. bin/dots install   Link every config into ~/.config
+  2. bin/dots pac       Install the Archfile packages with yay
+  3. Omarchyfile        Theme, background, font, web apps, TUIs
+  4. Omarchyfile        Packages and launchers dropped from Omarchy's defaults
+
+Every step is idempotent -- a second run reports "already ok" and changes
+nothing. Safe to re-run after editing the Omarchyfile.
+
+Options:
+  -c   Check: report what differs from the manifest, change nothing
+  -n   Dry-run: print the commands that would run
+  -v   Verbose: name the settings that are already correct
+  -h   Help
+
+Packages come from the Archfile, appearance and launchers from the Omarchyfile.
+Both assume an Omarchy base install and state only the delta from it.
+EOF
+}
+
+# --- Resolve repo root from THIS script's location (follow symlinks) ---
+SCRIPT="${BASH_SOURCE[0]}"
+while [ -L "$SCRIPT" ]; do
+  link_target="$(readlink "$SCRIPT")"
+  case "$link_target" in
+    /*) SCRIPT="$link_target" ;;
+    *)  SCRIPT="$(cd "$(dirname "$SCRIPT")" && pwd)/$link_target" ;;
+  esac
+done
+REPO_ROOT="$(cd "$(dirname "$SCRIPT")/.." && pwd -P)"
+MANIFEST="$REPO_ROOT/Omarchyfile"
+DOTS="$REPO_ROOT/bin/dots"
+APPS_DIR="$HOME/.local/share/applications"
+SHELL_TOML="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/shell.toml"
+BACKGROUND_LINK="$HOME/.local/state/omarchy/current/background"
+THEME_DIR="$HOME/.local/state/omarchy/current/theme"
+
+check_only=false
+dryrun=false
+verbose=false
+
+DONE=()
+OK=()
+FAILED=()
+
+msg(){ $verbose && echo "$@" || true; }
+section(){ echo; echo "▶ $*"; }
+die(){ echo "✖ $*" >&2; exit 1; }
+tilde(){ local t='~'; echo "${1/#$HOME/$t}"; }
+fail(){ FAILED+=("$1"$'\t'"$2"$'\t'"$3"); }
+
+# 1. Manifest ------------------------------------------------------------------
+
+# A `# --- <name> ---` marker owns every line up to the next marker. Comments
+# and blanks are the manifest's own, never data.
+manifest_section() {
+  awk -v n="$1" '
+    $0=="# --- "n" ---" { f=1; next }
+    /^# --- / { f=0 }
+    f { print }
+  ' "$MANIFEST" | sed -e 's/[[:space:]]*#.*//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' |
+    grep -v '^$'
+}
+
+# The single-value sections carry one line; anything more is a manifest bug.
+manifest_value() {
+  local body
+  body="$(manifest_section "$1")"
+  [ "$(printf '%s\n' "$body" | grep -c .)" -le 1 ] ||
+    die "Omarchyfile: section '$1' holds more than one value"
+  printf '%s' "$body"
+}
+
+# 2. Applying ------------------------------------------------------------------
+
+# Reconcile one setting: compare desired against actual, then run the command
+# that closes the gap. Used by theme, background, font, and font size.
+apply_setting() {
+  local label="$1" desired="$2" actual="$3"
+  shift 3
+  if [ -z "$desired" ]; then
+    msg "· $label: not set in the manifest"
+    return 0
+  fi
+  if [ "$desired" = "$actual" ]; then
+    OK+=("$label")
+    msg "✓ $label: $desired"
+    return 0
+  fi
+  if $check_only; then
+    fail "$label" "is '${actual:-unset}', manifest says '$desired'" \
+      "bin/sync-omarchy   applies it"
+    return 0
+  fi
+  if $dryrun; then
+    echo "DRY-RUN: $*"
+    DONE+=("$label")
+    return 0
+  fi
+  if "$@" >/dev/null; then
+    DONE+=("$label")
+    echo "→ $label: $desired"
+  else
+    fail "$label" "command failed: $*" "run it by hand to see the error"
+  fi
+}
+
+# Create or install one launcher, keyed on the .desktop file it writes.
+apply_launcher() {
+  local kind="$1" name="$2"
+  shift 2
+  if [ -e "$APPS_DIR/$name.desktop" ]; then
+    OK+=("$kind $name")
+    msg "✓ $kind: $name"
+    return 0
+  fi
+  if $check_only; then
+    fail "$kind $name" "no launcher at $(tilde "$APPS_DIR/$name.desktop")" \
+      "bin/sync-omarchy   installs it"
+    return 0
+  fi
+  if $dryrun; then
+    echo "DRY-RUN: $*"
+    DONE+=("$kind $name")
+    return 0
+  fi
+  if "$@" >/dev/null; then
+    DONE+=("$kind $name")
+    echo "→ $kind installed: $name"
+  else
+    fail "$kind $name" "install failed: $*" "run it by hand to see the error"
+  fi
+}
+
+summary() {
+  section "Summary"
+  printf '  Applied     %3d\n' "${#DONE[@]}"
+  printf '  Already ok  %3d\n' "${#OK[@]}"
+  printf '  Unresolved  %3d\n' "${#FAILED[@]}"
+  if [ "${#FAILED[@]}" -eq 0 ]; then
+    echo
+    echo "✓ Done."
+    return 0
+  fi
+  echo
+  echo "  Unresolved:"
+  local entry what reason remedy
+  for entry in "${FAILED[@]}"; do
+    IFS=$'\t' read -r what reason remedy <<< "$entry"
+    echo
+    echo "    ✖ $what"
+    echo "      $reason"
+    echo "      $remedy"
+  done
+  echo
+  return 1
+}
+
+# 3. Steps ---------------------------------------------------------------------
+
+step_configs() {
+  section "Configs"
+  local rc=0
+  if $check_only; then
+    "$DOTS" install -n >/dev/null 2>&1 || rc=$?
+  elif $dryrun; then
+    "$DOTS" install -n || rc=$?
+  else
+    "$DOTS" install || rc=$?
+  fi
+  if [ "$rc" -eq 0 ]; then
+    OK+=("configs")
+  else
+    fail "configs" "bin/dots install left paths unresolved" \
+      "bin/dots install   shows which, and how to adopt them"
+  fi
+}
+
+step_packages() {
+  section "Packages"
+  local rc=0
+  if $check_only || $dryrun; then
+    "$DOTS" pac -c || rc=$?
+  else
+    "$DOTS" pac || rc=$?
+  fi
+  if [ "$rc" -eq 0 ]; then
+    OK+=("packages")
+  else
+    fail "packages" "Archfile packages are missing" "bin/dots pac   installs them"
+  fi
+}
+
+step_theme_repos() {
+  local url name
+  while IFS= read -r url; do
+    [ -n "$url" ] || continue
+    name="$(basename "$url" .git)"
+    if omarchy theme extras 2>/dev/null | grep -qiF "$name"; then
+      OK+=("theme repo $name")
+      msg "✓ theme repo: $name"
+    elif $check_only; then
+      fail "theme repo $name" "not installed" "bin/sync-omarchy   installs it"
+    elif $dryrun; then
+      echo "DRY-RUN: omarchy theme install $url"
+      DONE+=("theme repo $name")
+    elif omarchy theme install "$url" >/dev/null; then
+      DONE+=("theme repo $name")
+      echo "→ theme repo installed: $name"
+    else
+      fail "theme repo $name" "install failed" "omarchy theme install $url"
+    fi
+  done < <(manifest_section "theme repos")
+}
+
+step_appearance() {
+  section "Appearance"
+  step_theme_repos
+
+  local theme background font size
+  theme="$(manifest_value theme)"
+  background="$(manifest_value background)"
+  font="$(manifest_value font)"
+  size="$(manifest_value "font size")"
+
+  apply_setting "theme" "$theme" "$(omarchy theme current 2>/dev/null)" \
+    omarchy theme set "$theme"
+
+  # Backgrounds live inside the theme, so this only resolves once the theme above
+  # has been applied.
+  local current_bg=""
+  [ -L "$BACKGROUND_LINK" ] && current_bg="$(basename "$(readlink -f "$BACKGROUND_LINK")")"
+  if [ -n "$background" ] && [ ! -f "$THEME_DIR/backgrounds/$background" ] && ! $dryrun; then
+    fail "background" "$background is not in the current theme" \
+      "ls $(tilde "$THEME_DIR/backgrounds")   names what is"
+  else
+    apply_setting "background" "$background" "$current_bg" \
+      omarchy theme bg set "$THEME_DIR/backgrounds/$background"
+  fi
+
+  apply_setting "font" "$font" "$(omarchy font current 2>/dev/null)" \
+    omarchy font set "$font"
+
+  # No omarchy command owns the base size, so the one key is written directly
+  # rather than the whole file being adopted into the repo.
+  local current_size=""
+  [ -f "$SHELL_TOML" ] &&
+    current_size="$(sed -n 's/^[[:space:]]*base-size[[:space:]]*=[[:space:]]*\([0-9]\+\).*/\1/p' "$SHELL_TOML" | head -1)"
+  apply_setting "font size" "$size" "$current_size" write_font_size "$size"
+}
+
+write_font_size() {
+  mkdir -p "$(dirname "$SHELL_TOML")"
+  if [ -f "$SHELL_TOML" ] && grep -q '^[[:space:]]*base-size' "$SHELL_TOML"; then
+    sed -i "s/^[[:space:]]*base-size[[:space:]]*=.*/base-size = $1/" "$SHELL_TOML"
+  elif [ -f "$SHELL_TOML" ] && grep -q '^\[font\]' "$SHELL_TOML"; then
+    sed -i "/^\[font\]/a base-size = $1" "$SHELL_TOML"
+  else
+    printf '[font]\nbase-size = %s\n' "$1" >> "$SHELL_TOML"
+  fi
+}
+
+step_launchers() {
+  section "Launchers"
+  local name url icon cmd style
+
+  while IFS='|' read -r name url icon; do
+    [ -n "$name" ] || continue
+    # An empty icon makes Omarchy fetch the site's own, which is what the
+    # manifest wants for anything with a real website behind it.
+    apply_launcher "web app" "$name" \
+      omarchy webapp install "$name" "$url" "$(resolve_icon "$icon")" "" ""
+  done < <(manifest_section webapps)
+
+  while IFS='|' read -r name cmd style icon; do
+    [ -n "$name" ] || continue
+    apply_launcher "TUI" "$name" \
+      omarchy tui install "$name" "$cmd" "$style" "$(resolve_icon "$icon")"
+  done < <(manifest_section tuis)
+}
+
+# A repo-relative path is made absolute so the clone can live anywhere. A URL or
+# a bare icon name is passed through for Omarchy to resolve.
+resolve_icon() {
+  case "$1" in
+    "") echo "" ;;
+    http://*|https://*|/*) echo "$1" ;;
+    *) [ -f "$REPO_ROOT/$1" ] && echo "$REPO_ROOT/$1" || echo "$1" ;;
+  esac
+}
+
+step_removals() {
+  section "Removals"
+  local pkg name present=() launchers=()
+
+  while IFS= read -r pkg; do
+    [ -n "$pkg" ] || continue
+    pacman -Qq "$pkg" >/dev/null 2>&1 && present+=("$pkg")
+  done < <(manifest_section "removed packages")
+
+  if [ "${#present[@]}" -eq 0 ]; then
+    OK+=("removed packages")
+    msg "✓ no dropped package is installed"
+  elif $check_only; then
+    fail "removed packages" "still installed: ${present[*]}" \
+      "bin/sync-omarchy   drops them"
+  elif $dryrun; then
+    echo "DRY-RUN: omarchy pkg drop ${present[*]}"
+    DONE+=("removed packages")
+  elif omarchy pkg drop "${present[@]}"; then
+    DONE+=("removed packages")
+    echo "→ dropped: ${present[*]}"
+  else
+    fail "removed packages" "omarchy pkg drop failed for: ${present[*]}" \
+      "a package another one depends on has to go by hand"
+  fi
+
+  while IFS= read -r name; do
+    [ -n "$name" ] || continue
+    [ -e "$APPS_DIR/$name.desktop" ] && launchers+=("$name")
+  done < <(manifest_section "removed launchers")
+
+  if [ "${#launchers[@]}" -eq 0 ]; then
+    OK+=("removed launchers")
+    msg "✓ no dropped launcher is present"
+  elif $check_only; then
+    fail "removed launchers" "still present: ${launchers[*]}" \
+      "bin/sync-omarchy   deletes them"
+  elif $dryrun; then
+    printf 'DRY-RUN: rm %s.desktop\n' "${launchers[@]/#/$APPS_DIR/}"
+    DONE+=("removed launchers")
+  else
+    for name in "${launchers[@]}"; do rm -f -- "$APPS_DIR/$name.desktop"; done
+    update-desktop-database "$APPS_DIR" >/dev/null 2>&1 || true
+    DONE+=("removed launchers")
+    echo "→ deleted: ${launchers[*]}"
+  fi
+}
+
+# 4. Dispatch ------------------------------------------------------------------
+
+while getopts ":cnvh" opt; do
+  case "$opt" in
+    c) check_only=true ;;
+    n) dryrun=true ;;
+    v) verbose=true ;;
+    h) usage; exit 0 ;;
+    \?) echo "✖ Unknown option: -$OPTARG" >&2; echo >&2; usage >&2; exit 2 ;;
+  esac
+done
+shift $((OPTIND - 1))
+[ $# -eq 0 ] || { echo "✖ Unexpected argument: $1" >&2; exit 2; }
+
+[ -f "$MANIFEST" ] || die "No Omarchyfile at $MANIFEST"
+command -v omarchy >/dev/null 2>&1 || die "omarchy not found — this is an Omarchy-only command."
+
+step_configs
+step_packages
+step_appearance
+step_launchers
+step_removals
+summary

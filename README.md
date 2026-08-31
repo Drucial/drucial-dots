@@ -11,10 +11,13 @@ only script.
 configs/      app configs, symlinked into ~/.config
 desktop-entries/  overrides that hide junk from the Linux apps menu
 docs/         notes on anything a config file cannot explain itself
+icons/        launcher icons for anything with no website to fetch one from
 Brewfile      curated package manifest for macOS, one section per config
 Archfile      the same for Omarchy, installed with yay
+Omarchyfile   everything else that makes an Omarchy box mine
 bin/dots      install / add / migrate / remove / brew / pac
-bin/dots.test.sh   drives every subcommand against a throwaway copy
+bin/sync-omarchy   one command: configs, packages, and the Omarchyfile
+bin/dots.test.sh, bin/sync-omarchy.test.sh   drive both against throwaway copies
 ```
 
 Neovim's colorscheme comes from an external theme switcher rather than from
@@ -62,13 +65,23 @@ machine-specific.
 
 ## Bootstrap
 
+On Omarchy, after a stock install of the same version, one command does all of it:
+
 ```sh
 git clone https://github.com/Drucial/drucial-dots.git ~/Dev/drucial-dots
 cd ~/Dev/drucial-dots
-bin/dots install    # symlink every config, plus the home-level dotfiles
-bin/dots brew       # macOS: install the packages
-bin/dots pac        # Omarchy: install the packages
+bin/sync-omarchy
 ```
+
+On macOS the pieces are still separate:
+
+```sh
+bin/dots install    # symlink every config, plus the home-level dotfiles
+bin/dots brew       # install the packages
+```
+
+Neither carries secrets or app data. 1Password, SSH keys, `gh auth login`, the
+atuin key, and Tailscale are all still done by hand on a new machine.
 
 `install` also links `~/.zshrc`, `~/.zprofile`, `~/.bashrc`, and
 `~/.bash_aliases`. `~/.bashrc` is tracked because it is a one-time `/etc/skel`
@@ -172,6 +185,49 @@ already covered by that base.
 `pac -c` then asks pacman which of the names the Archfile lists are missing, and
 exits non-zero if any are.
 
+## Omarchyfile
+
+`bin/sync-omarchy` runs `bin/dots install`, then `bin/dots pac`, then applies the
+`Omarchyfile` — the part of an Omarchy machine that is neither a config file nor
+a package:
+
+```
+# --- theme ---
+Tokyo Night
+
+# --- webapps ---
+Linear|https://linear.app|
+
+# --- removed packages ---
+pinta
+xournalpp
+```
+
+Sections use the same `# --- <name> ---` grammar as the package manifests. Like
+the Archfile it assumes an Omarchy base install and states only the delta from
+it — the launchers added on top of the shipped ones, and the packages and
+launchers taken away.
+
+Removals are the half a fresh install gets wrong on its own: Omarchy puts
+`Basecamp`, `Discord`, `HEY`, `WhatsApp` and the rest back on every
+`omarchy refresh applications`, so what was deleted has to be written down to
+stay deleted. Package removals go through `omarchy pkg drop`, which ignores
+anything already absent.
+
+An empty icon field lets Omarchy fetch the site's own apple-touch-icon, so most
+web apps need nothing in the repo. A TUI has no site to fetch from, which is
+what `icons/` is for.
+
+`~/.config/omarchy/` itself is deliberately **not** symlinked in. Everything in
+it — `shell.json`, `extensions/`, the hooks — is byte-identical to what Omarchy
+ships, and adopting the directory would put `omarchy refresh` and the update
+migrations on a collision course with this repo. The one value that is really
+mine is the shell font size, so the Omarchyfile carries that and writes the key
+directly.
+
+Every step is idempotent. `bin/sync-omarchy -c` reports what differs without
+changing anything, `-n` prints the commands, `-v` names what is already correct.
+
 ## Convention
 
 Configs are symlinked out, never copied. Edit the file under its real path
@@ -181,8 +237,11 @@ Configs are symlinked out, never copied. Edit the file under its real path
 
 ```sh
 bash bin/dots.test.sh
+bash bin/sync-omarchy.test.sh
 ```
 
-Copies the working tree to a temp dir, points `HOME` and `XDG_CONFIG_HOME` at
-scratch dirs, and drives all five subcommands through the real CLI. Touches
-nothing on the machine.
+Both copy the working tree to a temp dir and point `HOME` and `XDG_CONFIG_HOME`
+at scratch dirs. The first drives all five `dots` subcommands through the real
+CLI. The second stubs `omarchy`, `pacman`, and `yay` so it can assert on what
+`sync-omarchy` asked them to do without a real Omarchy install, and without ever
+reaching real package management. Neither touches anything on the machine.
