@@ -331,6 +331,26 @@ step_removals() {
       "a package another one depends on has to go by hand"
   fi
 
+  local stubs=()
+  while IFS= read -r name; do
+    [ -n "$name" ] || continue
+    [ -e "$HOME/.local/bin/$name" ] && stubs+=("$name")
+  done < <(manifest_section "removed mise stubs")
+
+  if [ "${#stubs[@]}" -eq 0 ]; then
+    OK+=("removed mise stubs")
+    msg "✓ no dropped mise stub is present"
+  elif $check_only; then
+    fail "removed mise stubs" "still present: ${stubs[*]}" "bin/sync-omarchy   deletes them"
+  elif $dryrun; then
+    printf 'DRY-RUN: rm %s\n' "${stubs[@]/#/$HOME/.local/bin/}"
+    DONE+=("removed mise stubs")
+  else
+    for name in "${stubs[@]}"; do rm -f -- "$HOME/.local/bin/$name"; done
+    DONE+=("removed mise stubs")
+    echo "→ deleted: ${stubs[*]}"
+  fi
+
   while IFS= read -r name; do
     [ -n "$name" ] || continue
     [ -e "$APPS_DIR/$name.desktop" ] && launchers+=("$name")

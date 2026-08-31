@@ -85,3 +85,10 @@ WhatsApp
 X
 YouTube
 Zoom
+
+# --- removed mise stubs ---
+# Omarchy's install/user/mise.sh recreates these ~/.local/bin wrappers on every
+# `omarchy refresh applications`, and each one reinstalls its tool when run, so
+# what was taken out has to be named here to stay out.
+
+opencode

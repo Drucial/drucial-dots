@@ -216,8 +216,10 @@ launchers taken away.
 Removals are the half a fresh install gets wrong on its own: Omarchy puts
 `Basecamp`, `Discord`, `HEY`, `WhatsApp` and the rest back on every
 `omarchy refresh applications`, so what was deleted has to be written down to
-stay deleted. Package removals go through `omarchy pkg drop`, which ignores
-anything already absent.
+stay deleted. The same call recreates the `~/.local/bin` mise wrappers, and each
+of those reinstalls its tool when run, which is why removed stubs are named too.
+Package removals go through `omarchy pkg drop`, which ignores anything already
+absent.
 
 An empty icon field lets Omarchy fetch the site's own apple-touch-icon, so most
 web apps need nothing in the repo. A TUI has no site to fetch from, which is

@@ -130,14 +130,17 @@ echo "removals"
 printf 'pinta\nfoot\nneovim\n' > "$HOME/pkgs"  # Archfile now unsatisfied; the removal checks below ignore that
 printf 'x\n' > "$APPS/Discord.desktop"
 printf 'x\n' > "$APPS/YouTube.desktop"
+mkdir -p "$HOME/.local/bin" && printf 'x\n' > "$HOME/.local/bin/opencode"
 run -c
 check "spots the installed drops"  'grep -q "still installed: foot pinta" "$out"'
 check "spots the stale launchers"  'grep -q "still present: Discord YouTube" "$out"'
+check "spots the stale mise stub"  'grep -q "still present: opencode" "$out"'
 : > "$HOME/calls.log"
 run
 check "drops only what is installed" 'grep -qx "pkg drop foot pinta" "$HOME/calls.log"'
 check "leaves other packages alone"  'grep -qx "neovim" "$HOME/pkgs"'
 check "deletes the launchers"        '[ ! -e "$APPS/Discord.desktop" ] && [ ! -e "$APPS/YouTube.desktop" ]'
+check "deletes the mise stub"        '[ ! -e "$HOME/.local/bin/opencode" ]'
 check "keeps the ones it installed"  '[ -e "$APPS/Linear.desktop" ]'
 
 echo "manifest — a background the theme does not have"
