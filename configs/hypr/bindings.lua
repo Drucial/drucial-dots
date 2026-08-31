@@ -77,9 +77,14 @@ hl.unbind("SUPER + SHIFT + E")
 o.bind("SUPER + SHIFT + E", "Superhuman",
   "omarchy-launch-or-focus 'chrome-mail\\.superhuman\\.com.*-Default' 'omarchy-launch-webapp https://mail.superhuman.com'")
 
--- The Linear web app is still installed and still pinned to workspace 5 in
--- hyprland.lua, but SUPER + SHIFT + L now opens the zen-linear TUI instead.
--- Launch it from the apps menu.
+-- Linear web app on SUPER + L (was: Omarchy's "Toggle workspace layout").
+-- SUPER + SHIFT + L keeps the zen-linear TUI, below. Pinned to workspace 5 in
+-- hyprland.lua. Raw command string rather than { webapp = ..., focus = true }:
+-- that form uses the description as the focus pattern, and "Linear" also
+-- matches the title of an ordinary browser window with Linear open in a tab.
+hl.unbind("SUPER + L")
+o.bind("SUPER + L", "Linear",
+  "omarchy-launch-or-focus 'chrome-linear\\.app.*-Default' 'omarchy-launch-webapp https://linear.app'")
 
 -- Web apps removed with `omarchy webapp remove`. Their launchers are gone, but
 -- the bindings launch the URL directly, so they need unbinding too.
@@ -107,7 +112,8 @@ o.bind("SUPER + SHIFT + O", "GitHub TUI", { tui = "zen-octo", focus = true })
 -- btop (was: SUPER + CTRL + T, Omarchy's "Activity"). Moved onto the same
 -- SUPER + SHIFT + <letter> row as the other TUIs. Resized in hyprland.lua.
 hl.unbind("SUPER + CTRL + T")
-o.bind("SUPER + SHIFT + T", "Activity", "omarchy-launch-tui --app-id=TUI.btop btop")
+o.bind("SUPER + SHIFT + T", "Activity",
+  "omarchy-launch-or-focus-tui --app-id=TUI.btop btop")
 
 -- zen-linear, a Linear TUI (was: the Linear chromium web app, above).
 -- Floated in hyprland.lua.
@@ -120,13 +126,14 @@ o.bind("SUPER + SHIFT + L", "Linear TUI", { tui = "zen-linear", focus = true })
 hl.unbind("SUPER + SHIFT + N")
 o.bind("SUPER + SHIFT + N", "Notes TUI", { tui = "zen-notes", focus = true })
 
--- Docker TUI (was: the same lazydocker launcher, tiled). Omarchy floats any
--- terminal whose app-id is TUI.float, so the launcher just needs that app-id.
+-- Docker TUI (was: the same lazydocker launcher, tiled). Given its own app-id
+-- rather than Omarchy's shared TUI.float: this binding focuses by app-id, and a
+-- shared one would cross-match any other floating TUI. Floated in hyprland.lua.
 -- Raw command string rather than { tui = ... }: that form shell-quotes the whole
 -- value as one argument, which would swallow the --app-id flag.
 hl.unbind("SUPER + SHIFT + D")
 o.bind("SUPER + SHIFT + D", "Docker",
-  "omarchy-launch-tui --app-id=TUI.float omarchy-launch-docker-tui")
+  "omarchy-launch-or-focus-tui --app-id=TUI.docker omarchy-launch-docker-tui")
 
 -- Spotify (was: Omarchy's default "Music", which launches spotify but does
 -- not focus an existing window). Pinned to workspace 10 in hyprland.lua.

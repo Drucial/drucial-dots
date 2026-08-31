@@ -75,3 +75,10 @@ o.window("org\\.omarchy\\.zen-(octo|notes|linear)", { size = { 1100, 750 } })
 o.window("TUI\\.btop", { float = true })
 o.window("TUI\\.btop", { center = true })
 o.window("TUI\\.btop", { size = { 1400, 860 } })
+
+-- Docker TUI (SUPER + SHIFT + D). Moved off Omarchy's shared TUI.float app-id so
+-- its binding can focus by app-id without cross-matching, which also means the
+-- TUI.float float rules no longer cover it. Same 875x600 those rules gave it.
+o.window("TUI\\.docker", { float = true })
+o.window("TUI\\.docker", { center = true })
+o.window("TUI\\.docker", { size = { 875, 600 } })
