@@ -14,13 +14,9 @@ zen-browser-bin
 slack-desktop
 spotify
 openai-codex-desktop
-minecraft-launcher
 
 tailscale
 
-mongodb-bin
-mongodb-tools-bin
-mongosh-bin
 valkey
 
 # --- config: ghostty ---
