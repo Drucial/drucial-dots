@@ -33,12 +33,11 @@ hl.config({
 --   },
 -- })
 
--- Off, matching Omarchy's default: the slide animation makes ws1's scrolling
--- layout flash its off-screen columns into empty workspaces during the
--- transition (Hyprland #15725, unfixed upstream). Workspace switching snaps
--- instead of settling as a result. To try it again:
---   enabled = true, speed = 2.5 (duration in ds, higher is slower)
-hl.animation({ leaf = "workspaces", enabled = false, speed = 2.5, bezier = "easeOutQuint", style = "slide" })
+-- Omarchy ships this off, which makes workspace switching snap. On at 350ms
+-- (speed is duration in ds, higher is slower). The cost is Hyprland #15725,
+-- unfixed upstream: ws1's scrolling layout flashes its off-screen columns into
+-- empty workspaces mid-transition, and a longer duration shows it for longer.
+hl.animation({ leaf = "workspaces", enabled = true, speed = 3.5, bezier = "easeOutQuint", style = "slide" })
 
 -- https://wiki.hypr.land/Configuring/Basics/Variables/#layout
 -- hl.config({
