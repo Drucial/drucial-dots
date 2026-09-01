@@ -62,6 +62,29 @@ hl.config({
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Gestures/
 hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
 
+-- Workspace swipe feel. Defaults noted; uncomment to tune.
+hl.config({
+  gestures = {
+    -- Follow the fingers the way macOS does (Hyprland default: true).
+    workspace_swipe_invert = false,
+
+    -- Overshooting the last workspace shouldn't strand you on a new empty one
+    -- (default: true).
+    workspace_swipe_create_new = false,
+
+    -- Travel in px for a full workspace (default: 300). Lower = more sensitive.
+    -- workspace_swipe_distance = 300,
+
+    -- Fraction of that travel needed to commit rather than snap back
+    -- (default: 0.5). Lower = commits more eagerly.
+    workspace_swipe_cancel_ratio = 0.3,
+
+    -- Flick speed that commits regardless of distance (default: 30).
+    -- 0 disables flicks, so distance alone decides.
+    -- workspace_swipe_min_speed_to_force = 30,
+  },
+})
+
 -- Enable touchpad gestures for moving focus (helpful on scrolling layout).
 -- hl.gesture({ fingers = 3, direction = "left", action = function() hl.dispatch(hl.dsp.focus({ direction = "l" })) end })
 -- hl.gesture({ fingers = 3, direction = "right", action = function() hl.dispatch(hl.dsp.focus({ direction = "r" })) end })
