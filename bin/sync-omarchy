@@ -303,6 +303,30 @@ write_font_size() {
   fi
 }
 
+step_plugins() {
+  section "Bar"
+  local id state catalog
+  catalog="$(omarchy plugin list 2>/dev/null)"
+  while IFS= read -r id; do
+    [ -n "$id" ] || continue
+    state="$(printf '%s\n' "$catalog" | awk -v i="$id" '$1==i {print $2; exit}')"
+    if [ "$state" = enabled ]; then
+      OK+=("bar plugin $id")
+      msg "✓ bar plugin: $id"
+    elif $check_only; then
+      fail "bar plugin $id" "${state:-no such plugin}" "bin/sync-omarchy   enables it"
+    elif $dryrun; then
+      echo "DRY-RUN: omarchy plugin enable $id"
+      DONE+=("bar plugin $id")
+    elif omarchy plugin enable "$id" >/dev/null; then
+      DONE+=("bar plugin $id")
+      echo "→ bar plugin enabled: $id"
+    else
+      fail "bar plugin $id" "enable failed" "omarchy plugin enable $id"
+    fi
+  done < <(manifest_section "bar plugins")
+}
+
 step_launchers() {
   section "Launchers"
   local name url icon cmd style
@@ -420,6 +444,7 @@ command -v omarchy >/dev/null 2>&1 || die "omarchy not found — this is an Omar
 step_configs
 step_packages
 step_appearance
+step_plugins
 step_launchers
 step_removals
 summary

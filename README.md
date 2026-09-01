@@ -225,6 +225,12 @@ An empty icon field lets Omarchy fetch the site's own apple-touch-icon, so most
 web apps need nothing in the repo. A TUI has no site to fetch from, which is
 what `icons/` is for.
 
+`bar plugins` names the widgets enabled on top of the bar's default layout.
+Enabling one needs no sudo, so the bar is reproduced without running an
+interactive service installer -- `omarchy install service tailscale` also enables
+a daemon and authenticates a browser session, and that half stays a manual step
+alongside the other logins.
+
 `~/.config/omarchy/` itself is deliberately **not** symlinked in. Everything in
 it — `shell.json`, `extensions/`, the hooks — is byte-identical to what Omarchy
 ships, and adopting the directory would put `omarchy refresh` and the update

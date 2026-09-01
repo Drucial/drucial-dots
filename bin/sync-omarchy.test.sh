@@ -53,6 +53,8 @@ case "$1 $2" in
   "webapp install") printf 'webapp\n' > "$HOME/.local/share/applications/$3.desktop" ;;
   "tui install")    printf 'tui\n'    > "$HOME/.local/share/applications/$3.desktop" ;;
   "pkg drop")       shift 2; for p in "$@"; do sed -i "/^$p\$/d" "$HOME/pkgs"; done ;;
+  "plugin list")    cat "$HOME/plugins" 2>/dev/null ;;
+  "plugin enable")  sed -i "s/^$3 disabled/$3 enabled/" "$HOME/plugins" ;;
   *) exit 0 ;;
 esac
 STUB
@@ -72,6 +74,7 @@ done
 chmod +x "$WORK/stub"/*
 
 touch "$STATE/theme/btop.theme"
+printf 'omarchy.tailscale disabled\n' > "$HOME/plugins"
 
 # A machine with the Archfile satisfied but nothing from the Omarchyfile applied,
 # so the checks below speak to Omarchy state rather than re-testing bin/dots.
@@ -93,6 +96,7 @@ check "reports the theme"       'grep -q "manifest says .Tokyo Night." "$out"'
 check "reports the font"        'grep -q "JetBrainsMono Nerd Font" "$out"'
 check "reports a missing web app" 'grep -q "web app Linear" "$out"'
 check "reports the btop theme link" 'grep -q "btop theme link" "$out"'
+check "reports the disabled bar plugin" 'grep -q "bar plugin omarchy.tailscale" "$out"'
 check "reports the TUI"         'grep -q "TUI Zen Octo" "$out"'
 check "changes nothing"         '[ ! -e "$HOME/theme" ] && [ -z "$(ls -A "$APPS")" ]'
 
@@ -108,7 +112,10 @@ check "exits 0"                  '[ $rc -eq 0 ]'
 check "sets the theme"           '[ "$(cat "$HOME/theme")" = "Tokyo Night" ]'
 check "sets the font"            '[ "$(cat "$HOME/font")" = "JetBrainsMono Nerd Font" ]'
 check "links the background"     '[ "$(basename "$(readlink "$STATE/background")")" = "0-winding-road.jpg" ]'
-check "installs the web apps"    '[ -e "$APPS/Linear.desktop" ] && [ -e "$APPS/Superhuman.desktop" ]'
+check "installs the web apps"    '[ -e "$APPS/Linear.desktop" ] && [ -e "$APPS/Superhuman.desktop" ] && [ -e "$APPS/Tailscale.desktop" ]'
+check "enables the bar plugin"   'grep -qx "omarchy.tailscale enabled" "$HOME/plugins"'
+check "passes a webapp its icon URL" \
+  'grep -q "^webapp install Tailscale https://login.tailscale.com/admin/machines https://cdn.jsdelivr.net" "$HOME/calls.log"'
 check "installs the TUI"         '[ -e "$APPS/Zen Octo.desktop" ]'
 check "writes the font size"     'grep -q "base-size = 14" "$XDG_CONFIG_HOME/omarchy/shell.toml"'
 check "relinks btop's theme"     '[ "$XDG_CONFIG_HOME/btop/themes/current.theme" -ef "$STATE/theme/btop.theme" ]'

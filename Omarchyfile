@@ -42,6 +42,14 @@ JetBrainsMono Nerd Font
 
 Linear|https://linear.app|
 Superhuman|https://mail.superhuman.com|
+Tailscale|https://login.tailscale.com/admin/machines|https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/tailscale-light.png
+
+# --- bar plugins ---
+# Widgets enabled on top of the bar's default layout, by plugin id --
+# `omarchy plugin list` names them. Enabling needs no sudo, so this reproduces
+# the bar without running an interactive service installer.
+
+omarchy.tailscale
 
 # --- tuis ---
 # name | command | float or tile | icon
