@@ -29,6 +29,17 @@ hl.config({
   },
 })
 
+-- Clicks only register from the physical button, never a tap (Hyprland
+-- default: true). Two-finger right-click still works, since
+-- clickfinger_behavior reads the finger count on a real click.
+hl.config({
+  input = {
+    touchpad = {
+      tap_to_click = false,
+    },
+  },
+})
+
 -- disable_while_typing stays at its default. Turning it off stopped swipes
 -- started right after typing being dropped, but let palm contact move the
 -- cursor mid-sentence; there's no timeout knob between the two.
