@@ -15,3 +15,6 @@ configs/rainfrog/rainfrog_config.toml
 # btop resolves its Omarchy theme through a symlink into ~/.local/state, which
 # bin/sync-omarchy recreates. Machine-specific, so it is not tracked.
 configs/btop/themes/
+
+# git: track the .example, keep identity and credential helpers local
+configs/git/config.local

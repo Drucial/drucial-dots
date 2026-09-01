@@ -1,0 +1,14 @@
+# Copy to ~/.config/git/config.local and fill in. Not tracked: identity is
+# per-person, and the credential helper is an absolute path to a specific gh
+# install that differs by machine and changes when gh updates.
+#
+# `gh auth login` writes the credential blocks for you -- run it rather than
+# copying the path below by hand.
+
+[user]
+	name =
+	email =
+
+# [credential "https://github.com"]
+# 	helper =
+# 	helper = !/path/to/gh auth git-credential

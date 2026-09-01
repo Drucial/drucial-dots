@@ -1,3 +1,39 @@
+# See https://git-scm.com/docs/git-config
+#
+# Omarchy ships most of this in /usr/share/omarchy/config/git/config. It is
+# restated rather than included, because this file replaces ~/.config/git/config
+# on both machines and macOS has no Omarchy to inherit from.
+#
+# Identity and credentials are machine-specific and stay out of the repo -- see
+# config.local.example.
+
+[alias]
+	co = checkout
+	br = branch
+	ci = commit
+	st = status
+[init]
+	defaultBranch = master
+[pull]
+	rebase = true            # Rebase (instead of merge) on pull
+[push]
+	autoSetupRemote = true   # Automatically set upstream branch on push
+[diff]
+	algorithm = histogram    # Clearer diffs on moved/edited lines
+	colorMoved = plain       # Highlight moved blocks in diffs
+	mnemonicPrefix = true    # More intuitive refs in diff output
+[commit]
+	verbose = true           # Include diff comment in commit message template
+[column]
+	ui = auto                # Output in columns when possible
+[branch]
+	sort = -committerdate    # Sort branches by most recent commit first
+[tag]
+	sort = -version:refname  # Sort version numbers as you would expect
+[rerere]
+	enabled = true           # Record and reuse conflict resolutions
+	autoupdate = true        # Apply stored conflict resolutions automatically
+
 [core]
 	pager = delta
 
@@ -16,3 +52,7 @@
 
 [merge]
 	conflictStyle = zdiff3
+
+# Last, so anything local wins. Silently skipped when the file does not exist.
+[include]
+	path = ~/.config/git/config.local
