@@ -147,3 +147,13 @@ o.bind("SUPER + SHIFT + D", "Docker",
 -- still resolves.
 hl.unbind("SUPER + SHIFT + M")
 o.bind("SUPER + SHIFT + M", "Spotify", { launch = "spotify", focus = "^spotify$" })
+
+-- Workspace prev/next on arrows, matching the Ctrl + arrows habit from macOS.
+-- Plain CTRL + arrows is deliberately not used: on Linux that's word-jump in
+-- every text context, and Hyprland would eat it before the app saw it.
+-- Was: "Move grouped window focus left/right", for Hyprland's tabbed groups.
+-- SUPER + TAB and SUPER + SHIFT + TAB still switch workspaces as well.
+hl.unbind("SUPER + CTRL + LEFT")
+hl.unbind("SUPER + CTRL + RIGHT")
+o.bind("SUPER + CTRL + LEFT", "Previous workspace", hl.dsp.focus({ workspace = "e-1" }))
+o.bind("SUPER + CTRL + RIGHT", "Next workspace", hl.dsp.focus({ workspace = "e+1" }))
