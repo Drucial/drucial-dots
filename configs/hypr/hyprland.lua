@@ -62,6 +62,16 @@ o.window("[sS]potify", { workspace = "10" })
 -- Pin the Linear web app to workspace 5.
 o.window("chrome-linear\\.app.*-Default", { workspace = "5" })
 
+-- Bigger 1Password (SUPER + SHIFT + SLASH). Omarchy tags it +floating-window,
+-- and apps/system.lua sizes that tag to 875x600, which clips its sidebar and
+-- detail pane. A plain size rule here loses to the tag rule regardless of
+-- declaration order, so drop the tag and restate the float treatment, the same
+-- escape the btop rule below makes via a distinct app-id.
+o.window("^1[pP]assword$", { tag = "-floating-window" })
+o.window("^1[pP]assword$", { float = true })
+o.window("^1[pP]assword$", { center = true })
+o.window("^1[pP]assword$", { size = { 1100, 750 } })
+
 -- Float the zen TUIs (SUPER + SHIFT + O, N, and L).
 -- Spelled out rather than tagged "+floating-window": this file loads after the
 -- default rules that consume that tag, so tagging here would never match. They
