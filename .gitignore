@@ -18,3 +18,7 @@ configs/btop/themes/
 
 # git: track the .example, keep identity and credential helpers local
 configs/git/config.local
+
+# lazygit: settings.yml is tracked, config.yml is generated from it by
+# bin/lazygit-theme with colours from the current Omarchy theme.
+configs/lazygit/config.yml

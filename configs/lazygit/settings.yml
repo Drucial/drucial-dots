@@ -1,10 +1,9 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/jesseduffield/lazygit/master/schema/config.json
+#
+# Settings only. bin/lazygit-theme concatenates this with a theme generated from
+# the current Omarchy palette and writes the result to config.yml, which is what
+# lazygit actually reads. Edit this file, never config.yml.
 gui:
-  theme:
-    selectedLineBgColor:
-      - black
-    activeBorderColor:
-      - blue
   nerdFontsVersion: "3"
   filterMode: fuzzy
   showNumstatInFilesView: true

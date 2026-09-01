@@ -75,6 +75,8 @@ chmod +x "$WORK/stub"/*
 
 touch "$STATE/theme/btop.theme"
 printf 'omarchy.tailscale disabled\n' > "$HOME/plugins"
+printf 'accent = "#aabbcc"\nmuted = "#112233"\nselection = "#445566"\nforeground = "#778899"\n' \
+  > "$STATE/theme/colors.toml"
 
 # A machine with the Archfile satisfied but nothing from the Omarchyfile applied,
 # so the checks below speak to Omarchy state rather than re-testing bin/dots.
@@ -97,6 +99,7 @@ check "reports the font"        'grep -q "JetBrainsMono Nerd Font" "$out"'
 check "reports a missing web app" 'grep -q "web app Linear" "$out"'
 check "reports the btop theme link" 'grep -q "btop theme link" "$out"'
 check "reports the disabled bar plugin" 'grep -q "bar plugin omarchy.tailscale" "$out"'
+check "reports the lazygit theme"       'grep -q "lazygit theme" "$out"'
 check "reports the TUI"         'grep -q "TUI Zen Octo" "$out"'
 check "changes nothing"         '[ ! -e "$HOME/theme" ] && [ -z "$(ls -A "$APPS")" ]'
 
@@ -119,6 +122,14 @@ check "passes a webapp its icon URL" \
 check "installs the TUI"         '[ -e "$APPS/Zen Octo.desktop" ]'
 check "writes the font size"     'grep -q "base-size = 14" "$XDG_CONFIG_HOME/omarchy/shell.toml"'
 check "relinks btop's theme"     '[ "$XDG_CONFIG_HOME/btop/themes/current.theme" -ef "$STATE/theme/btop.theme" ]'
+check "generates lazygit's theme" \
+  'grep -q "selectedLineBgColor" "$XDG_CONFIG_HOME/lazygit/config.yml"'
+check "takes lazygit colours from the palette" \
+  'grep -q "\"#445566\"" "$XDG_CONFIG_HOME/lazygit/config.yml" && grep -q "\"#aabbcc\"" "$XDG_CONFIG_HOME/lazygit/config.yml"'
+check "keeps lazygit's tracked settings" \
+  'grep -q "nerdFontsVersion" "$XDG_CONFIG_HOME/lazygit/config.yml"'
+check "installs the theme-set hook" \
+  'grep -q "bin/lazygit-theme" "$HOME/.config/omarchy/hooks/theme-set.d/lazygit-theme.hook"'
 check "lets the site pick a web app icon" \
   'grep -q "^webapp install Linear https://linear.app  *$" "$HOME/calls.log"'
 check "passes the TUI an absolute icon path" \
