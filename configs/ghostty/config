@@ -12,7 +12,7 @@
 # active. On macOS, comment it out and use the Mono variant below instead.
 font-family = "JetBrainsMono Nerd Font"
 font-style = Regular
-font-size = 12
+font-size = 10
 # font-family = JetBrainsMono Nerd Font Mono
 
 # ── Cursor ──
