@@ -1,24 +1,67 @@
-# ghostty, matched to zen-term
+# ghostty, shared between Omarchy and macOS.
 #
-# Mirrors ~/.config/zen-term/config so the two terminals look the same side by side.
-# Ghostty reads this only at process start: ⌘Q and relaunch to apply changes.
+# Colour is the only part that differs by machine, and it resolves itself: the
+# Rosé Pine block below is the committed default, and the Omarchy theme include
+# at the end of this file overrides it. On macOS that path does not exist and
+# ghostty skips an optional (`?`) include silently, so Rosé Pine is what is left.
+#
+# Ghostty reads this only at process start: quit and relaunch to apply changes.
 
 # ── Font ──
-font-family = JetBrainsMono Nerd Font Mono
-font-size = 14
+# Omarchy's `omarchy font set` rewrites the quoted form, so that line stays
+# active. On macOS, comment it out and use the Mono variant below instead.
+font-family = "JetBrainsMono Nerd Font"
+font-style = Regular
+font-size = 12
+# font-family = JetBrainsMono Nerd Font Mono
 
 # ── Cursor ──
 cursor-style = block
 cursor-style-blink = true
 
-# ── Input ──
+# ── Shell integration ──
+# All shell integration options must be passed together.
+shell-integration-features = no-cursor,ssh-env
+
+# ── Window ──
+# Padding is Omarchy's 12/8, not zen-term's 8/8.
+window-theme = ghostty
+window-padding-x = 12
+window-padding-y = 8
+window-padding-balance = true
+confirm-close-surface = false
+resize-overlay = never
+gtk-toolbar-style = flat
+
+# `tabs` folds the tab strip into the titlebar. Not `hidden`: that hides the
+# titlebar, and the native tab strip lives there, so ⌘T would still open tabs you
+# cannot see or click, and the titlebar would stop dragging the window. Ignored
+# on Linux.
+macos-titlebar-style = tabs
+macos-window-buttons = hidden
 macos-option-as-alt = true
-mouse-scroll-multiplier = precision:1.5,discrete:3
+
+# ── Input ──
+keybind = shift+insert=paste_from_clipboard
+keybind = control+insert=copy_to_clipboard
+# Send Shift+Enter as CSI-u so TUIs can distinguish it from Enter.
+keybind = shift+enter=csi:13;2u
+# Legacy encoding sends Alt+Shift+Enter the same as Alt+Enter; send CSI-u so tmux can match M-S-Enter.
+keybind = alt+shift+enter=csi:13;4u
+keybind = super+control+shift+alt+arrow_down=resize_split:down,100
+keybind = super+control+shift+alt+arrow_up=resize_split:up,100
+keybind = super+control+shift+alt+arrow_left=resize_split:left,100
+keybind = super+control+shift+alt+arrow_right=resize_split:right,100
+
+mouse-scroll-multiplier = 0.95
+
+# Fix general slowness on hyprland (https://github.com/ghostty-org/ghostty/discussions/3224)
+async-backend = epoll
 
 # ── Rosé Pine Moon, matched to zen-term's built-in ──
 # Set explicitly rather than `theme = "Rose Pine Moon"`: ghostty's bundled Moon uses
 # background #232136, zen-term uses #191724, so the theme name alone leaves the two
-# backgrounds visibly different.
+# backgrounds visibly different. Overridden by the Omarchy include below.
 background = #191724
 foreground = #e0def4
 cursor-color = #6b6790
@@ -40,13 +83,7 @@ palette = 13=#c4a7e7
 palette = 14=#ea9a97
 palette = 15=#e0def4
 
-# ── Padding: zen-term's window-gutter 8 + pane-gap 8 ──
-window-padding-x = 8
-window-padding-y = 8
-
-# ── Chrome: matches zen-term's `window-chrome = false` ──
-# `tabs` folds the tab strip into the titlebar. Not `hidden`: that hides the titlebar,
-# and the native tab strip lives there, so ⌘T would still open tabs you cannot see or
-# click, and the titlebar would stop dragging the window.
-macos-titlebar-style = tabs
-macos-window-buttons = hidden
+# ── Omarchy theme ──
+# Last, so it wins over the palette above. Absent on macOS, where `?` makes this
+# a no-op rather than an error.
+config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
