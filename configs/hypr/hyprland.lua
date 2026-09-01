@@ -42,6 +42,10 @@ o.window("(google-)?[cC]hrom(e|ium)", { workspace = "2" })
 -- Reports a lowercase app-id, despite its .desktop declaring no StartupWMClass.
 o.window("chatgpt", { workspace = "3" })
 
+-- Pin the Claude desktop app to workspace 3 as well, alongside ChatGPT.
+-- Reports the app-id its .desktop declares as StartupWMClass, unlike ChatGPT.
+o.window("com\\.anthropic\\.Claude", { workspace = "3" })
+
 -- Pin the Superhuman web app to workspace 4. Chromium derives the app-id from
 -- the URL, so a compose/mailto window gets a different suffix than the inbox
 -- one -- match any of them.

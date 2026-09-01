@@ -63,6 +63,13 @@ o.bind("SUPER + SHIFT + F", "File manager", { launch = "nautilus", focus = "^org
 hl.unbind("SUPER + SHIFT + A")
 o.bind("SUPER + SHIFT + A", "ChatGPT", { launch = "chatgpt", focus = "^chatgpt$" })
 
+-- Claude desktop app. One key over from ChatGPT, sharing workspace 3 with it
+-- (pinned in hyprland.lua). Takes the key Omarchy's "Calendar" (HEY) webapp had
+-- before that webapp was removed, so it still needs the unbind to win.
+hl.unbind("SUPER + SHIFT + C")
+o.bind("SUPER + SHIFT + C", "Claude",
+  { launch = "claude-desktop", focus = "^com\\.anthropic\\.Claude$" })
+
 -- Slack desktop app (was: Omarchy's default "Google Maps" webapp).
 -- Pinned to workspace 6 in hyprland.lua.
 hl.unbind("SUPER + SHIFT + S")
@@ -89,7 +96,6 @@ o.bind("SUPER + SHIFT + L", "Linear",
 -- Web apps removed with `omarchy webapp remove`. Their launchers are gone, but
 -- the bindings launch the URL directly, so they need unbinding too.
 hl.unbind("SUPER + SHIFT + ALT + A") -- Grok
-hl.unbind("SUPER + SHIFT + C")       -- Calendar (HEY)
 hl.unbind("SUPER + SHIFT + ALT + E") -- New email (HEY)
 hl.unbind("SUPER + SHIFT + Y")       -- YouTube
 hl.unbind("SUPER + SHIFT + ALT + G") -- WhatsApp
