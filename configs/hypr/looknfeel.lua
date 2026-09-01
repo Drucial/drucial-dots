@@ -33,10 +33,12 @@ hl.config({
 --   },
 -- })
 
--- Omarchy disables the workspace animation, so a released three-finger swipe
--- snaps instead of settling. Speed is duration in ds, so higher is slower.
--- This governs keyboard workspace switching too.
-hl.animation({ leaf = "workspaces", enabled = true, speed = 2.5, bezier = "easeOutQuint", style = "slide" })
+-- Off, matching Omarchy's default: the slide animation makes ws1's scrolling
+-- layout flash its off-screen columns into empty workspaces during the
+-- transition (Hyprland #15725, unfixed upstream). Workspace switching snaps
+-- instead of settling as a result. To try it again:
+--   enabled = true, speed = 2.5 (duration in ds, higher is slower)
+hl.animation({ leaf = "workspaces", enabled = false, speed = 2.5, bezier = "easeOutQuint", style = "slide" })
 
 -- https://wiki.hypr.land/Configuring/Basics/Variables/#layout
 -- hl.config({
