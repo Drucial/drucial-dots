@@ -13,22 +13,12 @@ hl.config({
   },
 })
 
--- Pointer speed. Omarchy pins this to 0; the range is -1.0 to 1.0. Left on the
--- adaptive accel_profile on purpose, since that curve is the macOS-like one --
--- "flat" would remove acceleration entirely.
-hl.config({
-  input = {
-    sensitivity = 0.3,
-
-    touchpad = {
-      -- Back on (libinput's default). Off meant swipes started right after
-      -- typing were dropped, since libinput mutes the touchpad for a few
-      -- hundred ms after each keystroke; on means palm contact can't move the
-      -- cursor mid-sentence. It's one or the other, there's no timeout knob.
-      disable_while_typing = true,
-    },
-  },
-})
+-- Two touchpad experiments, both reverted to the stock behaviour, so there is
+-- deliberately no config here:
+--   sensitivity = 0.3        -- pointer speed, range -1.0 to 1.0, Omarchy pins 0
+--   disable_while_typing     -- off stopped swipes right after typing being
+--                            -- dropped, but let palm contact move the cursor
+--                            -- mid-sentence; there is no timeout knob between
 
 -- hl.config({
 --   input = {
