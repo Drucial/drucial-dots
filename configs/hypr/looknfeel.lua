@@ -33,6 +33,11 @@ hl.config({
 --   },
 -- })
 
+-- Omarchy disables the workspace animation, so a released three-finger swipe
+-- snaps instead of settling. Speed is duration in ds, so higher is slower.
+-- This governs keyboard workspace switching too.
+hl.animation({ leaf = "workspaces", enabled = true, speed = 2.5, bezier = "easeOutQuint", style = "slide" })
+
 -- https://wiki.hypr.land/Configuring/Basics/Variables/#layout
 -- hl.config({
 --   layout = {

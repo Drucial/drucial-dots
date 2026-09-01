@@ -13,6 +13,15 @@ hl.config({
   },
 })
 
+-- Pointer speed. Omarchy pins this to 0; the range is -1.0 to 1.0. Left on the
+-- adaptive accel_profile on purpose, since that curve is the macOS-like one --
+-- "flat" would remove acceleration entirely.
+hl.config({
+  input = {
+    sensitivity = 0.3,
+  },
+})
+
 -- hl.config({
 --   input = {
 --     -- Use multiple keyboard layouts and switch between them with Left Alt + Right Alt.
