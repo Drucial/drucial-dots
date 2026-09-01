@@ -22,6 +22,13 @@ hl.config({
   },
 })
 
+-- Focus only changes on click, never by hovering (Omarchy default: 1).
+hl.config({
+  input = {
+    follow_mouse = 0,
+  },
+})
+
 -- disable_while_typing stays at its default. Turning it off stopped swipes
 -- started right after typing being dropped, but let palm contact move the
 -- cursor mid-sentence; there's no timeout knob between the two.
