@@ -19,6 +19,12 @@ hl.config({
 hl.config({
   input = {
     sensitivity = 0.3,
+
+    touchpad = {
+      -- libinput mutes the touchpad for a few hundred ms after each keystroke,
+      -- which eats swipes started right after typing. macOS doesn't do this.
+      disable_while_typing = false,
+    },
   },
 })
 
@@ -91,6 +97,10 @@ hl.config({
     -- Flick speed that commits regardless of distance (default: 30).
     -- 0 disables flicks, so distance alone decides.
     -- workspace_swipe_min_speed_to_force = 30,
+
+    -- Let a swipe reverse mid-gesture. Default true locks the direction once
+    -- you've travelled 10px, so corrections without lifting don't register.
+    workspace_swipe_direction_lock = false,
   },
 })
 
