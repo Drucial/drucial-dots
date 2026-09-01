@@ -21,9 +21,11 @@ hl.config({
     sensitivity = 0.3,
 
     touchpad = {
-      -- libinput mutes the touchpad for a few hundred ms after each keystroke,
-      -- which eats swipes started right after typing. macOS doesn't do this.
-      disable_while_typing = false,
+      -- Back on (libinput's default). Off meant swipes started right after
+      -- typing were dropped, since libinput mutes the touchpad for a few
+      -- hundred ms after each keystroke; on means palm contact can't move the
+      -- cursor mid-sentence. It's one or the other, there's no timeout knob.
+      disable_while_typing = true,
     },
   },
 })
