@@ -56,6 +56,60 @@ y() {
   rm -f -- "$tmp"
 }
 
+# Listening TCP ports, one row per port: PORT COMMAND PID
+list_ports() {
+  printf "%-7s %-24s %s\n" PORT COMMAND PID
+  lsof -nP -iTCP -sTCP:LISTEN 2>/dev/null \
+    | awk 'NR > 1 {
+        split($9, addr, ":")
+        port = addr[length(addr)]
+        if (!seen[port " " $2]++) printf "%-7s %-24s %s\n", port, $1, $2
+      }' \
+    | sort -n
+}
+
+kill_port() {
+  local port="$1"
+  if [[ -z "$port" ]]; then
+    print -u2 "killport: usage: killport <port>"
+    return 1
+  fi
+
+  local pids
+  pids=$(lsof -tiTCP:"$port" -sTCP:LISTEN 2>/dev/null)
+  if [[ -z "$pids" ]]; then
+    print -u2 "killport: nothing listening on port $port"
+    return 1
+  fi
+
+  print -r -- "$pids" | xargs kill -9 && print "killport: freed $port (${pids//$'\n'/, })"
+}
+
+# fzf picker over listening ports; enter kills the selected processes.
+pick_ports_to_kill() {
+  local rows selected
+  rows=$(list_ports)
+  if [[ $(print -r -- "$rows" | wc -l) -le 1 ]]; then
+    print -u2 "fkill: no listening ports"
+    return 1
+  fi
+
+  selected=$(
+    print -r -- "$rows" \
+      | fzf --multi \
+            --header-lines=1 \
+            --prompt='port> ' \
+            --header='enter kills selected (SIGKILL) · tab marks multiple' \
+            --marker='*' \
+            --layout=reverse \
+            --height=40% \
+            --preview-window=hidden
+  ) || return
+  [[ -z "$selected" ]] && return
+
+  print -r -- "$selected" | awk '{print $3}' | xargs kill -9
+}
+
 # Manage Dotfiles/Projects
 custom_picker() {
   local target_dir="$XDG_CONFIG_HOME"
