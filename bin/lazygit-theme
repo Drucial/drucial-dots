@@ -105,7 +105,9 @@ clamp() {
 }
 
 # A shade `level` percent of the way from the background's brightness toward the
-# foreground's, carrying the background's own colour cast at $SATURATION.
+# foreground's, carrying the background's own colour cast at $SATURATION -- or at
+# `cast`, for the selection bars, which sit under text and take the tint harder
+# than a one-pixel border does.
 #
 # Interpolating straight from bg to fg would be the obvious thing, but it averages
 # the two casts against each other and the middle of the ramp comes out grey --
@@ -115,16 +117,16 @@ clamp() {
 # background brightness disappears once lightened. A neutral grey background has
 # no cast to amplify and stays grey.
 tint() {
-  local level="$1"
+  local level="$1" cast="${2:-$SATURATION}"
   local br=$((16#${bg:1:2}))       bgr=$((16#${bg:3:2}))       bb=$((16#${bg:5:2}))
   local fr=$((16#${term_fg:1:2}))  fgr=$((16#${term_fg:3:2}))  fb=$((16#${term_fg:5:2}))
   local bmean=$(( (br + bgr + bb) / 3 ))
   local fmean=$(( (fr + fgr + fb) / 3 ))
   local target=$(( bmean + (fmean - bmean) * level / 100 ))
   printf '#%02x%02x%02x' \
-    "$(clamp $(( target + (br  - bmean) * SATURATION / 100 )))" \
-    "$(clamp $(( target + (bgr - bmean) * SATURATION / 100 )))" \
-    "$(clamp $(( target + (bb  - bmean) * SATURATION / 100 )))"
+    "$(clamp $(( target + (br  - bmean) * cast / 100 )))" \
+    "$(clamp $(( target + (bgr - bmean) * cast / 100 )))" \
+    "$(clamp $(( target + (bb  - bmean) * cast / 100 )))"
 }
 
 if [ ! -f "$COLORS" ]; then
@@ -143,12 +145,12 @@ if [ ! -f "$COLORS" ]; then
     # carries the background's own, so the chrome reads as part of the theme.
     source="terminal $bg → $term_fg at ${SATURATION}% cast"
     fg="$term_fg"
-    insel_bg="$(tint 6)"
-    sel_bg="$(tint 13)"
-    inactive="$(tint 26)"
+    insel_bg="$(tint 6 100)"
+    sel_bg="$(tint 13 100)"
+    inactive="$(tint 32)"
     cherry_bg="$(tint 40)"
-    options="$(tint 44)"
-    author="$(tint 50)"
+    options="$(tint 56)"
+    author="$(tint 54)"
     marked_bg="$(tint 56)"
     unstaged="$(tint 64)"
     active="$(tint 72)"
