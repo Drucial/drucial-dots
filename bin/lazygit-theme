@@ -17,13 +17,13 @@
 # Run: bin/lazygit-theme [--dark|--light] [--saturation N]
 #   --dark/--light skip the query and force the fixed ramp.
 #   --saturation is how hard the chrome carries the background's colour cast:
-#   100 keeps it as-is, 0 gives flat grey, the 260 default pushes it well past
-#   the background's own so it survives being lightened.
+#   0 gives flat grey, 100 keeps the background's own, and the 180 default lifts
+#   it enough to survive being lightened without reading as a colour of its own.
 #   Env: LAZYGIT_THEME_MODE=auto|dark|light, LAZYGIT_THEME_SATURATION=N
 set -euo pipefail
 
 MODE="${LAZYGIT_THEME_MODE:-auto}"
-SATURATION="${LAZYGIT_THEME_SATURATION:-260}"
+SATURATION="${LAZYGIT_THEME_SATURATION:-180}"
 while [ $# -gt 0 ]; do
   case "$1" in
     --auto)  MODE=auto ;;
