@@ -41,7 +41,7 @@ mkdir -p "$APPS" "$STATE/theme/backgrounds"
 # A machine that installed the old lazygit theme-set hook, which sync now clears.
 LAZYGIT_HOOK="$HOME/.config/omarchy/hooks/theme-set.d/lazygit-theme.hook"
 mkdir -p "$(dirname "$LAZYGIT_HOOK")"
-printf '#!/bin/bash\nexec "%s/bin/lazygit-theme"\n' "$WORK/repo" > "$LAZYGIT_HOOK"
+printf '#!/bin/bash\nexec "%s/configs/lazygit/lazygit-theme"\n' "$WORK/repo" > "$LAZYGIT_HOOK"
 
 # Stubs record every call and read their answers out of the scratch HOME, so a
 # test can set up a machine state and then assert on what was asked of it.

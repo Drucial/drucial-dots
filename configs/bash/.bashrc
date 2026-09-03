@@ -21,12 +21,12 @@
 
 # Re-derives lazygit's theme from this terminal's colours before handing off.
 # Shadows the binary rather than the `gg` alias so both spellings get it; the
-# alias resolves to this function. bin/lazygit-theme asks the terminal what its
+# alias resolves to this function. lazygit-theme asks the terminal what its
 # background is, which needs a tty, so it has to run from here rather than from
 # a theme-change hook. It exits without writing when nothing has changed.
 # Mirrors the zsh copy in configs/zsh/.zsh_functions.
 lazygit() {
-  local theme="${DOTS_REPO:-$HOME/Dev/drucial-dots}/bin/lazygit-theme"
+  local theme="${XDG_CONFIG_HOME:-$HOME/.config}/lazygit/lazygit-theme"
   [ -x "$theme" ] && "$theme" --quiet
   command lazygit "$@"
 }

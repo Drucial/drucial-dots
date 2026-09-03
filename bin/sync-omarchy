@@ -268,10 +268,10 @@ step_appearance() {
   remove_lazygit_hook
 }
 
-# bin/lazygit-theme used to run from a theme-set hook, deriving its colours from
-# the theme's colors.toml. It now asks the terminal for its background directly,
-# which needs a tty the hook does not have, so the `lazygit` shell wrapper runs
-# it instead. Machines that installed the hook are cleaned up here.
+# The lazygit theme script used to run from a theme-set hook, deriving its
+# colours from the theme's colors.toml. It now asks the terminal for its
+# background directly, which needs a tty the hook does not have, so the
+# `lazygit` shell wrapper runs it instead. Old hooks are cleaned up here.
 remove_lazygit_hook() {
   local label="lazygit theme hook" hook="$HOME/.config/omarchy/hooks/theme-set.d/lazygit-theme.hook"
   [ -e "$hook" ] || { OK+=("$label"); msg "✓ $label (absent)"; return 0; }
