@@ -51,7 +51,6 @@ SHELL_TOML="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/shell.toml"
 BACKGROUND_LINK="$HOME/.local/state/omarchy/current/background"
 THEME_DIR="$HOME/.local/state/omarchy/current/theme"
 BTOP_THEME_LINK="${XDG_CONFIG_HOME:-$HOME/.config}/btop/themes/current.theme"
-LAZYGIT_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/lazygit/config.yml"
 
 check_only=false
 dryrun=false
@@ -266,39 +265,28 @@ step_appearance() {
     current_size="$(sed -n 's/^[[:space:]]*base-size[[:space:]]*=[[:space:]]*\([0-9]\+\).*/\1/p' "$SHELL_TOML" | head -1)"
   apply_setting "font size" "$size" "$current_size" write_font_size "$size"
   link_btop_theme
-  install_lazygit_theme
+  remove_lazygit_hook
 }
 
-# Omarchy themes every terminal app it ships a file for, and there is no lazygit
-# one. bin/lazygit-theme derives it from the theme's colors.toml instead; the
-# hook reruns it on every theme change. omarchy hook install copies the file, so
-# a shim is installed rather than the script, leaving the repo the only source.
-install_lazygit_theme() {
-  local label="lazygit theme" hook="$HOME/.config/omarchy/hooks/theme-set.d/lazygit-theme.hook"
-  local want="#!/bin/bash"$'\n'"exec \"$REPO_ROOT/bin/lazygit-theme\""
-  if [ -f "$hook" ] && [ "$(cat "$hook")" = "$want" ] && [ -f "$LAZYGIT_CONFIG" ]; then
-    OK+=("$label")
-    msg "✓ $label"
-    return 0
-  fi
+# bin/lazygit-theme used to run from a theme-set hook, deriving its colours from
+# the theme's colors.toml. It now asks the terminal for its background directly,
+# which needs a tty the hook does not have, so the `lazygit` shell wrapper runs
+# it instead. Machines that installed the hook are cleaned up here.
+remove_lazygit_hook() {
+  local label="lazygit theme hook" hook="$HOME/.config/omarchy/hooks/theme-set.d/lazygit-theme.hook"
+  [ -e "$hook" ] || { OK+=("$label"); msg "✓ $label (absent)"; return 0; }
   if $check_only; then
-    fail "$label" "hook or generated config missing" "bin/sync-omarchy   installs both"
+    fail "$label" "stale hook still installed" "bin/sync-omarchy   removes it"
     return 0
   fi
   if $dryrun; then
-    echo "DRY-RUN: install $hook && $REPO_ROOT/bin/lazygit-theme"
+    echo "DRY-RUN: rm $hook"
     DONE+=("$label")
     return 0
   fi
-  mkdir -p "$(dirname "$hook")"
-  printf '%s\n' "$want" > "$hook"
-  chmod 755 "$hook"
-  if "$REPO_ROOT/bin/lazygit-theme" >/dev/null; then
-    DONE+=("$label")
-    echo "→ $label: hook installed, config generated"
-  else
-    fail "$label" "bin/lazygit-theme failed" "run it by hand to see the error"
-  fi
+  rm -f "$hook"
+  DONE+=("$label")
+  echo "→ $label: stale hook removed"
 }
 
 # btop resolves `color_theme = "current"` through a symlink Omarchy writes once

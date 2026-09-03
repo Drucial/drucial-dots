@@ -1,35 +1,33 @@
 #!/usr/bin/env bash
 # Regenerates ~/.config/lazygit/config.yml from configs/lazygit/settings.yml plus
-# a theme derived from the current Omarchy palette.
+# a theme derived from the terminal's own colours.
 #
-# Omarchy themes every terminal app by shipping a per-app file, but there is no
-# lazygit one. Every theme does ship colors.toml with the same semantic keys, so
-# the theme is derived from those rather than pinned to any one palette: switch
-# themes and this regenerates. Installed as a theme-set hook by bin/sync-omarchy.
+# Omarchy themes every terminal app by shipping a per-app file, and there is no
+# lazygit one. Rather than read any theme's palette, the terminal is asked for
+# its background and foreground over OSC 11/10 -- a VT escape any modern
+# terminal answers -- and the chrome is built off the answer. That needs no
+# knowledge of which terminal is running or how it was themed, and it reports
+# what is actually on screen rather than what some config file claims.
 #
-# Without an Omarchy palette (macOS, or a fresh machine) the terminal is asked
-# for its own background and foreground over OSC 11/10 and the theme is mixed
-# between the two. That is a VT escape any modern terminal answers, so it needs
-# no knowledge of which terminal is running or how it was themed, and the greys
-# land in the background's own hue instead of fighting it. Falls back to a fixed
-# grayscale ramp when there is no terminal to ask.
+# The query needs a tty, so this is driven by the `lazygit` shell wrapper in
+# configs/zsh/.zsh_functions and configs/bash/.bash_aliases, which runs it just
+# before handing off to the real binary. Where no wrapper runs it -- a shell
+# without one, a script -- lazygit keeps whatever theme was generated last, or
+# falls back to its own defaults on a machine where this has never run.
 #
-# Run: bin/lazygit-theme [--dark|--light] [--saturation N]
-#   --dark/--light skip the query and force the fixed ramp.
+# Run: bin/lazygit-theme [--saturation N] [--quiet]
 #   --saturation is how hard the chrome carries the background's colour cast:
 #   0 gives flat grey, 100 keeps the background's own, and the 180 default lifts
 #   it enough to survive being lightened without reading as a colour of its own.
-#   Env: LAZYGIT_THEME_MODE=auto|dark|light, LAZYGIT_THEME_SATURATION=N
+#   Env: LAZYGIT_THEME_SATURATION=N
 set -euo pipefail
 
-MODE="${LAZYGIT_THEME_MODE:-auto}"
 SATURATION="${LAZYGIT_THEME_SATURATION:-180}"
+quiet=false
 while [ $# -gt 0 ]; do
   case "$1" in
-    --auto)  MODE=auto ;;
-    --dark)  MODE=dark ;;
-    --light) MODE=light ;;
     --saturation) shift; SATURATION="${1:-}" ;;
+    --quiet|-q)   quiet=true ;;
     *) echo "✖ Unknown argument: $1" >&2; exit 1 ;;
   esac
   shift
@@ -37,10 +35,8 @@ done
 case "$SATURATION" in
   ''|*[!0-9]*) echo "✖ Saturation must be a whole number: $SATURATION" >&2; exit 1 ;;
 esac
-case "$MODE" in
-  auto|dark|light) ;;
-  *) echo "✖ Unknown mode: $MODE (expected auto, dark or light)" >&2; exit 1 ;;
-esac
+
+say() { $quiet || echo "$@"; }
 
 SCRIPT="${BASH_SOURCE[0]}"
 while [ -L "$SCRIPT" ]; do
@@ -54,29 +50,14 @@ REPO_ROOT="$(cd "$(dirname "$SCRIPT")/.." && pwd -P)"
 
 SETTINGS="$REPO_ROOT/configs/lazygit/settings.yml"
 CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/lazygit/config.yml"
-COLORS="${OMARCHY_THEME_DIR:-$HOME/.local/state/omarchy/current/theme}/colors.toml"
 
 [ -f "$SETTINGS" ] || { echo "✖ No settings at $SETTINGS" >&2; exit 1; }
-
-# colors.toml is flat `key = "#rrggbb"`, so it is read directly rather than
-# through a TOML parser this repo would otherwise not need.
-color() { sed -n "s/^$1[[:space:]]*=[[:space:]]*\"\(#[0-9a-fA-F]\{3,8\}\)\".*/\1/p" "$COLORS" | head -1; }
-
-# Falls back through the keys an older theme is most likely to have instead.
-pick() {
-  local key value
-  for key in "$@"; do
-    value="$(color "$key")"
-    [ -n "$value" ] && { printf '%s' "$value"; return 0; }
-  done
-  return 1
-}
 
 # Asks the terminal for one of its own colours: OSC 10 is the foreground, OSC 11
 # the background. The reply comes back on the same tty as `rgb:rrrr/gggg/bbbb`
 # with 1-4 hex digits per channel, so each is padded out and truncated to 8-bit.
 # `min 0 time 3` caps the wait at 0.3s, which is what keeps a terminal that
-# ignores the query from hanging the script.
+# ignores the query from hanging the shell that is about to open lazygit.
 query_terminal_color() {
   local code="$1" saved reply
   # Braced so bash's own message for a failed redirect is suppressed too.
@@ -129,55 +110,56 @@ tint() {
     "$(clamp $(( target + (bb  - bmean) * cast / 100 )))"
 }
 
-if [ ! -f "$COLORS" ]; then
-  # No Omarchy palette (a fresh machine before the first theme set, or macOS).
+bg="$(query_terminal_color 11 || true)"
+term_fg="$(query_terminal_color 10 || true)"
+[ "$bg" = "$term_fg" ] && { bg=""; term_fg=""; }
+
+if [ -z "$bg" ] || [ -z "$term_fg" ]; then
+  # Nothing answered: no tty, or a terminal that ignores the query. An existing
+  # config was generated against a terminal that did answer, so it is left alone
+  # rather than clobbered with something worse. Only a machine that has never
+  # generated one gets the bare settings, and lazygit's own defaults with them.
+  if [ -f "$CONFIG" ]; then
+    say "→ lazygit theme: terminal did not answer, keeping $CONFIG"
+    exit 0
+  fi
+  # Not `install -D`: BSD install has no such flag, and this runs on macOS too.
+  mkdir -p "$(dirname "$CONFIG")"
+  install -m644 "$SETTINGS" "$CONFIG"
+  say "→ lazygit: settings only, no terminal to derive a theme from"
+  exit 0
+fi
+
+# Recorded so the wrapper can run this on every launch without rewriting the
+# file each time. Nothing else in the output depends on state, so matching this
+# line means the rest would be byte-identical.
+STAMP="# derived: bg=$bg fg=$term_fg cast=$SATURATION"
+if [ -f "$CONFIG" ] && grep -qxF "$STAMP" "$CONFIG"; then
+  say "→ lazygit theme: already current for $bg"
+  exit 0
+fi
+
+fg="$term_fg"
+insel_bg="$(tint 6 100)"
+sel_bg="$(tint 13 100)"
+inactive="$(tint 32)"
+cherry_bg="$(tint 40)"
+author="$(tint 54)"
+options="$(tint 56)"
+marked_bg="$(tint 56)"
+unstaged="$(tint 64)"
+active="$(tint 72)"
+cherry_fg="$bg"
+marked_fg="$bg"
+
+mkdir -p "$(dirname "$CONFIG")"
+{
+  echo "# Generated by bin/lazygit-theme -- edit configs/lazygit/settings.yml instead."
+  echo "$STAMP"
+  cat "$SETTINGS"
   # Every one of lazygit's twelve theme keys is set so nothing falls through to
   # its ANSI defaults, which are at the mercy of the terminal's own palette.
-  bg=""; term_fg=""
-  if [ "$MODE" = auto ]; then
-    bg="$(query_terminal_color 11 || true)"
-    term_fg="$(query_terminal_color 10 || true)"
-    [ "$bg" = "$term_fg" ] && { bg=""; term_fg=""; }
-  fi
-
-  if [ -n "$bg" ] && [ -n "$term_fg" ]; then
-    # One ramp off the terminal's background. Nothing here picks a hue; it only
-    # carries the background's own, so the chrome reads as part of the theme.
-    source="terminal $bg → $term_fg at ${SATURATION}% cast"
-    fg="$term_fg"
-    insel_bg="$(tint 6 100)"
-    sel_bg="$(tint 13 100)"
-    inactive="$(tint 32)"
-    cherry_bg="$(tint 40)"
-    options="$(tint 56)"
-    author="$(tint 54)"
-    marked_bg="$(tint 56)"
-    unstaged="$(tint 64)"
-    active="$(tint 72)"
-    cherry_fg="$bg"
-    marked_fg="$bg"
-  elif [ "$MODE" = light ]; then
-    source="fixed light ramp"
-    fg="#2e2e2e";        active="#101010";    inactive="#bcbcbc"
-    options="#8a8a8a";   sel_bg="#e2e2e2";    insel_bg="#ededed"
-    cherry_fg="#fafafa"; cherry_bg="#5a5a5a"
-    marked_fg="#fafafa"; marked_bg="#8c8c8c"
-    unstaged="#5c5c5c";  author="#6e6e6e"
-  else
-    source="fixed dark ramp"
-    fg="#c6c6c6";        active="#e4e4e4";    inactive="#4c4c4c"
-    options="#767676";   sel_bg="#303030";    insel_bg="#262626"
-    cherry_fg="#1c1c1c"; cherry_bg="#9e9e9e"
-    marked_fg="#1c1c1c"; marked_bg="#6c6c6c"
-    unstaged="#a8a8a8";  author="#8c8c8c"
-  fi
-
-  mkdir -p "$(dirname "$CONFIG")"
-  {
-    echo "# Generated by bin/lazygit-theme -- edit configs/lazygit/settings.yml instead."
-    echo "# Neutral theme from $source: no Omarchy palette at $COLORS"
-    cat "$SETTINGS"
-    cat <<EOF
+  cat <<EOF
   authorColors:
     "*": "$author"
   theme:
@@ -207,37 +189,6 @@ if [ ! -f "$COLORS" ]; then
     defaultFgColor:
       - "$fg"
 EOF
-  } > "$CONFIG"
-
-  echo "→ lazygit theme: neutral, $source"
-  exit 0
-fi
-
-accent="$(pick accent blue bright_blue)"
-muted="$(pick muted dark_foreground lighter_background)"
-selection="$(pick selection lighter_background dark_background)"
-fg="$(pick foreground light_foreground)"
-
-mkdir -p "$(dirname "$CONFIG")"
-{
-  echo "# Generated by bin/lazygit-theme -- edit configs/lazygit/settings.yml instead."
-  echo "# Theme derived from $COLORS"
-  cat "$SETTINGS"
-  cat <<EOF
-  theme:
-    activeBorderColor:
-      - "$accent"
-    inactiveBorderColor:
-      - "$muted"
-    searchingActiveBorderColor:
-      - "$accent"
-    selectedLineBgColor:
-      - "$selection"
-    optionsTextColor:
-      - "$muted"
-    defaultFgColor:
-      - "$fg"
-EOF
 } > "$CONFIG"
 
-echo "→ lazygit theme: accent $accent, muted $muted, selection $selection"
+say "→ lazygit theme: $bg → $term_fg at ${SATURATION}% cast"

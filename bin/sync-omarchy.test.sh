@@ -38,6 +38,11 @@ APPS="$HOME/.local/share/applications"
 STATE="$HOME/.local/state/omarchy/current"
 mkdir -p "$APPS" "$STATE/theme/backgrounds"
 
+# A machine that installed the old lazygit theme-set hook, which sync now clears.
+LAZYGIT_HOOK="$HOME/.config/omarchy/hooks/theme-set.d/lazygit-theme.hook"
+mkdir -p "$(dirname "$LAZYGIT_HOOK")"
+printf '#!/bin/bash\nexec "%s/bin/lazygit-theme"\n' "$WORK/repo" > "$LAZYGIT_HOOK"
+
 # Stubs record every call and read their answers out of the scratch HOME, so a
 # test can set up a machine state and then assert on what was asked of it.
 cat > "$WORK/stub/omarchy" <<'STUB'
@@ -99,7 +104,7 @@ check "reports the font"        'grep -q "JetBrainsMono Nerd Font" "$out"'
 check "reports a missing web app" 'grep -q "web app Linear" "$out"'
 check "reports the btop theme link" 'grep -q "btop theme link" "$out"'
 check "reports the disabled bar plugin" 'grep -q "bar plugin omarchy.tailscale" "$out"'
-check "reports the lazygit theme"       'grep -q "lazygit theme" "$out"'
+check "reports the stale lazygit hook"   'grep -q "lazygit theme hook" "$out"'
 check "reports the TUI"         'grep -q "TUI Zen Octo" "$out"'
 check "changes nothing"         '[ ! -e "$HOME/theme" ] && [ -z "$(ls -A "$APPS")" ]'
 
@@ -122,14 +127,7 @@ check "passes a webapp its icon URL" \
 check "installs the TUI"         '[ -e "$APPS/Zen Octo.desktop" ]'
 check "writes the font size"     'grep -q "base-size = 14" "$XDG_CONFIG_HOME/omarchy/shell.toml"'
 check "relinks btop's theme"     '[ "$XDG_CONFIG_HOME/btop/themes/current.theme" -ef "$STATE/theme/btop.theme" ]'
-check "generates lazygit's theme" \
-  'grep -q "selectedLineBgColor" "$XDG_CONFIG_HOME/lazygit/config.yml"'
-check "takes lazygit colours from the palette" \
-  'grep -q "\"#445566\"" "$XDG_CONFIG_HOME/lazygit/config.yml" && grep -q "\"#aabbcc\"" "$XDG_CONFIG_HOME/lazygit/config.yml"'
-check "keeps lazygit's tracked settings" \
-  'grep -q "nerdFontsVersion" "$XDG_CONFIG_HOME/lazygit/config.yml"'
-check "installs the theme-set hook" \
-  'grep -q "bin/lazygit-theme" "$HOME/.config/omarchy/hooks/theme-set.d/lazygit-theme.hook"'
+check "removes the stale lazygit hook" '[ ! -e "$LAZYGIT_HOOK" ]'
 check "lets the site pick a web app icon" \
   'grep -q "^webapp install Linear https://linear.app  *$" "$HOME/calls.log"'
 check "passes the TUI an absolute icon path" \

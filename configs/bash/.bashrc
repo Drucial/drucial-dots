@@ -18,3 +18,15 @@
 # Personal aliases, symlinked from the dotfiles repo by bin/dots.
 # Sourced last so it can shadow Omarchy's defaults above.
 [[ -r ~/.bash_aliases ]] && source ~/.bash_aliases
+
+# Re-derives lazygit's theme from this terminal's colours before handing off.
+# Shadows the binary rather than the `gg` alias so both spellings get it; the
+# alias resolves to this function. bin/lazygit-theme asks the terminal what its
+# background is, which needs a tty, so it has to run from here rather than from
+# a theme-change hook. It exits without writing when nothing has changed.
+# Mirrors the zsh copy in configs/zsh/.zsh_functions.
+lazygit() {
+  local theme="${DOTS_REPO:-$HOME/Dev/drucial-dots}/bin/lazygit-theme"
+  [ -x "$theme" ] && "$theme" --quiet
+  command lazygit "$@"
+}
