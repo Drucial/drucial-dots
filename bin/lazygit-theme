@@ -7,16 +7,21 @@
 # the theme is derived from those rather than pinned to any one palette: switch
 # themes and this regenerates. Installed as a theme-set hook by bin/sync-omarchy.
 #
-# Without an Omarchy palette (macOS, or a fresh machine) it falls back to a
-# grayscale theme in explicit hex rather than lazygit's ANSI defaults, which
-# render badly against most terminal palettes.
+# Without an Omarchy palette (macOS, or a fresh machine) the terminal is asked
+# for its own background and foreground over OSC 11/10 and the theme is mixed
+# between the two. That is a VT escape any modern terminal answers, so it needs
+# no knowledge of which terminal is running or how it was themed, and the greys
+# land in the background's own hue instead of fighting it. Falls back to a fixed
+# grayscale ramp when there is no terminal to ask.
 #
 # Run: bin/lazygit-theme [--dark|--light]   (env: LAZYGIT_THEME_MODE=dark|light)
+#   --dark/--light skip the query and force the fixed ramp.
 set -euo pipefail
 
-MODE="${LAZYGIT_THEME_MODE:-dark}"
+MODE="${LAZYGIT_THEME_MODE:-auto}"
 while [ $# -gt 0 ]; do
   case "$1" in
+    --auto)  MODE=auto ;;
     --dark)  MODE=dark ;;
     --light) MODE=light ;;
     *) echo "✖ Unknown argument: $1" >&2; exit 1 ;;
@@ -24,8 +29,8 @@ while [ $# -gt 0 ]; do
   shift
 done
 case "$MODE" in
-  dark|light) ;;
-  *) echo "✖ Unknown mode: $MODE (expected dark or light)" >&2; exit 1 ;;
+  auto|dark|light) ;;
+  *) echo "✖ Unknown mode: $MODE (expected auto, dark or light)" >&2; exit 1 ;;
 esac
 
 SCRIPT="${BASH_SOURCE[0]}"
@@ -58,28 +63,87 @@ pick() {
   return 1
 }
 
+# Asks the terminal for one of its own colours: OSC 10 is the foreground, OSC 11
+# the background. The reply comes back on the same tty as `rgb:rrrr/gggg/bbbb`
+# with 1-4 hex digits per channel, so each is padded out and truncated to 8-bit.
+# `min 0 time 3` caps the wait at 0.3s, which is what keeps a terminal that
+# ignores the query from hanging the script.
+query_terminal_color() {
+  local code="$1" saved reply
+  # Braced so bash's own message for a failed redirect is suppressed too.
+  { exec 3<>/dev/tty; } 2>/dev/null || return 1
+  saved="$(stty -g <&3 2>/dev/null)" || { exec 3>&-; return 1; }
+  stty raw -echo min 0 time 3 <&3 2>/dev/null || { exec 3>&-; return 1; }
+  printf '\033]%s;?\007' "$code" >&3
+  reply="$(dd bs=64 count=1 <&3 2>/dev/null)" || true
+  stty "$saved" <&3 2>/dev/null || true
+  exec 3>&-
+
+  [[ "$reply" =~ rgb:([0-9a-fA-F]{1,4})/([0-9a-fA-F]{1,4})/([0-9a-fA-F]{1,4}) ]] || return 1
+  local channel out=""
+  for channel in "${BASH_REMATCH[@]:1:3}"; do
+    channel="${channel}${channel}${channel}${channel}"
+    out="$out${channel:0:2}"
+  done
+  printf '#%s' "$out"
+}
+
+# Percentage `t` of the way from `a` to `b`, per channel.
+mix() {
+  local a="$1" b="$2" t="$3"
+  printf '#%02x%02x%02x' \
+    $(( (16#${a:1:2} * (100 - t) + 16#${b:1:2} * t) / 100 )) \
+    $(( (16#${a:3:2} * (100 - t) + 16#${b:3:2} * t) / 100 )) \
+    $(( (16#${a:5:2} * (100 - t) + 16#${b:5:2} * t) / 100 ))
+}
+
 if [ ! -f "$COLORS" ]; then
   # No Omarchy palette (a fresh machine before the first theme set, or macOS).
   # Every one of lazygit's twelve theme keys is set so nothing falls through to
   # its ANSI defaults, which are at the mercy of the terminal's own palette.
-  if [ "$MODE" = light ]; then
-    fg="#2e2e2e";       active="#101010";    inactive="#bcbcbc"
-    options="#8a8a8a";  sel_bg="#e2e2e2";    insel_bg="#ededed"
+  bg=""; term_fg=""
+  if [ "$MODE" = auto ]; then
+    bg="$(query_terminal_color 11 || true)"
+    term_fg="$(query_terminal_color 10 || true)"
+    [ "$bg" = "$term_fg" ] && { bg=""; term_fg=""; }
+  fi
+
+  if [ -n "$bg" ] && [ -n "$term_fg" ]; then
+    # One ramp from the terminal's background to its foreground. Nothing here
+    # picks a hue: whatever tint the background carries, the greys carry too.
+    source="terminal $bg → $term_fg"
+    fg="$term_fg"
+    insel_bg="$(mix "$bg" "$term_fg" 7)"
+    sel_bg="$(mix "$bg" "$term_fg" 14)"
+    inactive="$(mix "$bg" "$term_fg" 30)"
+    cherry_bg="$(mix "$bg" "$term_fg" 42)"
+    options="$(mix "$bg" "$term_fg" 48)"
+    marked_bg="$(mix "$bg" "$term_fg" 58)"
+    unstaged="$(mix "$bg" "$term_fg" 66)"
+    author="$(mix "$bg" "$term_fg" 52)"
+    active="$(mix "$bg" "$term_fg" 78)"
+    cherry_fg="$bg"
+    marked_fg="$bg"
+  elif [ "$MODE" = light ]; then
+    source="fixed light ramp"
+    fg="#2e2e2e";        active="#101010";    inactive="#bcbcbc"
+    options="#8a8a8a";   sel_bg="#e2e2e2";    insel_bg="#ededed"
     cherry_fg="#fafafa"; cherry_bg="#5a5a5a"
     marked_fg="#fafafa"; marked_bg="#8c8c8c"
-    unstaged="#5c5c5c"; author="#6e6e6e"
+    unstaged="#5c5c5c";  author="#6e6e6e"
   else
-    fg="#c6c6c6";       active="#e4e4e4";    inactive="#4c4c4c"
-    options="#767676";  sel_bg="#303030";    insel_bg="#262626"
+    source="fixed dark ramp"
+    fg="#c6c6c6";        active="#e4e4e4";    inactive="#4c4c4c"
+    options="#767676";   sel_bg="#303030";    insel_bg="#262626"
     cherry_fg="#1c1c1c"; cherry_bg="#9e9e9e"
     marked_fg="#1c1c1c"; marked_bg="#6c6c6c"
-    unstaged="#a8a8a8"; author="#8c8c8c"
+    unstaged="#a8a8a8";  author="#8c8c8c"
   fi
 
   mkdir -p "$(dirname "$CONFIG")"
   {
     echo "# Generated by bin/lazygit-theme -- edit configs/lazygit/settings.yml instead."
-    echo "# Neutral $MODE theme: no Omarchy palette at $COLORS"
+    echo "# Neutral theme from $source: no Omarchy palette at $COLORS"
     cat "$SETTINGS"
     cat <<EOF
   authorColors:
@@ -113,7 +177,7 @@ if [ ! -f "$COLORS" ]; then
 EOF
   } > "$CONFIG"
 
-  echo "→ lazygit theme: neutral $MODE"
+  echo "→ lazygit theme: neutral, $source"
   exit 0
 fi
 
