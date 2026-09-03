@@ -14,20 +14,29 @@
 # land in the background's own hue instead of fighting it. Falls back to a fixed
 # grayscale ramp when there is no terminal to ask.
 #
-# Run: bin/lazygit-theme [--dark|--light]   (env: LAZYGIT_THEME_MODE=dark|light)
+# Run: bin/lazygit-theme [--dark|--light] [--saturation N]
 #   --dark/--light skip the query and force the fixed ramp.
+#   --saturation is how hard the chrome carries the background's colour cast:
+#   100 keeps it as-is, 0 gives flat grey, the 260 default pushes it well past
+#   the background's own so it survives being lightened.
+#   Env: LAZYGIT_THEME_MODE=auto|dark|light, LAZYGIT_THEME_SATURATION=N
 set -euo pipefail
 
 MODE="${LAZYGIT_THEME_MODE:-auto}"
+SATURATION="${LAZYGIT_THEME_SATURATION:-260}"
 while [ $# -gt 0 ]; do
   case "$1" in
     --auto)  MODE=auto ;;
     --dark)  MODE=dark ;;
     --light) MODE=light ;;
+    --saturation) shift; SATURATION="${1:-}" ;;
     *) echo "✖ Unknown argument: $1" >&2; exit 1 ;;
   esac
   shift
 done
+case "$SATURATION" in
+  ''|*[!0-9]*) echo "✖ Saturation must be a whole number: $SATURATION" >&2; exit 1 ;;
+esac
 case "$MODE" in
   auto|dark|light) ;;
   *) echo "✖ Unknown mode: $MODE (expected auto, dark or light)" >&2; exit 1 ;;
@@ -88,13 +97,34 @@ query_terminal_color() {
   printf '#%s' "$out"
 }
 
-# Percentage `t` of the way from `a` to `b`, per channel.
-mix() {
-  local a="$1" b="$2" t="$3"
+clamp() {
+  local v="$1"
+  [ "$v" -lt 0 ] && v=0
+  [ "$v" -gt 255 ] && v=255
+  printf '%d' "$v"
+}
+
+# A shade `level` percent of the way from the background's brightness toward the
+# foreground's, carrying the background's own colour cast at $SATURATION.
+#
+# Interpolating straight from bg to fg would be the obvious thing, but it averages
+# the two casts against each other and the middle of the ramp comes out grey --
+# which on a tinted background reads as dirt. So brightness alone is interpolated,
+# and each channel's distance from its own average (the cast) is re-applied on
+# top, amplified: backgrounds are usually desaturated, and a cast that survives at
+# background brightness disappears once lightened. A neutral grey background has
+# no cast to amplify and stays grey.
+tint() {
+  local level="$1"
+  local br=$((16#${bg:1:2}))       bgr=$((16#${bg:3:2}))       bb=$((16#${bg:5:2}))
+  local fr=$((16#${term_fg:1:2}))  fgr=$((16#${term_fg:3:2}))  fb=$((16#${term_fg:5:2}))
+  local bmean=$(( (br + bgr + bb) / 3 ))
+  local fmean=$(( (fr + fgr + fb) / 3 ))
+  local target=$(( bmean + (fmean - bmean) * level / 100 ))
   printf '#%02x%02x%02x' \
-    $(( (16#${a:1:2} * (100 - t) + 16#${b:1:2} * t) / 100 )) \
-    $(( (16#${a:3:2} * (100 - t) + 16#${b:3:2} * t) / 100 )) \
-    $(( (16#${a:5:2} * (100 - t) + 16#${b:5:2} * t) / 100 ))
+    "$(clamp $(( target + (br  - bmean) * SATURATION / 100 )))" \
+    "$(clamp $(( target + (bgr - bmean) * SATURATION / 100 )))" \
+    "$(clamp $(( target + (bb  - bmean) * SATURATION / 100 )))"
 }
 
 if [ ! -f "$COLORS" ]; then
@@ -109,19 +139,19 @@ if [ ! -f "$COLORS" ]; then
   fi
 
   if [ -n "$bg" ] && [ -n "$term_fg" ]; then
-    # One ramp from the terminal's background to its foreground. Nothing here
-    # picks a hue: whatever tint the background carries, the greys carry too.
-    source="terminal $bg → $term_fg"
+    # One ramp off the terminal's background. Nothing here picks a hue; it only
+    # carries the background's own, so the chrome reads as part of the theme.
+    source="terminal $bg → $term_fg at ${SATURATION}% cast"
     fg="$term_fg"
-    insel_bg="$(mix "$bg" "$term_fg" 7)"
-    sel_bg="$(mix "$bg" "$term_fg" 14)"
-    inactive="$(mix "$bg" "$term_fg" 30)"
-    cherry_bg="$(mix "$bg" "$term_fg" 42)"
-    options="$(mix "$bg" "$term_fg" 48)"
-    marked_bg="$(mix "$bg" "$term_fg" 58)"
-    unstaged="$(mix "$bg" "$term_fg" 66)"
-    author="$(mix "$bg" "$term_fg" 52)"
-    active="$(mix "$bg" "$term_fg" 78)"
+    insel_bg="$(tint 6)"
+    sel_bg="$(tint 13)"
+    inactive="$(tint 26)"
+    cherry_bg="$(tint 40)"
+    options="$(tint 44)"
+    author="$(tint 50)"
+    marked_bg="$(tint 56)"
+    unstaged="$(tint 64)"
+    active="$(tint 72)"
     cherry_fg="$bg"
     marked_fg="$bg"
   elif [ "$MODE" = light ]; then
