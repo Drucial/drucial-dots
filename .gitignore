@@ -22,3 +22,7 @@ configs/git/config.local
 # lazygit: settings.yml is tracked, config.yml is generated from it by
 # configs/lazygit/lazygit-theme with colours read from the terminal itself.
 configs/lazygit/config.yml
+
+# lazydocker: settings.yml is tracked, config.yml is generated from it by
+# configs/lazydocker/lazydocker-theme with colours read from the terminal itself.
+configs/lazydocker/config.yml

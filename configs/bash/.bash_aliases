@@ -19,6 +19,7 @@ alias ff="fzf --bind 'enter:execute(nvim {})'"                                  
 alias fs='fzf --ansi --disabled --delimiter : --bind "start:reload:rg --column --line-number --no-heading --color=always --smart-case {q}" --bind "change:reload:sleep 0.1; rg --column --line-number --no-heading --color=always --smart-case {q} || true" --preview "bat --style=numbers --color=always --highlight-line {2} {1}" --bind "enter:become(nvim +{2} {1})"'  # Fzf: Live ripgrep search; enter opens file at line in nvim
 alias ip='ip -4 -o addr show scope global | awk "{print \$4}" | cut -d/ -f1 | head -1 | tee >(wl-copy)'  # Network: Print and copy local IP
 alias notes='zen-notes'                                                                      # Neovim: Open notes directory
+alias lzd='lazydocker'                                                                       # Lazydocker: Launch TUI
 
 #------
 # Term

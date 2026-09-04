@@ -9,6 +9,14 @@ lazygit() {
   command lazygit "$@"
 }
 
+# Same for lazydocker, which has its own script and its own four theme keys.
+# Mirrors the bash copy in configs/bash/.bashrc.
+lazydocker() {
+  local theme="${XDG_CONFIG_HOME:-$HOME/.config}/lazydocker/lazydocker-theme"
+  [ -x "$theme" ] && "$theme" --quiet
+  command lazydocker "$@"
+}
+
 # Alias cheat sheet — fzf picker over ~/.config/zsh/.aliases.
 # Enter drops the alias name onto the prompt (no execute) so you can add args.
 fa() {

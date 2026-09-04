@@ -2,8 +2,8 @@
 
 My personal dotfiles. App configs live under `configs/` and get symlinked into
 `~/.config` (or `$XDG_CONFIG_HOME`). Packages come from two curated manifests at
-the repo root — `Brewfile` on macOS, `Archfile` on Omarchy. `bin/dots` is the
-only script.
+the repo root — `Brewfile` on macOS, `Archfile` on Omarchy. `bin/` holds the
+repo's own scripts; a few configs carry one of their own.
 
 ## Layout
 
@@ -57,6 +57,7 @@ size a desktop does not, and that is a property of the screen, not of the repo.
 | `git/`          | git config + ignore    |
 | `hypr/`         | Hyprland (Linux only)  |
 | `kitty/`        | terminal               |
+| `lazydocker/`   | docker TUI             |
 | `lazygit/`      | git TUI                |
 | `mise/`         | tool versions          |
 | `nvim/`         | editor (lazy.nvim)     |
@@ -243,19 +244,27 @@ interactive service installer -- `omarchy install service tailscale` also enable
 a daemon and authenticates a browser session, and that half stays a manual step
 alongside the other logins.
 
-Two apps need more than a config file to follow the theme. btop resolves
+Three apps need more than a config file to follow the theme. btop resolves
 `color_theme = "current"` through a symlink Omarchy writes once at install and
-never recreates, so `sync-omarchy` recreates it. lazygit has no Omarchy theme
-file at all -- `configs/lazygit/lazygit-theme` derives one by asking the
-terminal for its own background and foreground over OSC 11/10, so it follows
-whatever is actually on screen without knowing which terminal or theme is in
-play. That query needs a tty, so the `lazygit` shell function in
-`configs/zsh/.zsh_functions` and `configs/bash/.bashrc` runs it just before
-handing off to the real binary, rather than a `theme-set` hook. Its tracked file
-is `configs/lazygit/settings.yml`; `config.yml` is generated from it and
-gitignored. When nothing answers the query -- no tty, or a terminal that ignores
-it -- an existing `config.yml` is left alone, and a machine that has never
-generated one gets the settings alone with lazygit's own colours.
+never recreates, so `sync-omarchy` recreates it. lazygit and lazydocker have no
+Omarchy theme file at all -- `configs/lazygit/lazygit-theme` and
+`configs/lazydocker/lazydocker-theme` derive one by asking the terminal for its
+own background and foreground over OSC 11/10, so they follow whatever is
+actually on screen without knowing which terminal or theme is in play. That
+query needs a tty, so the `lazygit` and `lazydocker` shell functions in
+`configs/zsh/.zsh_functions` and `configs/bash/.bashrc` run it just before
+handing off to the real binary, rather than a `theme-set` hook. The tracked file
+in each is `settings.yml`; `config.yml` is generated from it and gitignored.
+When nothing answers the query -- no tty, or a terminal that ignores it -- an
+existing `config.yml` is left alone, and a machine that has never generated one
+gets the settings alone with the app's own colours.
+
+The two scripts are independent copies rather than one shared generator.
+lazydocker exposes four theme keys to lazygit's twelve, and it hands
+`inactiveBorderColor` to gocui as the global foreground, which every view copies
+as its text colour -- so where lazygit dims its inactive border, lazydocker has
+to leave that key at the terminal foreground or dim all of its body text with
+it.
 
 `~/.config/omarchy/` itself is deliberately **not** symlinked in. Everything in
 it — `shell.json`, `extensions/`, the hooks — is byte-identical to what Omarchy

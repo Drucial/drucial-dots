@@ -37,6 +37,14 @@ lazygit() {
   command lazygit "$@"
 }
 
+# Same for lazydocker, which has its own script and its own four theme keys.
+# Mirrors the zsh copy in configs/zsh/.zsh_functions.
+lazydocker() {
+  local theme="${XDG_CONFIG_HOME:-$HOME/.config}/lazydocker/lazydocker-theme"
+  [ -x "$theme" ] && "$theme" --quiet
+  command lazydocker "$@"
+}
+
 # Shell history. Guarded because the Archfile installs atuin but a machine
 # mid-sync may not have it yet. Mirrors the zsh copy in configs/zsh/.zshrc.
 command -v atuin >/dev/null 2>&1 && eval "$(atuin init bash)"

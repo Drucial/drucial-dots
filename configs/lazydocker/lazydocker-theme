@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+# Regenerates config.yml from settings.yml, both alongside this script, adding a
+# theme derived from the terminal's own colours.
+#
+# It lives here rather than in bin/ so that the config directory this repo
+# already links to ~/.config/lazydocker carries it: the shell wrapper can then
+# find it at a fixed path without knowing where the repo was cloned.
+#
+# Omarchy themes every terminal app by shipping a per-app file, and there is no
+# lazydocker one. Rather than read any theme's palette, the terminal is asked
+# for its background and foreground over OSC 11/10 -- a VT escape any modern
+# terminal answers -- and the chrome is built off the answer. That needs no
+# knowledge of which terminal is running or how it was themed, and it reports
+# what is actually on screen rather than what some config file claims.
+#
+# The same approach themes lazygit, in configs/lazygit/lazygit-theme. The two
+# scripts stay independent copies: lazydocker exposes four theme keys to
+# lazygit's twelve, and one of the four behaves differently enough (see
+# inactiveBorderColor below) that a shared generator would be mostly branches.
+#
+# The query needs a tty, so this is driven by the `lazydocker` shell wrapper in
+# configs/zsh/.zsh_functions and configs/bash/.bashrc, which runs it just before
+# handing off to the real binary. Where no wrapper runs it -- a shell without
+# one, a script -- lazydocker keeps whatever theme was generated last, or falls
+# back to its own defaults on a machine where this has never run.
+#
+# Run: ~/.config/lazydocker/lazydocker-theme [--saturation N] [--quiet]
+#   --saturation is how hard the chrome carries the background's colour cast:
+#   0 gives flat grey, 100 keeps the background's own, and the 180 default lifts
+#   it enough to survive being lightened without reading as a colour of its own.
+#   Env: LAZYDOCKER_THEME_SATURATION=N
+set -euo pipefail
+
+SATURATION="${LAZYDOCKER_THEME_SATURATION:-180}"
+quiet=false
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --saturation) shift; SATURATION="${1:-}" ;;
+    --quiet|-q)   quiet=true ;;
+    *) echo "✖ Unknown argument: $1" >&2; exit 1 ;;
+  esac
+  shift
+done
+case "$SATURATION" in
+  ''|*[!0-9]*) echo "✖ Saturation must be a whole number: $SATURATION" >&2; exit 1 ;;
+esac
+
+say() { $quiet || echo "$@"; }
+
+# Resolved through any symlink so settings.yml is read from the repo, not from
+# whatever ~/.config path was followed to get here.
+SCRIPT="${BASH_SOURCE[0]}"
+while [ -L "$SCRIPT" ]; do
+  link_target="$(readlink "$SCRIPT")"
+  case "$link_target" in
+    /*) SCRIPT="$link_target" ;;
+    *)  SCRIPT="$(cd "$(dirname "$SCRIPT")" && pwd)/$link_target" ;;
+  esac
+done
+SETTINGS="$(cd "$(dirname "$SCRIPT")" && pwd -P)/settings.yml"
+CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/lazydocker/config.yml"
+
+[ -f "$SETTINGS" ] || { echo "✖ No settings at $SETTINGS" >&2; exit 1; }
+
+# Asks the terminal for one of its own colours: OSC 10 is the foreground, OSC 11
+# the background. The reply comes back on the same tty as `rgb:rrrr/gggg/bbbb`
+# with 1-4 hex digits per channel, so each is padded out and truncated to 8-bit.
+# `min 0 time 3` caps the wait at 0.3s, which is what keeps a terminal that
+# ignores the query from hanging the shell that is about to open lazydocker.
+query_terminal_color() {
+  local code="$1" saved reply
+  # Braced so bash's own message for a failed redirect is suppressed too.
+  { exec 3<>/dev/tty; } 2>/dev/null || return 1
+  saved="$(stty -g <&3 2>/dev/null)" || { exec 3>&-; return 1; }
+  stty raw -echo min 0 time 3 <&3 2>/dev/null || { exec 3>&-; return 1; }
+  printf '\033]%s;?\007' "$code" >&3
+  reply="$(dd bs=64 count=1 <&3 2>/dev/null)" || true
+  stty "$saved" <&3 2>/dev/null || true
+  exec 3>&-
+
+  [[ "$reply" =~ rgb:([0-9a-fA-F]{1,4})/([0-9a-fA-F]{1,4})/([0-9a-fA-F]{1,4}) ]] || return 1
+  local channel out=""
+  for channel in "${BASH_REMATCH[@]:1:3}"; do
+    channel="${channel}${channel}${channel}${channel}"
+    out="$out${channel:0:2}"
+  done
+  printf '#%s' "$out"
+}
+
+clamp() {
+  local v="$1"
+  [ "$v" -lt 0 ] && v=0
+  [ "$v" -gt 255 ] && v=255
+  printf '%d' "$v"
+}
+
+# A shade `level` percent of the way from the background's brightness toward the
+# foreground's, carrying the background's own colour cast at $SATURATION -- or at
+# `cast`, for the selection bar, which sits under text and takes the tint harder
+# than a one-pixel border does.
+#
+# Interpolating straight from bg to fg would be the obvious thing, but it averages
+# the two casts against each other and the middle of the ramp comes out grey --
+# which on a tinted background reads as dirt. So brightness alone is interpolated,
+# and each channel's distance from its own average (the cast) is re-applied on
+# top, amplified: backgrounds are usually desaturated, and a cast that survives at
+# background brightness disappears once lightened. A neutral grey background has
+# no cast to amplify and stays grey.
+tint() {
+  local level="$1" cast="${2:-$SATURATION}"
+  local br=$((16#${bg:1:2}))       bgr=$((16#${bg:3:2}))       bb=$((16#${bg:5:2}))
+  local fr=$((16#${term_fg:1:2}))  fgr=$((16#${term_fg:3:2}))  fb=$((16#${term_fg:5:2}))
+  local bmean=$(( (br + bgr + bb) / 3 ))
+  local fmean=$(( (fr + fgr + fb) / 3 ))
+  local target=$(( bmean + (fmean - bmean) * level / 100 ))
+  printf '#%02x%02x%02x' \
+    "$(clamp $(( target + (br  - bmean) * cast / 100 )))" \
+    "$(clamp $(( target + (bgr - bmean) * cast / 100 )))" \
+    "$(clamp $(( target + (bb  - bmean) * cast / 100 )))"
+}
+
+bg="$(query_terminal_color 11 || true)"
+term_fg="$(query_terminal_color 10 || true)"
+[ "$bg" = "$term_fg" ] && { bg=""; term_fg=""; }
+
+if [ -z "$bg" ] || [ -z "$term_fg" ]; then
+  # Nothing answered: no tty, or a terminal that ignores the query. An existing
+  # config was generated against a terminal that did answer, so it is left alone
+  # rather than clobbered with something worse. Only a machine that has never
+  # generated one gets the bare settings, and lazydocker's own defaults with them.
+  if [ -f "$CONFIG" ]; then
+    say "→ lazydocker theme: terminal did not answer, keeping $CONFIG"
+    exit 0
+  fi
+  # Not `install -D`: BSD install has no such flag, and this runs on macOS too.
+  mkdir -p "$(dirname "$CONFIG")"
+  install -m644 "$SETTINGS" "$CONFIG"
+  say "→ lazydocker: settings only, no terminal to derive a theme from"
+  exit 0
+fi
+
+# Recorded so the wrapper can run this on every launch without rewriting the
+# file each time. Nothing else in the output depends on state, so matching this
+# line means the rest would be byte-identical.
+STAMP="# derived: bg=$bg fg=$term_fg cast=$SATURATION"
+if [ -f "$CONFIG" ] && grep -qxF "$STAMP" "$CONFIG"; then
+  say "→ lazydocker theme: already current for $bg"
+  exit 0
+fi
+
+sel_bg="$(tint 13 100)"
+options="$(tint 56)"
+active="$(tint 72)"
+
+# lazydocker hands inactiveBorderColor to gocui as the global FgColor, which
+# every view then copies as its own text colour -- so it is the body text as
+# much as it is the border. lazygit dims its inactive border to tint 32; doing
+# that here would dim container names, logs and stats with it, and lazydocker
+# has no separate defaultFgColor to restore them. Readable text wins.
+inactive="$term_fg"
+
+mkdir -p "$(dirname "$CONFIG")"
+{
+  echo "# Generated by lazydocker-theme -- edit settings.yml beside it, never this file."
+  echo "$STAMP"
+  cat "$SETTINGS"
+  # All four of lazydocker's theme keys are set so nothing falls through to its
+  # ANSI defaults, which are at the mercy of the terminal's own palette.
+  cat <<EOF
+  theme:
+    activeBorderColor:
+      - "$active"
+    inactiveBorderColor:
+      - "$inactive"
+    selectedLineBgColor:
+      - "$sel_bg"
+    optionsTextColor:
+      - "$options"
+EOF
+} > "$CONFIG"
+
+say "→ lazydocker theme: $bg → $term_fg at ${SATURATION}% cast"
