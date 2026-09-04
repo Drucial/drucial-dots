@@ -50,7 +50,7 @@ machine-specific.
 | `kitty/`        | terminal               |
 | `lazygit/`      | git TUI                |
 | `mise/`         | tool versions          |
-| `nvim/`         | editor (LazyVim)       |
+| `nvim/`         | editor (lazy.nvim)     |
 | `posting/`      | API client             |
 | `rainfrog/`     | database TUI           |
 | `slk/`          | Slack TUI              |
