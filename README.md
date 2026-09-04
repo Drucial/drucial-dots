@@ -262,9 +262,13 @@ gets the settings alone with the app's own colours.
 The two scripts are independent copies rather than one shared generator.
 lazydocker exposes four theme keys to lazygit's twelve, and it hands
 `inactiveBorderColor` to gocui as the global foreground, which every view copies
-as its text colour -- so where lazygit dims its inactive border, lazydocker has
-to leave that key at the terminal foreground or dim all of its body text with
-it.
+as its text colour -- so that key is the body text as much as it is the border,
+and dimming it the way lazygit does would dim container names and logs with it.
+lazydocker's ramp therefore runs the other way: the inactive border sits just
+below the foreground, still bright enough to read as text, and the active border
+takes the foreground itself, in bold. Its stamp line also carries the
+generator's own checksum, so editing the ramp re-derives every machine's
+`config.yml` instead of leaving it on the theme it had already generated.
 
 `~/.config/omarchy/` itself is deliberately **not** symlinked in. Everything in
 it — `shell.json`, `extensions/`, the hooks — is byte-identical to what Omarchy

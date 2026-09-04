@@ -140,9 +140,12 @@ if [ -z "$bg" ] || [ -z "$term_fg" ]; then
 fi
 
 # Recorded so the wrapper can run this on every launch without rewriting the
-# file each time. Nothing else in the output depends on state, so matching this
-# line means the rest would be byte-identical.
-STAMP="# derived: bg=$bg fg=$term_fg cast=$SATURATION"
+# file each time. Matching this line means the rest would be byte-identical.
+#
+# The generator's own checksum is part of it: the colours alone would not change
+# when the ramp does, so editing this script would otherwise leave every machine
+# sitting on the theme it had already generated.
+STAMP="# derived: bg=$bg fg=$term_fg cast=$SATURATION gen=$(cksum < "$SCRIPT" | cut -d" " -f1)"
 if [ -f "$CONFIG" ] && grep -qxF "$STAMP" "$CONFIG"; then
   say "→ lazydocker theme: already current for $bg"
   exit 0
@@ -150,14 +153,20 @@ fi
 
 sel_bg="$(tint 13 100)"
 options="$(tint 56)"
-active="$(tint 72)"
 
 # lazydocker hands inactiveBorderColor to gocui as the global FgColor, which
 # every view then copies as its own text colour -- so it is the body text as
 # much as it is the border. lazygit dims its inactive border to tint 32; doing
 # that here would dim container names, logs and stats with it, and lazydocker
-# has no separate defaultFgColor to restore them. Readable text wins.
-inactive="$term_fg"
+# has no separate defaultFgColor to restore them.
+#
+# So the ramp runs the other way from lazygit's: the inactive border sits just
+# below the foreground, high enough to still read as body text, and the active
+# one takes the foreground itself. Anything dimmer for `active` would leave it
+# darker than the panes it is meant to stand out from. Twelve percent is a thin
+# margin for a one-pixel border, so `active` carries bold as well.
+inactive="$(tint 88)"
+active="$term_fg"
 
 mkdir -p "$(dirname "$CONFIG")"
 {
@@ -170,6 +179,7 @@ mkdir -p "$(dirname "$CONFIG")"
   theme:
     activeBorderColor:
       - "$active"
+      - bold
     inactiveBorderColor:
       - "$inactive"
     selectedLineBgColor:
