@@ -17,7 +17,6 @@ Archfile      the same for Omarchy, installed with yay
 Omarchyfile   everything else that makes an Omarchy box mine
 bin/dots      install / add / migrate / remove / brew / pac
 bin/sync-omarchy   one command: configs, packages, and the Omarchyfile
-bin/lazygit-theme  regenerates lazygit's colours from the current theme
 bin/dots.test.sh, bin/sync-omarchy.test.sh   drive both against throwaway copies
 ```
 
@@ -235,13 +234,16 @@ alongside the other logins.
 Two apps need more than a config file to follow the theme. btop resolves
 `color_theme = "current"` through a symlink Omarchy writes once at install and
 never recreates, so `sync-omarchy` recreates it. lazygit has no Omarchy theme
-file at all -- `bin/lazygit-theme` derives one from the palette in the theme's
-`colors.toml`, which every theme ships, and a `theme-set` hook reruns it on each
-switch. Its tracked file is `configs/lazygit/settings.yml`; `config.yml` is
-generated from it and gitignored, so lazygit needs no wrapper or flag to be
-themed. With no Omarchy palette present -- macOS, or before the first theme is
-set -- the generator writes the settings alone and leaves lazygit's own colours
-in place.
+file at all -- `configs/lazygit/lazygit-theme` derives one by asking the
+terminal for its own background and foreground over OSC 11/10, so it follows
+whatever is actually on screen without knowing which terminal or theme is in
+play. That query needs a tty, so the `lazygit` shell function in
+`configs/zsh/.zsh_functions` and `configs/bash/.bashrc` runs it just before
+handing off to the real binary, rather than a `theme-set` hook. Its tracked file
+is `configs/lazygit/settings.yml`; `config.yml` is generated from it and
+gitignored. When nothing answers the query -- no tty, or a terminal that ignores
+it -- an existing `config.yml` is left alone, and a machine that has never
+generated one gets the settings alone with lazygit's own colours.
 
 `~/.config/omarchy/` itself is deliberately **not** symlinked in. Everything in
 it — `shell.json`, `extensions/`, the hooks — is byte-identical to what Omarchy
