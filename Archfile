@@ -20,6 +20,14 @@ tailscale
 
 valkey
 
+# --- config: atuin ---
+atuin
+
+# --- config: git ---
+# Only for `[interactive] diffFilter` in configs/git/config -- delta is not the
+# pager. The Brewfile installs it on macOS; this keeps the two in step.
+git-delta
+
 # --- config: ghostty ---
 ghostty
 

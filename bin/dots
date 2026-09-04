@@ -66,7 +66,7 @@ done
 # and both keep their manifest sections so a config stays addressable from either
 # machine — the same reason add and migrate open a section in every manifest.
 SKIP_DARWIN=(hypr)
-SKIP_LINUX=(yabai kitty)
+SKIP_LINUX=(yabai kitty zen-term)
 case "$(uname -s)" in
   Darwin) SKIP=(${SKIP_DARWIN[@]+"${SKIP_DARWIN[@]}"}) ;;
   *)      SKIP=(${SKIP_LINUX[@]+"${SKIP_LINUX[@]}"}) ;;

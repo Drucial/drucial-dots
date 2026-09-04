@@ -81,11 +81,14 @@ bin/dots brew       # install the packages
 ```
 
 Neither carries secrets or app data. 1Password, SSH keys, `gh auth login`, the
-atuin key, and Tailscale are all still done by hand on a new machine.
+atuin key, and Tailscale are all still done by hand on a new machine. So are the
+`zen-*` TUIs -- `zen-octo`, `zen-notes` and `zen-linear` are bound in
+`hypr/bindings.lua` and `zen-octo` has a launcher in the Omarchyfile, but no
+manifest packages them, so those bindings dangle until each is built from source.
 
 Configs that only make sense on one platform are skipped rather than linked --
-`yabai` on Linux, `hypr` on macOS. Both keep their sections in both manifests, so
-a config stays addressable from either machine.
+`yabai`, `kitty` and `zen-term` on Linux, `hypr` on macOS. Both keep their
+sections in both manifests, so a config stays addressable from either machine.
 
 `install` also links `~/.zshrc`, `~/.zprofile`, `~/.bashrc`, and
 `~/.bash_aliases`. `~/.bashrc` is tracked because it is a one-time `/etc/skel`
