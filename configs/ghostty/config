@@ -87,3 +87,10 @@ palette = 15=#e0def4
 # Last, so it wins over the palette above. Absent on macOS, where `?` makes this
 # a no-op rather than an error.
 config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
+
+# ── This machine ──
+# Anything that differs by machine rather than by platform -- font-size is the
+# one so far, 10 on the mac and larger on a HiDPI laptop. Last, so it wins over
+# everything above. Outside the repo, so a clone elsewhere just gets the
+# defaults. Mirrors hypr/monitors.lua's ~/.local/state/hypr/machine.lua.
+config-file = ?"~/.local/state/ghostty/machine.conf"

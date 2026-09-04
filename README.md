@@ -31,10 +31,19 @@ into `~/.local/share/applications` individually rather than the directory being
 symlinked whole, because Omarchy writes its own web app launchers there. Drop a
 new file in and `bin/dots install` picks it up.
 
-Display scaling is per-machine, so `hypr/monitors.lua` reads it from
-`~/.local/state/hypr/machine.lua` when that file exists and falls back to
-committed defaults when it doesn't. Nothing else in `configs/` is
-machine-specific.
+Two settings are per-machine rather than per-platform, and both resolve the same
+way: an optional file under `~/.local/state/`, read when it exists and ignored
+when it doesn't, so a clone elsewhere just gets the committed defaults.
+
+| Setting | Committed default | Machine file |
+| ------- | ----------------- | ------------ |
+| Display scaling (`hypr/monitors.lua`) | `1` / `1` | `~/.local/state/hypr/machine.lua`, returning `{ gdk_scale = N, monitor_scale = N }` |
+| ghostty `font-size` | `10` | `~/.local/state/ghostty/machine.conf` |
+
+The hypr path works because `~/.local/state` is first on Omarchy's Lua module
+path; the ghostty one is an optional `config-file = ?"..."` include, last in the
+file so it wins. Neither is tracked -- a HiDPI laptop wants a scale and a font
+size a desktop does not, and that is a property of the screen, not of the repo.
 
 ### `configs/`
 
