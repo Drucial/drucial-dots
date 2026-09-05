@@ -15,6 +15,15 @@
 # Make an alias for invoking commands you use constantly
 # alias p='python'
 
+# Version manager. Omarchy's env-bootstrap only *appends* mise's shims dir, so
+# a tool Arch also ships in /usr/bin wins over the mise-managed one -- ruby is
+# the case that bites, since `ruby` resolves to the system 3.4.10 and every
+# `#!/usr/bin/env ruby` shebang (Rails' bin/rails, bin/vite) follows it. This
+# prepends the resolved tool dirs instead, and re-resolves on cd so a repo's
+# own mise.toml pin applies. Guarded because the shims path is set up whether
+# or not mise itself is present.
+command -v mise >/dev/null 2>&1 && eval "$(mise activate bash)"
+
 # Personal aliases, symlinked from the dotfiles repo by bin/dots.
 # Sourced last so it can shadow Omarchy's defaults above.
 [[ -r ~/.bash_aliases ]] && source ~/.bash_aliases
