@@ -23,6 +23,8 @@ cursor-style-blink = true
 # All shell integration options must be passed together.
 shell-integration-features = no-cursor,ssh-env
 
+working-directory = inherit
+window-inherit-working-directory = false
 # ── Window ──
 # Padding is Omarchy's 12/8, not zen-term's 8/8.
 window-theme = ghostty
