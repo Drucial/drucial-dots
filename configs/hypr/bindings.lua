@@ -99,6 +99,14 @@ hl.unbind("SUPER + SHIFT + L")
 o.bind("SUPER + SHIFT + L", "Linear",
   "omarchy-launch-or-focus 'chrome-linear\\.app.*-Default' 'omarchy-launch-webapp https://linear.app'")
 
+-- X, the web app Omarchy ships. Pinned to workspace 8 in hyprland.lua. Omarchy
+-- binds this key to the same web app, so the unbind still has to win. Raw
+-- command string rather than { webapp = ..., focus = true }, for the same
+-- reason as Linear above.
+hl.unbind("SUPER + SHIFT + X")
+o.bind("SUPER + SHIFT + X", "X",
+  "omarchy-launch-or-focus 'chrome-x\\.com.*-Default' 'omarchy-launch-webapp https://x.com/'")
+
 -- Web apps removed with `omarchy webapp remove`. Their launchers are gone, but
 -- the bindings launch the URL directly, so they need unbinding too.
 hl.unbind("SUPER + SHIFT + ALT + A") -- Grok
@@ -107,7 +115,6 @@ hl.unbind("SUPER + SHIFT + Y")       -- YouTube
 hl.unbind("SUPER + SHIFT + ALT + G") -- WhatsApp
 hl.unbind("SUPER + SHIFT + CTRL + G")-- Google Messages
 hl.unbind("SUPER + SHIFT + P")       -- Google Photos
-hl.unbind("SUPER + SHIFT + X")       -- X
 hl.unbind("SUPER + SHIFT + ALT + X") -- X Post
 
 -- Preinstalled apps uninstalled with `omarchy pkg drop`.

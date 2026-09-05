@@ -65,6 +65,9 @@ o.window("chrome-linear\\.app.*-Default", { workspace = "5" })
 -- Pin the Discord web app to workspace 7, the next one up from Slack.
 o.window("chrome-discord\\.com.*-Default", { workspace = "7" })
 
+-- Pin the X web app to workspace 8.
+o.window("chrome-x\\.com.*-Default", { workspace = "8" })
+
 -- Bigger 1Password (SUPER + SHIFT + SLASH). Omarchy tags it +floating-window,
 -- and apps/system.lua sizes that tag to 875x600, which clips its sidebar and
 -- detail pane. A plain size rule here loses to the tag rule regardless of
