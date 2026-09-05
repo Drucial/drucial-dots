@@ -4,7 +4,6 @@
   "page_size": 50,
   "cache_ttl": "5m0s",
   "search_debounce": "200ms",
-  "log_file": "/Users/drucial/.zen-linear/app.log",
   "log_level": "debug",
   "theme": "terminal",
   "density": "comfortable",

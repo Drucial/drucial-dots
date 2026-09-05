@@ -32,7 +32,7 @@ command -v mise >/dev/null 2>&1 && eval "$(mise activate bash)"
 # first, but it is plain `export` lines and both shells read it -- zen-linear
 # reads the LINEAR_API_KEY_* vars, and bash is the only shell on Omarchy.
 # Mirrors the zsh copy in configs/zsh/.zshrc.
-[[ -r ~/.config/zsh/.secrets ]] && source ~/.config/zsh/.secrets
+[[ -r ~/.bash_secrets ]] && source ~/.bash_secrets
 
 # Re-derives lazygit's theme from this terminal's colours before handing off.
 # Shadows the binary rather than the `gg` alias so both spellings get it; the
