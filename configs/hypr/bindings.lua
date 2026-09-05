@@ -75,6 +75,12 @@ o.bind("SUPER + SHIFT + C", "Claude",
 hl.unbind("SUPER + SHIFT + S")
 o.bind("SUPER + SHIFT + S", "Slack", { launch = "slack", focus = "^slack$" })
 
+-- Discord, the web app Omarchy ships. Pinned to workspace 7 in hyprland.lua.
+-- Omarchy binds no key to it, so nothing to unbind. Raw command string rather
+-- than { webapp = ..., focus = true }, for the same reason as Linear below.
+o.bind("SUPER + D", "Discord",
+  "omarchy-launch-or-focus 'chrome-discord\\.com.*-Default' 'omarchy-launch-webapp https://discord.com/channels/@me'")
+
 -- Superhuman, run as a chromium web app (was: Omarchy's default "Email"
 -- webapp on app.hey.com). Pinned to workspace 4 in hyprland.lua.
 -- Raw command string rather than { webapp = ..., focus = true }: that form uses
