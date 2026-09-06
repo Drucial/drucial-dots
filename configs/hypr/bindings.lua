@@ -63,12 +63,18 @@ o.bind("SUPER + SHIFT + F", "File manager", { launch = "nautilus", focus = "^org
 hl.unbind("SUPER + SHIFT + A")
 o.bind("SUPER + SHIFT + A", "ChatGPT", { launch = "chatgpt", focus = "^chatgpt$" })
 
--- Claude desktop app. One key over from ChatGPT, sharing workspace 3 with it
--- (pinned in hyprland.lua). Takes the key Omarchy's "Calendar" (HEY) webapp had
--- before that webapp was removed, so it still needs the unbind to win.
-hl.unbind("SUPER + SHIFT + C")
-o.bind("SUPER + SHIFT + C", "Claude",
+-- Claude desktop app, sharing workspace 3 with ChatGPT (pinned in hyprland.lua).
+-- Moved off SUPER + SHIFT + C so the Notion Calendar web app can take that key.
+o.bind("SUPER + SHIFT + K", "Claude",
   { launch = "claude-desktop", focus = "^com\\.anthropic\\.Claude$" })
+
+-- Notion Calendar, run as a chromium web app. Pinned to workspace 4 in
+-- hyprland.lua, alongside Superhuman. Omarchy binds this key to its own
+-- "Calendar" (HEY) webapp, so the unbind still has to win. Raw command string
+-- rather than { webapp = ..., focus = true }, for the same reason as Linear.
+hl.unbind("SUPER + SHIFT + C")
+o.bind("SUPER + SHIFT + C", "Calendar",
+  "omarchy-launch-or-focus 'chrome-calendar\\.notion\\.so.*-Default' 'omarchy-launch-webapp https://calendar.notion.so'")
 
 -- Slack desktop app (was: Omarchy's default "Google Maps" webapp).
 -- Pinned to workspace 6 in hyprland.lua.

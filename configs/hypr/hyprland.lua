@@ -51,6 +51,9 @@ o.window("com\\.anthropic\\.Claude", { workspace = "3" })
 -- one -- match any of them.
 o.window("chrome-mail\\.superhuman\\.com.*-Default", { workspace = "4" })
 
+-- Pin the Notion Calendar web app to workspace 4 as well, alongside Superhuman.
+o.window("chrome-calendar\\.notion\\.so.*-Default", { workspace = "4" })
+
 -- Pin the Slack desktop app to workspace 6. The Wayland app-id is lowercase
 -- "slack", not the "Slack" its .desktop declares as StartupWMClass.
 o.window("slack", { workspace = "6" })
