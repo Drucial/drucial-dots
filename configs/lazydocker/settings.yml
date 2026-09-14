@@ -1,0 +1,9 @@
+# Settings only. The lazydocker-theme script beside this file concatenates it
+# with a theme derived from the terminal's own background and foreground, and
+# writes the result to config.yml, which is what lazydocker actually reads. Edit
+# this file, never config.yml.
+#
+# `gui:` must stay the last top-level key: the generated theme block is appended
+# as `  theme:` and continues the mapping this file leaves open.
+gui:
+  containerStatusHealthStyle: icon

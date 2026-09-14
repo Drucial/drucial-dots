@@ -51,6 +51,9 @@ o.window("com\\.anthropic\\.Claude", { workspace = "3" })
 -- one -- match any of them.
 o.window("chrome-mail\\.superhuman\\.com.*-Default", { workspace = "4" })
 
+-- Pin the Notion Calendar web app to workspace 4 as well, alongside Superhuman.
+o.window("chrome-calendar\\.notion\\.so.*-Default", { workspace = "4" })
+
 -- Pin the Slack desktop app to workspace 6. The Wayland app-id is lowercase
 -- "slack", not the "Slack" its .desktop declares as StartupWMClass.
 o.window("slack", { workspace = "6" })
@@ -62,6 +65,12 @@ o.window("[sS]potify", { workspace = "10" })
 -- Pin the Linear web app to workspace 5.
 o.window("chrome-linear\\.app.*-Default", { workspace = "5" })
 
+-- Pin the Discord web app to workspace 7, the next one up from Slack.
+o.window("chrome-discord\\.com.*-Default", { workspace = "7" })
+
+-- Pin the X web app to workspace 8.
+o.window("chrome-x\\.com.*-Default", { workspace = "8" })
+
 -- Bigger 1Password (SUPER + SHIFT + SLASH). Omarchy tags it +floating-window,
 -- and apps/system.lua sizes that tag to 875x600, which clips its sidebar and
 -- detail pane. A plain size rule here loses to the tag rule regardless of
@@ -70,7 +79,7 @@ o.window("chrome-linear\\.app.*-Default", { workspace = "5" })
 o.window("^1[pP]assword$", { tag = "-floating-window" })
 o.window("^1[pP]assword$", { float = true })
 o.window("^1[pP]assword$", { center = true })
-o.window("^1[pP]assword$", { size = { 1100, 750 } })
+o.window("^1[pP]assword$", { size = { 1800, 1100 } })
 
 -- Float the zen TUIs (SUPER + SHIFT + O, N, and L).
 -- Spelled out rather than tagged "+floating-window": this file loads after the
@@ -79,7 +88,7 @@ o.window("^1[pP]assword$", { size = { 1100, 750 } })
 -- focus an existing window by app-id, and a shared one would cross-match.
 o.window("org\\.omarchy\\.zen-(octo|notes|linear)", { float = true })
 o.window("org\\.omarchy\\.zen-(octo|notes|linear)", { center = true })
-o.window("org\\.omarchy\\.zen-(octo|notes|linear)", { size = { 1100, 750 } })
+o.window("org\\.omarchy\\.zen-(octo|notes|linear)", { size = { 1800, 1100 } })
 
 -- Bigger btop (SUPER + SHIFT + T). Its binding gives it the app-id TUI.btop
 -- rather than the default org.omarchy.btop, so Omarchy's floating-window rules
@@ -88,11 +97,11 @@ o.window("org\\.omarchy\\.zen-(octo|notes|linear)", { size = { 1100, 750 } })
 -- logical, so this leaves a margin for the bar.
 o.window("TUI\\.btop", { float = true })
 o.window("TUI\\.btop", { center = true })
-o.window("TUI\\.btop", { size = { 1400, 860 } })
+o.window("TUI\\.btop", { size = { 1800, 1100 } })
 
 -- Docker TUI (SUPER + SHIFT + D). Moved off Omarchy's shared TUI.float app-id so
 -- its binding can focus by app-id without cross-matching, which also means the
 -- TUI.float float rules no longer cover it. Same 875x600 those rules gave it.
 o.window("TUI\\.docker", { float = true })
 o.window("TUI\\.docker", { center = true })
-o.window("TUI\\.docker", { size = { 875, 600 } })
+o.window("TUI\\.docker", { size = { 1800, 1100 } })

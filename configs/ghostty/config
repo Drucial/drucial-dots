@@ -18,11 +18,14 @@ font-size = 10
 # ── Cursor ──
 cursor-style = block
 cursor-style-blink = true
+adjust-cursor-thickness = 3
 
 # ── Shell integration ──
 # All shell integration options must be passed together.
 shell-integration-features = no-cursor,ssh-env
 
+working-directory = inherit
+window-inherit-working-directory = false
 # ── Window ──
 # Padding is Omarchy's 12/8, not zen-term's 8/8.
 window-theme = ghostty
@@ -87,3 +90,10 @@ palette = 15=#e0def4
 # Last, so it wins over the palette above. Absent on macOS, where `?` makes this
 # a no-op rather than an error.
 config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
+
+# ── This machine ──
+# Anything that differs by machine rather than by platform -- font-size is the
+# one so far, 10 on the mac and larger on a HiDPI laptop. Last, so it wins over
+# everything above. Outside the repo, so a clone elsewhere just gets the
+# defaults. Mirrors hypr/monitors.lua's ~/.local/state/hypr/machine.lua.
+config-file = ?"~/.local/state/ghostty/machine.conf"

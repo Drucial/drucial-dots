@@ -55,6 +55,9 @@ brew "git-delta"
 # --- config: kitty ---
 cask "kitty"
 
+# --- config: lazydocker ---
+brew "lazydocker"
+
 # --- config: lazygit ---
 brew "lazygit"
 

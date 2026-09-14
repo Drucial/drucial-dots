@@ -2,8 +2,8 @@
 
 My personal dotfiles. App configs live under `configs/` and get symlinked into
 `~/.config` (or `$XDG_CONFIG_HOME`). Packages come from two curated manifests at
-the repo root — `Brewfile` on macOS, `Archfile` on Omarchy. `bin/dots` is the
-only script.
+the repo root — `Brewfile` on macOS, `Archfile` on Omarchy. `bin/` holds the
+repo's own scripts; a few configs carry one of their own.
 
 ## Layout
 
@@ -17,7 +17,6 @@ Archfile      the same for Omarchy, installed with yay
 Omarchyfile   everything else that makes an Omarchy box mine
 bin/dots      install / add / migrate / remove / brew / pac
 bin/sync-omarchy   one command: configs, packages, and the Omarchyfile
-bin/lazygit-theme  regenerates lazygit's colours from the current theme
 bin/dots.test.sh, bin/sync-omarchy.test.sh   drive both against throwaway copies
 ```
 
@@ -32,10 +31,19 @@ into `~/.local/share/applications` individually rather than the directory being
 symlinked whole, because Omarchy writes its own web app launchers there. Drop a
 new file in and `bin/dots install` picks it up.
 
-Display scaling is per-machine, so `hypr/monitors.lua` reads it from
-`~/.local/state/hypr/machine.lua` when that file exists and falls back to
-committed defaults when it doesn't. Nothing else in `configs/` is
-machine-specific.
+Two settings are per-machine rather than per-platform, and both resolve the same
+way: an optional file under `~/.local/state/`, read when it exists and ignored
+when it doesn't, so a clone elsewhere just gets the committed defaults.
+
+| Setting | Committed default | Machine file |
+| ------- | ----------------- | ------------ |
+| Display scaling (`hypr/monitors.lua`) | `1` / `1` | `~/.local/state/hypr/machine.lua`, returning `{ gdk_scale = N, monitor_scale = N }` |
+| ghostty `font-size` | `10` | `~/.local/state/ghostty/machine.conf` |
+
+The hypr path works because `~/.local/state` is first on Omarchy's Lua module
+path; the ghostty one is an optional `config-file = ?"..."` include, last in the
+file so it wins. Neither is tracked -- a HiDPI laptop wants a scale and a font
+size a desktop does not, and that is a property of the screen, not of the repo.
 
 ### `configs/`
 
@@ -49,9 +57,10 @@ machine-specific.
 | `git/`          | git config + ignore    |
 | `hypr/`         | Hyprland (Linux only)  |
 | `kitty/`        | terminal               |
+| `lazydocker/`   | docker TUI             |
 | `lazygit/`      | git TUI                |
 | `mise/`         | tool versions          |
-| `nvim/`         | editor (LazyVim)       |
+| `nvim/`         | editor (lazy.nvim)     |
 | `posting/`      | API client             |
 | `rainfrog/`     | database TUI           |
 | `slk/`          | Slack TUI              |
@@ -82,11 +91,14 @@ bin/dots brew       # install the packages
 ```
 
 Neither carries secrets or app data. 1Password, SSH keys, `gh auth login`, the
-atuin key, and Tailscale are all still done by hand on a new machine.
+atuin key, and Tailscale are all still done by hand on a new machine. So are the
+`zen-*` TUIs -- `zen-octo`, `zen-notes` and `zen-linear` are bound in
+`hypr/bindings.lua` and `zen-octo` has a launcher in the Omarchyfile, but no
+manifest packages them, so those bindings dangle until each is built from source.
 
 Configs that only make sense on one platform are skipped rather than linked --
-`yabai` on Linux, `hypr` on macOS. Both keep their sections in both manifests, so
-a config stays addressable from either machine.
+`yabai`, `kitty` and `zen-term` on Linux, `hypr` on macOS. Both keep their
+sections in both manifests, so a config stays addressable from either machine.
 
 `install` also links `~/.zshrc`, `~/.zprofile`, `~/.bashrc`, and
 `~/.bash_aliases`. `~/.bashrc` is tracked because it is a one-time `/etc/skel`
@@ -232,16 +244,31 @@ interactive service installer -- `omarchy install service tailscale` also enable
 a daemon and authenticates a browser session, and that half stays a manual step
 alongside the other logins.
 
-Two apps need more than a config file to follow the theme. btop resolves
+Three apps need more than a config file to follow the theme. btop resolves
 `color_theme = "current"` through a symlink Omarchy writes once at install and
-never recreates, so `sync-omarchy` recreates it. lazygit has no Omarchy theme
-file at all -- `bin/lazygit-theme` derives one from the palette in the theme's
-`colors.toml`, which every theme ships, and a `theme-set` hook reruns it on each
-switch. Its tracked file is `configs/lazygit/settings.yml`; `config.yml` is
-generated from it and gitignored, so lazygit needs no wrapper or flag to be
-themed. With no Omarchy palette present -- macOS, or before the first theme is
-set -- the generator writes the settings alone and leaves lazygit's own colours
-in place.
+never recreates, so `sync-omarchy` recreates it. lazygit and lazydocker have no
+Omarchy theme file at all -- `configs/lazygit/lazygit-theme` and
+`configs/lazydocker/lazydocker-theme` derive one by asking the terminal for its
+own background and foreground over OSC 11/10, so they follow whatever is
+actually on screen without knowing which terminal or theme is in play. That
+query needs a tty, so the `lazygit` and `lazydocker` shell functions in
+`configs/zsh/.zsh_functions` and `configs/bash/.bashrc` run it just before
+handing off to the real binary, rather than a `theme-set` hook. The tracked file
+in each is `settings.yml`; `config.yml` is generated from it and gitignored.
+When nothing answers the query -- no tty, or a terminal that ignores it -- an
+existing `config.yml` is left alone, and a machine that has never generated one
+gets the settings alone with the app's own colours.
+
+The two scripts are independent copies rather than one shared generator.
+lazydocker exposes four theme keys to lazygit's twelve, and it hands
+`inactiveBorderColor` to gocui as the global foreground, which every view copies
+as its text colour -- so that key is the body text as much as it is the border,
+and dimming it the way lazygit does would dim container names and logs with it.
+lazydocker's ramp therefore runs the other way: the inactive border sits just
+below the foreground, still bright enough to read as text, and the active border
+takes the foreground itself, in bold. Its stamp line also carries the
+generator's own checksum, so editing the ramp re-derives every machine's
+`config.yml` instead of leaving it on the theme it had already generated.
 
 `~/.config/omarchy/` itself is deliberately **not** symlinked in. Everything in
 it — `shell.json`, `extensions/`, the hooks — is byte-identical to what Omarchy
