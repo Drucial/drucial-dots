@@ -63,6 +63,7 @@ add_yabai_rules() {
     "^Postgres$"
     "^CleanShot X$"
     "^EVO$"
+    "^1Password$"
   )
 
    # --- ChatGPT-specific rules ---
