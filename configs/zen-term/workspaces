@@ -4,6 +4,7 @@
 [ZenTerm]
 path   = ~/Dev/zen-term
 main   = claude
+carry  = Sources/TerminalKit/Resources/ghostty-resources
 
 [Zen Linear]
 path   = ~/Dev/zen-linear
@@ -24,11 +25,19 @@ right  = zen-notes
 
 [Craftwork]
 path   = ~/Dev/craftwork
-main   = claude
+main   = nvim
+right  = claude
+bottom = shell
+carry  = .env.local
+carry  = apps/rails/.overmind.env.local
+carry  = apps/rails/config/credentials/development.key
+carry  = apps/rails/config/credentials/production.key
 
 [Cohaus]
 path   = ~/Dev/cohaus
 main   = claude
+carry  = .env.local
+carry  = apps/mobile-app/.env.local
 
 [ZenTerm Website]
 path   = ~/Dev/zen-term-website

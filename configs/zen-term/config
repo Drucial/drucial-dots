@@ -33,3 +33,4 @@ toast-duration = 5
 theme = rose-pine-moon
 hide-toolbar-buttons = new-tab,split-h,split-v,bottom-drawer,right-drawer,scratch,focus-mode,command-palette
 accent-color = magenta
+backdrop-alpha = 0.5
