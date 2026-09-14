@@ -4,7 +4,6 @@
   "page_size": 50,
   "cache_ttl": "5m0s",
   "search_debounce": "200ms",
-  "log_file": "/Users/drucial/.zen-linear/app.log",
   "log_level": "debug",
   "theme": "terminal",
   "density": "comfortable",
@@ -15,6 +14,7 @@
     "priority"
   ],
   "rounded_borders": true,
+  "images": "auto",
   "workspaces": [
     {
       "name": "Craftwork",
@@ -36,5 +36,6 @@
   "agent_workspace": "",
   "default_team": "",
   "default_project": "",
-  "session_restore": true
+  "session_restore": true,
+  "update_check": true
 }
