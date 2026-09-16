@@ -57,3 +57,5 @@ lazydocker() {
 # Shell history. Guarded because the Archfile installs atuin but a machine
 # mid-sync may not have it yet. Mirrors the zsh copy in configs/zsh/.zshrc.
 command -v atuin >/dev/null 2>&1 && eval "$(atuin init bash)"
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init bash)"; fi
