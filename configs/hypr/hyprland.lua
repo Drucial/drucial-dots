@@ -28,6 +28,10 @@ require("default.hypr.toggles")
 -- Add any other personal Hyprland configuration below.
 -- o.window("qemu", { workspace = "5" })
 
+-- Fully opaque windows. Omarchy tags every window +default-opacity and gives
+-- that tag "0.985 0.96" (windows.lua), which reads as a haze on every app.
+o.window(".*", { opacity = "1 1" })
+
 -- Pin Ghostty terminals to workspace 1.
 -- Omarchy's TUI wrappers use their own app-ids (org.omarchy.*, TUI.*), so
 -- floating tools like btop are unaffected by this.

@@ -35,6 +35,7 @@ window-padding-balance = true
 confirm-close-surface = false
 resize-overlay = never
 gtk-toolbar-style = flat
+background-opacity = .97
 
 # `tabs` folds the tab strip into the titlebar. Not `hidden`: that hides the
 # titlebar, and the native tab strip lives there, so ⌘T would still open tabs you
