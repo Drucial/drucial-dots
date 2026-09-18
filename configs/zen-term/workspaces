@@ -5,6 +5,7 @@
 path   = ~/Dev/zen-term
 main   = claude
 carry  = Sources/TerminalKit/Resources/ghostty-resources
+carry  = Frameworks/GhosttyKit.xcframework
 
 [Zen Linear]
 path   = ~/Dev/zen-linear
@@ -25,9 +26,7 @@ right  = zen-notes
 
 [Craftwork]
 path   = ~/Dev/craftwork
-main   = nvim
-right  = claude
-bottom = shell
+main   = claude
 carry  = .env.local
 carry  = apps/rails/.overmind.env.local
 carry  = apps/rails/config/credentials/development.key
@@ -50,10 +49,6 @@ focus  = right
 path   = ~/Dev/praxis-labs
 main   = Claude
 
-[Drucial App]
-path   = ~/Dev/drucial-app
-main   = claude
-
 [Dot Files]
 path   = ~/Dev/drucial-dots
 main   = "nvim ."
@@ -67,3 +62,10 @@ focus  = right
 [Zen YouTube]
 path   = ~/Dev/zen-youtube
 main   = Claude
+
+[Drucial.dev]
+path   = ~/Dev/drucial-dot-dev
+main   = nvim
+right  = claude
+bottom = shell
+carry  = node_modules
