@@ -57,6 +57,10 @@ cask "kitty"
 
 # --- config: lazydocker ---
 brew "lazydocker"
+brew "colima", restart_service: :changed
+brew "docker"
+brew "docker-compose"
+brew "docker-buildx"
 
 # --- config: lazygit ---
 brew "lazygit"
