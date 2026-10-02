@@ -1,4 +1,5 @@
 format = """
+$hostname\
 $directory\
 $git_branch\
 $git_state\
@@ -98,7 +99,10 @@ symbol = " "
 symbol = " "
 
 [hostname]
+ssh_only = false
 ssh_symbol = " "
+format = "[$ssh_symbol$hostname]($style) "
+style = "bold purple"
 
 [java]
 symbol = " "
