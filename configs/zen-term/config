@@ -16,22 +16,31 @@ cursor-thickness = 3
 
 keybind = clear_screen=none
 keybind = fill_screen=cmd+shift+f
+keybind = focus_sidebar=cmd+ctrl+e
 keybind = nav_down=ctrl+j
 keybind = nav_left=ctrl+h
 keybind = nav_right=ctrl+l
 keybind = nav_up=ctrl+k
+keybind = rename_tab=cmd+ctrl+r
 keybind = resize_down=cmd+ctrl+j
 keybind = resize_left=cmd+ctrl+h
 keybind = resize_right=cmd+ctrl+l
 keybind = resize_up=cmd+ctrl+k
 keybind = search_selection=none
 keybind = toggle_focus_mode=cmd+enter
-background-alpha = 0.85
+background-alpha = 1
 attention-toast = auto
 completion-toast = auto
 toast-duration = 5
-theme = rose-pine-moon
-hide-toolbar-buttons = new-tab,split-h,split-v,bottom-drawer,right-drawer,scratch,focus-mode,command-palette
-backdrop-alpha = 0.5
-accent-color = magenta
+theme = rose-pine-zen
+backdrop-alpha = 0.7
 
+
+reduce-motion = off
+hide-toolbar-buttons = new-tab,split-h,split-v,bottom-drawer,right-drawer,scratch,focus-mode,command-palette,settings
+tab-inherit-cwd = true
+window-gutter = 8
+pane-gap = 8
+bottom-drawer-fraction = 0.3
+accent-color = magenta
+ssh-hosts = drucial@omakase-desk, drucial@omakase-xps, drucial@omakase-pro

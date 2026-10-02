@@ -40,9 +40,7 @@ carry  = apps/mobile-app/.env.local
 
 [ZenTerm Website]
 path   = ~/Dev/zen-term-website
-main   = nvim
-right  = claude
-bottom = "pnpm dev"
+main   = claude
 focus  = right
 
 [Praxis-Labs]
@@ -65,7 +63,6 @@ main   = Claude
 
 [Drucial.dev]
 path   = ~/Dev/drucial-dot-dev
-main   = nvim
-right  = claude
-bottom = shell
+main   = claude
+carry  = .env.local
 carry  = node_modules

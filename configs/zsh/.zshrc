@@ -35,8 +35,6 @@ add_to_path() {
   fi
 }
 
-# Add Postgres binaries
-add_to_path "/Applications/Postgres.app/Contents/Versions/latest/bin"
 add_to_path "$HOME/bin"
 add_to_path "$HOME/.local/bin"
 

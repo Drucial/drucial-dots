@@ -85,3 +85,13 @@ alias wb='wt switch -'                                                          
 alias wm='wt switch ^'                                                                       # Worktrunk: Jump to default branch worktree
 alias wl='wt list'                                                                           # Worktrunk: List all worktrees
 alias wrm='wt remove'                                                                        # Worktrunk: Remove current worktree (deletes branch if merged)
+#
+#-----------
+# Zen apps
+#-----------
+
+alias zn="zen-notes"
+alias zr="zen-review"
+alias zo="zen-octo"
+alias zl="zen-linear"
+alias zs="zen-stats"
