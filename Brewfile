@@ -107,3 +107,5 @@ cask "ghostty"
 # --- config: mise ---
 # Arch gets mise from pacman; this is the macOS side.
 brew "mise"
+
+# --- config: rex ---
