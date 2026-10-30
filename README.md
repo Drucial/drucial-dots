@@ -63,6 +63,7 @@ size a desktop does not, and that is a property of the screen, not of the repo.
 | `nvim/`         | editor (lazy.nvim)     |
 | `posting/`      | API client             |
 | `rainfrog/`     | database TUI           |
+| `rex/`          | terminal multiplexer   |
 | `slk/`          | Slack TUI              |
 | `starship.toml` | prompt                 |
 | `tuicr/`        | TUI code review        |
@@ -93,8 +94,10 @@ bin/dots brew       # install the packages
 Neither carries secrets or app data. 1Password, SSH keys, `gh auth login`, the
 atuin key, and Tailscale are all still done by hand on a new machine. So are the
 `zen-*` TUIs -- `zen-octo`, `zen-notes` and `zen-linear` are bound in
-`hypr/bindings.lua` and `zen-octo` has a launcher in the Omarchyfile, but no
-manifest packages them, so those bindings dangle until each is built from source.
+`hypr/bindings.lua`, `zen-octo`, `zen-linear` and `zen-review` open as floats
+from `rex/init.lua` (which expects them in `~/.local/bin`), and `zen-octo` has a
+launcher in the Omarchyfile, but no manifest packages them, so those bindings
+dangle until each is built from source. Rex itself is installed by hand too.
 
 Configs that only make sense on one platform are skipped rather than linked --
 `yabai`, `kitty` and `zen-term` on Linux, `hypr` on macOS. Both keep their
@@ -172,8 +175,8 @@ and drops both on one confirmation. Keeping them in step means a config added on
 the mac is still addressable from the Arch box, and the reverse.
 
 `bin/dots brew -c` fails on a section naming a config that doesn't exist, and
-lists configs that declare no packages without failing — `gh-dash`, `tuicr`,
-`zen-linear`, and `zen-term` install nothing through Homebrew. An unfamiliar
+lists configs that declare no packages without failing — `gh-dash`, `rex`,
+`tuicr`, `zen-linear`, and `zen-term` install nothing through Homebrew. An unfamiliar
 name on that list means a section is missing. It then asks Homebrew whether the
 manifest is satisfied.
 
