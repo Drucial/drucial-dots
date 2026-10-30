@@ -1,0 +1,24 @@
+background = #121213
+foreground = #d4d5d8
+cursor-color = #d4d5d8
+cursor-text = #121213
+selection-background = #2c2d31
+selection-foreground = #d4d5d8
+palette = 0=#26272b
+palette = 1=#da615d
+palette = 2=#6ab586
+palette = 3=#f7ba33
+palette = 4=#6973df
+palette = 5=#cf71bd
+palette = 6=#58b3cb
+palette = 7=#d4d5d8
+palette = 8=#6e7179
+palette = 9=#ec7771
+palette = 10=#80c79a
+palette = 11=#ffc85b
+palette = 12=#7b87ef
+palette = 13=#e187ce
+palette = 14=#71c6dd
+palette = 15=#eeeff1
+
+nvim-colorscheme = zen-dark
