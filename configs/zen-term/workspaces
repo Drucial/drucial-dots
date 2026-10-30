@@ -9,7 +9,12 @@ carry  = Frameworks/GhosttyKit.xcframework
 
 [Zen Linear]
 path   = ~/Dev/zen-linear
-main   = claude
+
+tab
+  main   = claude
+
+tab
+  main   = zen-linear
 
 [Zen Octo]
 path   = ~/Dev/zen-octo
@@ -26,36 +31,59 @@ right  = zen-notes
 
 [Craftwork]
 path   = ~/Dev/craftwork
-main   = claude
 carry  = .env.local
 carry  = apps/rails/.overmind.env.local
 carry  = apps/rails/config/credentials/development.key
 carry  = apps/rails/config/credentials/production.key
 
+tab
+  main   = claude
+
+tab = server
+
 [Cohaus]
 path   = ~/Dev/cohaus
-main   = claude
 carry  = .env.local
 carry  = apps/mobile-app/.env.local
 
+tab
+  main   = claude
+
+tab = server
+
 [ZenTerm Website]
 path   = ~/Dev/zen-term-website
-main   = claude
-focus  = right
+
+tab
+  main   = claude
+
+tab = server
 
 [Praxis-Labs]
 path   = ~/Dev/praxis-labs
-main   = Claude
+
+tab
+  main   = Claude
+
+tab = server
 
 [Dot Files]
 path   = ~/Dev/drucial-dots
-main   = "nvim ."
+
+tab
+  main   = claude
+
+tab
+  main   = nvim
 
 [Agent Kit]
 path   = ~/Dev/agent-kit
-main   = nvim
-right  = claude
-focus  = right
+
+tab
+  main   = claude
+
+tab
+  main   = nvim
 
 [Zen YouTube]
 path   = ~/Dev/zen-youtube
@@ -63,6 +91,10 @@ main   = Claude
 
 [Drucial.dev]
 path   = ~/Dev/drucial-dot-dev
-main   = claude
 carry  = .env.local
 carry  = node_modules
+
+tab
+  main   = claude
+
+tab = server
