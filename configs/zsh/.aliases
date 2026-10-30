@@ -34,6 +34,7 @@ alias ports='list_ports'                                                        
 alias killport='kill_port'                                                                   # Network: Kill process holding a port (arg: port number)
 alias fkill='pick_ports_to_kill'                                                             # Network: fzf picker over listening ports; enter kills selected
 alias zshrc='nvim ${ZDOTDIR:-$HOME}/.zshrc'                                                                # Zsh: Edit .zshrc in nvim
+alias unlock='security unlock-keychain ~/Library/Keychains/login.keychain-db'                # Keychain: Unlock login keychain for this SSH session (prompts for password)
 
 alias pd="pnpm dev"
 
