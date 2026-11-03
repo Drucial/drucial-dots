@@ -148,7 +148,7 @@
       "resizable": false
     }
   ],
-  "background": "canvas",
+  "background": "chrome",
   "terminal_padding": [
     14,
     12
