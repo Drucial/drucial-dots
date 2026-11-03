@@ -56,7 +56,9 @@
     "ctrl-8": "space.select:8",
     "ctrl-9": "space.select:9",
     "cmd-ctrl-]": "space.next",
-    "cmd-ctrl-[": "space.prev"
+    "cmd-ctrl-[": "space.prev",
+    "cmd-shift-e": "drucial-tabs.files",
+    "cmd-shift-g": "drucial-tabs.changes"
   },
   "terminal": {
     "cmd-c": "terminal.copy",
