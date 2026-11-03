@@ -55,6 +55,7 @@ size a desktop does not, and that is a property of the screen, not of the repo.
 | `diffnav/`      | git diff TUI           |
 | `gh-dash/`      | GitHub TUI             |
 | `git/`          | git config + ignore    |
+| `herdr-app/`    | terminal + agent app   |
 | `hypr/`         | Hyprland (Linux only)  |
 | `kitty/`        | terminal               |
 | `lazydocker/`   | docker TUI             |

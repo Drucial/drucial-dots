@@ -109,3 +109,6 @@ cask "ghostty"
 brew "mise"
 
 # --- config: rex ---
+
+# --- config: herdr-app ---
+cask "herdr-app"
