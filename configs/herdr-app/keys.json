@@ -58,7 +58,11 @@
     "cmd-ctrl-]": "space.next",
     "cmd-ctrl-[": "space.prev",
     "cmd-shift-e": "drucial-tabs.files",
-    "cmd-shift-g": "drucial-tabs.changes"
+    "cmd-shift-g": "drucial-tabs.changes",
+    "cmd-g": "drucial-floats.lazygit",
+    "cmd-o": "drucial-floats.zen-octo",
+    "cmd-l": "drucial-floats.zen-linear",
+    "cmd-r": "drucial-floats.zen-review"
   },
   "terminal": {
     "cmd-c": "terminal.copy",

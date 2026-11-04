@@ -143,6 +143,16 @@
           ],
           "padding": 8,
           "gap": 8
+        },
+        {
+          "id": "floats",
+          "type": "block",
+          "content": {
+            "mod": "drucial-floats"
+          },
+          "size": {
+            "px": 0
+          }
         }
       ],
       "resizable": false
