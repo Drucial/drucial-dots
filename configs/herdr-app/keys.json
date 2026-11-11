@@ -7,10 +7,10 @@
     "cmd-w": "tab.close",
     "ctrl-tab": "tab.next",
     "ctrl-shift-tab": "tab.prev",
-    "cmd-shift-]": "agent.next",
-    "cmd-shift-[": "agent.prev",
-    "cmd-]": "tab.next",
-    "cmd-[": "tab.prev",
+    "cmd-shift-]": "tab.next",
+    "cmd-shift-[": "tab.prev",
+    "cmd-]": "agent.next",
+    "cmd-[": "agent.prev",
     "cmd-shift-l": "layout.switch",
     "cmd-n": "space.new",
     "cmd-p": "mod.open:picker",
@@ -62,7 +62,9 @@
     "cmd-g": "drucial-floats.lazygit",
     "cmd-o": "drucial-floats.zen-octo",
     "cmd-l": "drucial-floats.zen-linear",
-    "cmd-r": "drucial-floats.zen-review"
+    "cmd-r": "drucial-floats.zen-review",
+    "cmd-ctrl-r": "tab.rename",
+    "cmd-ctrl-shift-r": "space.rename"
   },
   "terminal": {
     "cmd-c": "terminal.copy",
