@@ -64,7 +64,7 @@ local function float_action(name, title, label, command, requires_repo)
 
       local layout = rex.layout.block{
         flavor  = terminal .. ".shell",
-        options = { command = type(command) == "function" and command(ctx) or command, cwd = root or dir },
+        options = { command = command, cwd = root or dir },
       }
       layout.block.label = label
       local _, new_err = rex.session.new_layer{
@@ -153,112 +153,7 @@ persistent_float_action("nvim_float", "Toggle Neovim Float", "nvim", tool_bounds
 persistent_float_action("zen_octo_float", "Toggle Zen Octo Float", "zen-octo", tool_bounds, { user_bin .. "zen-octo" }, true)
 persistent_float_action("zen_linear_float", "Toggle Zen Linear Float", "zen-linear", tool_bounds, { user_bin .. "zen-linear" }, true)
 
-local config_dir = os.getenv("REX_CONFIG") and os.getenv("REX_CONFIG"):match("^(.*)/[^/]*$")
-  or (os.getenv("XDG_CONFIG_HOME") or os.getenv("HOME") .. "/.config") .. "/rex"
-local worktree = dofile(config_dir .. "/worktree.lua")
-
-local function worktree_settings()
-  return worktree.load_settings(config_dir .. "/worktrees.lua")
-end
-
-local function caller_checkout(ctx, repo)
-  local dir = repo or working_directory(ctx.block_id)
-  if dir == nil then error("no repo given and no pane directory to find one in", 0) end
-  return worktree.main_checkout(dir)
-end
-
-local function target_worktree(ctx, args)
-  if args.path == nil and args.branch == nil then error("give a path or a branch", 0) end
-  local settings = worktree_settings()
-  local main = nil
-  if args.repo ~= nil or args.path == nil then main = caller_checkout(ctx, args.repo) end
-  return settings, worktree.find(settings, main, args)
-end
-
--- A CLI caller is a client too, but only an app can show a session.
-local function select_session(ctx, session_id)
-  if ctx.client_id ~= nil and ctx.origin ~= "api" then
-    rex.client.queue("session.select", { session_id = session_id })
-  end
-end
-
-rex.action{
-  name  = "worktree_create",
-  title = "Create Worktree",
-  description = "Create a worktree for branch under the worktree root, carry its configured files, and open it in a new session.",
-  args  = { branch = "string", base = "string?", repo = "string?" },
-  run   = function(ctx, args)
-    local settings = worktree_settings()
-    local entry = worktree.create(settings, caller_checkout(ctx, args.repo), args.branch, args.base)
-    entry.session_id = worktree.open(settings, entry)
-    select_session(ctx, entry.session_id)
-    return entry
-  end,
-}
-
-rex.action{
-  name  = "worktree_open",
-  title = "Open Worktree",
-  description = "Return the worktree's session, creating one if it has none.",
-  args  = { path = "string?", branch = "string?", repo = "string?" },
-  run   = function(ctx, args)
-    local settings, entry = target_worktree(ctx, args)
-    local session_id, created = worktree.open(settings, entry)
-    return { path = entry.path, session_id = session_id, created = created }
-  end,
-}
-
-rex.action{
-  name  = "worktree_switch",
-  title = "Switch to Worktree",
-  description = "Open the worktree's session and show it in the invoking app.",
-  args  = { path = "string?", branch = "string?", repo = "string?" },
-  run   = function(ctx, args)
-    local settings, entry = target_worktree(ctx, args)
-    local session_id = worktree.open(settings, entry)
-    select_session(ctx, session_id)
-    return { path = entry.path, session_id = session_id }
-  end,
-}
-
-rex.action{
-  name  = "worktree_list",
-  title = "List Worktrees",
-  description = "List the caller's repo's worktrees under the worktree root, or every repo's with all or outside a repo.",
-  args  = { repo = "string?", all = "boolean?" },
-  run   = function(ctx, args)
-    local settings = worktree_settings()
-    local main = nil
-    if not args.all then
-      local ok, found = pcall(caller_checkout, ctx, args.repo)
-      if ok then main = found elseif args.repo ~= nil then error(found, 0) end
-    end
-    local sessions = worktree.sessions(settings)
-    local list = worktree.list(settings, main)
-    for _, entry in ipairs(list) do entry.session_id = sessions[entry.path] end
-    return list
-  end,
-}
-
-rex.action{
-  name  = "worktree_remove",
-  title = "Remove Worktree",
-  description = "Remove a worktree and close its session. Git refuses a dirty worktree unless force. The branch is kept.",
-  args  = { path = "string?", branch = "string?", repo = "string?", force = "boolean?" },
-  run   = function(ctx, args)
-    local settings, entry = target_worktree(ctx, args)
-    worktree.remove(entry, args.force)
-    worktree.close(settings, entry.path)
-    return { removed = entry.path }
-  end,
-}
-
-float_action("worktree_picker", "Toggle Worktree Picker", "worktree-picker", function(ctx)
-  return { config_dir .. "/worktree-picker", ctx.client_id or "" }
-end, false)
-
 rex.bind("cmd+g", "lazygit_float")
-rex.bind("shift+cmd+g", "worktree_picker")
 rex.bind("cmd+o", "zen_octo_float")
 rex.bind("cmd+l", "zen_linear_float")
 rex.bind("cmd+r", "zen_review_float")
