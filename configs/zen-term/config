@@ -27,16 +27,16 @@ keybind = resize_right=cmd+ctrl+l
 keybind = resize_up=cmd+ctrl+k
 keybind = search_selection=none
 keybind = toggle_focus_mode=cmd+enter
-background-alpha = 1
+background-alpha = 0.5
 attention-toast = auto
 completion-toast = auto
 toast-duration = 5
-theme = zen-cool-dark
+theme = rose-pine-zen
 backdrop-alpha = 0.8
 
 
 reduce-motion = off
-hide-toolbar-buttons = settings
+hide-toolbar-buttons = bottom-drawer,right-drawer,scratch,settings
 tab-inherit-cwd = true
 window-gutter = 8
 pane-gap = 8
@@ -44,4 +44,3 @@ bottom-drawer-fraction = 0.3
 ssh-host = drucial@omakase-desk: Desk
 ssh-host = drucial@omakase-xps: XPS
 ssh-host = drucial@omakase-pro: Work
-accent-color = green
