@@ -100,6 +100,12 @@ from `rex/init.lua` (which expects them in `~/.local/bin`), and `zen-octo` has a
 launcher in the Omarchyfile, but no manifest packages them, so those bindings
 dangle until each is built from source. Rex itself is installed by hand too.
 
+Rex manages git worktrees under `~/.rex-worktrees/<repo>/<branch>`, one session
+each. `rex/worktrees.lua` lists the git-ignored files each repo copies into a
+new worktree. Agents use `rex do worktree_create|open|switch|list|remove`, and
+⇧⌘G opens an fzf picker. For the picker to switch the app's session, Remote
+Control must be on in Rex Settings → Rex Server.
+
 Configs that only make sense on one platform are skipped rather than linked --
 `yabai`, `kitty` and `zen-term` on Linux, `hypr` on macOS. Both keep their
 sections in both manifests, so a config stays addressable from either machine.
@@ -294,6 +300,7 @@ Configs are symlinked out, never copied. Edit the file under its real path
 ```sh
 bash bin/dots.test.sh
 bash bin/sync-omarchy.test.sh
+bash configs/rex/worktree.test.sh
 ```
 
 Both copy the working tree to a temp dir and point `HOME` and `XDG_CONFIG_HOME`
@@ -301,3 +308,5 @@ at scratch dirs. The first drives all five `dots` subcommands through the real
 CLI. The second stubs `omarchy`, `pacman`, and `yay` so it can assert on what
 `sync-omarchy` asked them to do without a real Omarchy install, and without ever
 reaching real package management. Neither touches anything on the machine.
+The third drives Rex's worktree module through `rex do` against a temp repo and
+worktree root; it needs a running Rex server but never touches sessions.

@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Rex worktree picker: enter switches, ctrl-n creates a branch from the query, ctrl-x removes.
+# Usage: worktree-picker [CLIENT_ID]  (the app to switch; without one, sessions open but aren't shown)
+set -uo pipefail
+
+client="${1:-}"
+
+pause() {
+  printf '%s\n' "$1"
+  read -r -n 1 -s -p "press any key"
+  echo
+}
+
+show_session() {
+  [ -n "$client" ] && rex -C "$client" do session.select session_id="$1" > /dev/null
+}
+
+while true; do
+  if ! list="$(rex do worktree_list all=true --json 2>&1)"; then
+    pause "$list"
+    exit 1
+  fi
+
+  picked="$(jq -r '.[] | [.path, .repo + "/" + .name, .branch // "(detached)", (if .session_id then "●" else "" end)] | @tsv' <<< "$list" \
+    | fzf --delimiter='\t' --with-nth=2.. --print-query --expect=ctrl-n,ctrl-x \
+          --prompt='worktree> ' --header='enter switch · ctrl-n create from query · ctrl-x remove')"
+  [ $? -eq 130 ] && exit 0
+
+  query="$(sed -n 1p <<< "$picked")"
+  key="$(sed -n 2p <<< "$picked")"
+  path="$(sed -n 3p <<< "$picked" | cut -f1)"
+
+  if [ "$key" = ctrl-n ] || { [ -z "$path" ] && [ -n "$query" ]; }; then
+    [ -z "$query" ] && continue
+    if ! result="$(rex do worktree_create branch="$query" --json 2>&1)"; then
+      pause "$result"
+      continue
+    fi
+    show_session "$(jq -r .session_id <<< "$result")"
+    exit 0
+  elif [ "$key" = ctrl-x ] && [ -n "$path" ]; then
+    read -r -p "remove $path? [y/N] " answer
+    [ "$answer" = y ] || continue
+    if ! result="$(rex do worktree_remove path="$path" --json 2>&1)"; then
+      printf '%s\n' "$result"
+      read -r -p "force remove, discarding changes? [y/N] " answer
+      if [ "$answer" = y ] && ! result="$(rex do worktree_remove path="$path" force=true --json 2>&1)"; then
+        pause "$result"
+      fi
+    fi
+  elif [ -n "$path" ]; then
+    if ! result="$(rex do worktree_open path="$path" --json 2>&1)"; then
+      pause "$result"
+      continue
+    fi
+    show_session "$(jq -r .session_id <<< "$result")"
+    exit 0
+  else
+    exit 0
+  fi
+done
