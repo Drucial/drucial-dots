@@ -45,6 +45,7 @@ end
 
 --- Returns the main checkout of the repository containing dir, even when dir is inside a linked worktree.
 function M.main_checkout(dir)
+  dir = expand(dir)
   local common = git(dir, "rev-parse", "--path-format=absolute", "--git-common-dir")
   if not common.ok then error("not in a git repository: " .. dir, 0) end
   local main = trim(common.stdout):gsub("/%.git/?$", "")
@@ -200,7 +201,7 @@ end
 local function state_path(settings) return settings.root .. "/.sessions.json" end
 
 local function live_sessions()
-  local list, err = rex.session.list{}
+  local list, err = rex.call("session.list")
   if err ~= nil then error(err, 0) end
   local live = {}
   for _, session in ipairs(list.sessions) do live[session.session_id] = true end
@@ -228,21 +229,21 @@ local function write_state(settings, state)
   file:close()
 end
 
---- Returns the live session id recorded for a worktree path, or nil.
-function M.session_of(settings, path)
-  return read_state(settings)[path]
+--- Returns a map of worktree path to live session id.
+function M.sessions(settings)
+  return read_state(settings)
 end
 
 --- Returns the worktree's live session, creating one with a terminal at its root when it has none.
 function M.open(settings, entry)
   local state = read_state(settings)
   if state[entry.path] ~= nil then return state[entry.path], false end
-  local result, err = rex.session.create{
+  local result, err = rex.call("session.create", {
     label = entry.repo .. "/" .. entry.name,
     initial_windows = {
       { layout = rex.layout.block{ flavor = terminal .. ".shell", options = { cwd = entry.path } } },
     },
-  }
+  })
   if err ~= nil then error(err, 0) end
   state[entry.path] = result.session_id
   write_state(settings, state)
@@ -254,7 +255,8 @@ function M.close(settings, path)
   local state = read_state(settings)
   local session_id = state[path]
   if session_id == nil then return end
-  local _, err = rex.session.destroy{ session_id = session_id }
+  local _, err = rex.call("session.attach", { session_id = session_id })
+  if err == nil then _, err = rex.call("session.destroy", { session_id = session_id }) end
   if err ~= nil then error(err, 0) end
   state[path] = nil
   write_state(settings, state)
