@@ -26,3 +26,18 @@ configs/lazygit/config.yml
 # lazydocker: settings.yml is tracked, config.yml is generated from it by
 # configs/lazydocker/lazydocker-theme with colours read from the terminal itself.
 configs/lazydocker/config.yml
+
+# herdr-app: the folder also holds Herdr's socket, state and the shipped layouts
+# and mods it rewrites on every start. Only the personal layout, its mods, keys
+# and settings are tracked; layouts/.state is per-machine click state.
+configs/herdr-app/*
+!configs/herdr-app/keys.json
+!configs/herdr-app/settings.json
+!configs/herdr-app/layouts/
+configs/herdr-app/layouts/*
+!configs/herdr-app/layouts/drucial.json
+!configs/herdr-app/mods/
+configs/herdr-app/mods/*
+!configs/herdr-app/mods/drucial-*/
+configs/herdr-app/mods/drucial-*/jsconfig.json
+configs/herdr-app/mods/drucial-*/gpui-kit.d.ts
