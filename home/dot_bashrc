@@ -10,6 +10,9 @@ source ~/.config/shell/aliases
 source ~/.config/shell/functions
 source ~/.config/bash/functions
 
+# Untracked: API keys and other secrets, shared with zsh.
+[[ -f ~/.config/shell/secrets ]] && source ~/.config/shell/secrets
+
 # atuin needs bash-preexec on bash; loaded last so its Ctrl-R replaces fzf's.
 if command -v atuin &> /dev/null && [[ -f /usr/share/bash-preexec/bash-preexec.sh ]]; then
   source /usr/share/bash-preexec/bash-preexec.sh

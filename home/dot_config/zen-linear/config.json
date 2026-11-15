@@ -1,0 +1,12 @@
+{
+  "group_by": "status",
+  "sort_by": ["status", "priority"],
+  "rounded_borders": true,
+  "workspaces": [
+    { "name": "Craftwork", "api_key_env": "LINEAR_API_KEY_CRAFTWORK" },
+    { "name": "Praxis Labs", "api_key_env": "LINEAR_API_KEY_PRAXIS_LABS" },
+    { "name": "CoHaus", "api_key_env": "LINEAR_API_KEY_COHAUS" }
+  ],
+  "default_workspace": "Praxis Labs",
+  "agent_provider": "claude"
+}

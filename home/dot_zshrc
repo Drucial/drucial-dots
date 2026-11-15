@@ -6,7 +6,8 @@ source ~/.config/shell/env
 source ~/.config/shell/aliases
 source ~/.config/shell/functions
 
-[ -f ~/.config/zsh/.secrets ] && source ~/.config/zsh/.secrets
+# Untracked: API keys and other secrets, shared with bash.
+[ -f ~/.config/shell/secrets ] && source ~/.config/shell/secrets
 
 export XDG_CONFIG_HOME="$HOME/.config"
 export RAINFROG_CONFIG="$XDG_CONFIG_HOME/rainfrog"
