@@ -106,9 +106,6 @@ export default class Tabs extends View {
         run("layout.resize", { id: "sidebar", px: shared("sidebar.width") ?? 268 });
       })).child(div().w(4).flex_none()))
       .child(h_flex().id("tab-scroll").flex_1().min_w(0).h_full().items_center().gap(3).overflow_x_scrollbar().children(shown.map(item)))
-      .child(button("tab-new", svg("mods/workspace-chrome/plus.svg").size(15), () => openOverlay({ mod: "new-menu", kind: "popup", width: 250, height: 512 })))
-      .when(enabled.includes("files"), el => el.child(panelButton("files", "Files", "mods/files/file.svg")))
-      .when(enabled.includes("changes"), el => el.child(panelButton("changes", "Changes", "mods/changes/changes.svg")))
       .when(w?.buttons, el => el.child(button("minimize", w.platform === "windows" ? svg("mods/drucial-tabs/win-min.svg").size(15) : "−", () => run("window.minimize")))
         .child(button("maximize", w.platform === "windows" ? svg(`mods/drucial-tabs/${w.maximized ? "win-restore" : "win-max"}.svg`).size(15) : "□", () => run("window.maximize")))
         .child(button("close-window", w.platform === "windows" ? svg("mods/drucial-tabs/win-close.svg").size(15) : svg("mods/pane/close.svg").size(15), () => run("window.close"))));

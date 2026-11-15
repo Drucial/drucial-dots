@@ -6,6 +6,7 @@ import { closeOverlay, exec, focused, hc, home, nextCommand, notify, openOverlay
 
 const OPEN = "floats.open";
 const KEPT = "floats.kept";
+const TARGET = "floats.target";
 const TITLE_BAR = 28;
 
 function floats() {
@@ -14,6 +15,7 @@ function floats() {
     lazygit: { title: "Lazygit", argv: ["lazygit"], repo: true, kept: false },
     "zen-review": { title: "Zen Review", argv: [`${bin}/zen-review`], repo: true, kept: false },
     "zen-octo": { title: "Zen Octo", argv: [`${bin}/zen-octo`], repo: false, kept: true },
+    "zen-octo-pr": { title: "Zen Octo", argv: [`${bin}/zen-octo`], repo: false, kept: false, targeted: true },
     "zen-linear": { title: "Zen Linear", argv: [`${bin}/zen-linear`], repo: false, kept: true },
   };
 }
@@ -42,15 +44,17 @@ async function workingFolder(machine) {
 
 async function start(name, float) {
   const space = spaces().find((s) => s.id === focused()?.space);
-  const machine = float.kept ? null : space?.machine ?? null;
-  const { dir, root } = float.kept ? { dir: home(), root: null } : await workingFolder(machine);
+  const local = float.kept || float.targeted;
+  const machine = local ? null : space?.machine ?? null;
+  const { dir, root } = local ? { dir: home(), root: null } : await workingFolder(machine);
   if (float.repo && !root) {
     notify({ title: `${float.title} needs a git repository`, body: dir ?? "No focused folder", level: "warning" });
     return null;
   }
   const args = ["run", "--bg", "--json", "--no-parent", "--no-notify", "--rm", "--cwd", root ?? dir ?? home()];
   if (machine) args.push("--on", machine);
-  const result = await hc([...args, "--", ...float.argv]);
+  const argv = float.targeted ? [...float.argv, record(TARGET)[name]] : float.argv;
+  const result = await hc([...args, "--", ...argv]);
   if (result.code !== 0) {
     notify({ title: `${float.title} didn't start`, body: result.stderr.trim(), level: "error" });
     return null;
@@ -65,7 +69,7 @@ async function toggle(name) {
   if (open && alive(open.terminal)) {
     closeOverlay(open.overlay);
     patch(OPEN, name, null);
-    return;
+    if (!float.targeted || open.target === record(TARGET)[name]) return;
   }
   const kept = record(KEPT)[name];
   const terminal = float.kept && alive(kept) ? kept : await start(name, float);
@@ -84,7 +88,7 @@ async function toggle(name) {
       ],
     },
   });
-  patch(OPEN, name, { overlay, terminal });
+  patch(OPEN, name, { overlay, terminal, target: float.targeted ? record(TARGET)[name] : undefined });
 }
 
 export default class Floats extends View {
@@ -101,7 +105,7 @@ export default class Floats extends View {
   async close() {
     const { float: name, terminal } = props() ?? {};
     if (!name) return;
-    patch(OPEN, name, null);
+    if (record(OPEN)[name]?.terminal === terminal) patch(OPEN, name, null);
     if (!floats()[name]?.kept) run("terminal.kill", { terminal });
   }
 

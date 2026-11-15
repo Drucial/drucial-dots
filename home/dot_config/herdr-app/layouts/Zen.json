@@ -43,7 +43,7 @@
                 "mod": "drucial-agents"
               },
               "size": {
-                "px": 200
+                "px": 221
               },
               "min": 0,
               "max": 440
@@ -99,46 +99,13 @@
                   },
                   "focus": {
                     "width": 1,
-                    "color": "accent"
+                    "color": "border"
                   },
                   "radius": 10,
                   "gap": 8,
                   "lone": true
                 }
               }
-            },
-            {
-              "id": "panel",
-              "type": "column",
-              "children": [
-                {
-                  "id": "panel-body",
-                  "type": "stack",
-                  "children": [
-                    {
-                      "id": "files",
-                      "type": "block",
-                      "content": {
-                        "mod": "files"
-                      }
-                    },
-                    {
-                      "id": "changes",
-                      "type": "block",
-                      "content": {
-                        "mod": "changes"
-                      }
-                    }
-                  ],
-                  "active": "files"
-                }
-              ],
-              "size": {
-                "px": 368
-              },
-              "min": 280,
-              "max": 900,
-              "hidden": true
             }
           ],
           "padding": 8,
@@ -153,12 +120,23 @@
           "size": {
             "px": 0
           }
+        },
+        {
+          "id": "focus-ring",
+          "type": "block",
+          "content": {
+            "mod": "zen-focus"
+          },
+          "size": {
+            "px": 0
+          }
         }
       ],
       "resizable": false
     }
   ],
   "background": "chrome",
+  "theme": "omarchy-zen",
   "terminal_padding": [
     14,
     12
