@@ -5,7 +5,7 @@ set -euo pipefail
 omarchy pkg add {{ .omarchy.packages | join " " }}
 
 {{ range .omarchy.webapps -}}
-[[ -f "$HOME/.local/share/applications/{{ .name }}.desktop" ]] || omarchy webapp install {{ .name | quote }} {{ .url | quote }} ""
+[[ -f "$HOME/.local/share/applications/{{ .name }}.desktop" ]] || omarchy webapp install {{ .name | quote }} {{ .url | quote }} {{ .icon | quote }}
 {{ end }}
 omarchy bar background none
 {{ end -}}

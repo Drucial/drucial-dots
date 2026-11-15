@@ -20,6 +20,7 @@ which mirrors `$HOME` (`home/dot_config/hypr` → `~/.config/hypr`).
 | --- | --- |
 | `home/dot_config/...` | Configs, copied to `~/.config/...` |
 | `home/.chezmoidata/omarchy.yaml` | Omarchy packages and web apps to install |
+| `home/dot_local/share/icons/...` | Web app icons |
 | `home/run_onchange_after_omarchy.sh.tmpl` | Installs the above, sets the bar; re-runs when either changes |
 | `home/.chezmoiignore` | Paths skipped per OS |
 | `home/.chezmoi.toml.tmpl` | Per-machine chezmoi config, generated on `init` |
@@ -60,8 +61,9 @@ applying.
   `home/.chezmoiignore`.
 - **Omarchy package:** add it to `packages` in `home/.chezmoidata/omarchy.yaml`,
   then `chezmoi apply`.
-- **Web app:** add `name` and `url` to `webapps` in the same file. Omarchy fetches
-  the icon.
+- **Web app:** add `name`, `url` and `icon` to `webapps` in the same file, and
+  put a 256px PNG named `<icon>.png` in
+  `home/dot_local/share/icons/hicolor/256x256/apps/`.
 
 ## Removing
 

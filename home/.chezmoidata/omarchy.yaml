@@ -7,7 +7,10 @@ omarchy:
   webapps:
     - name: Linear
       url: https://linear.app
+      icon: linear
     - name: Notion Calendar
       url: https://calendar.notion.so
+      icon: notion-calendar
     - name: Superhuman
       url: https://mail.superhuman.com
+      icon: superhuman
