@@ -21,7 +21,7 @@ read_only = " 󰌾 "
 
 [git_branch]
 format = "[$symbol](green) [$branch]($style) "
-symbol = ""
+symbol = ""
 style = "blue"
 truncation_length = 50
 
@@ -43,7 +43,7 @@ renamed = "[»](bright-blue) "
 deleted = "[-$count](italic red) "
 
 [hostname]
-ssh_symbol = " "
+ssh_symbol = " "
 format = "[$ssh_symbol$hostname]($style) "
 style = "bold purple"
 
