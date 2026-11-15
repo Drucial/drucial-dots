@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/jesseduffield/lazygit/master/schema/config.json
+gui:
+  nerdFontsVersion: "3"
+  filterMode: fuzzy
+  showNumstatInFilesView: true
+  showDivergenceFromBaseBranch: arrowAndNumber
