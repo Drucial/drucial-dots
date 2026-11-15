@@ -1,0 +1,11 @@
+#!/bin/bash
+# Copy the Herdr theme rendered from ~/.config/omarchy/themed/herdr-{dark,light}.json.tpl
+# into Herdr, which reloads it live (layout "Zen" uses theme "omarchy-zen").
+# Picks the variant matching the theme's mode in colors.toml.
+theme_dir="$HOME/.local/state/omarchy/current/theme"
+mode=$(omarchy-theme-color --file "$theme_dir/colors.toml" mode 2>/dev/null)
+[[ $mode == light ]] || mode=dark
+src="$theme_dir/herdr-$mode.json"
+dst="$HOME/.config/herdr-app/themes/omarchy-zen.json"
+[[ -f $src ]] || exit 0
+cp "$src" "$dst.tmp" && mv "$dst.tmp" "$dst"

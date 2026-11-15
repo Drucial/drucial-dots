@@ -1,0 +1,13 @@
+omarchy:
+  packages:
+    - claude-desktop
+    - herdr-app
+    - openai-codex-desktop
+    - spotify
+  webapps:
+    - name: Linear
+      url: https://linear.app
+    - name: Notion Calendar
+      url: https://calendar.notion.so
+    - name: Superhuman
+      url: https://mail.superhuman.com

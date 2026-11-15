@@ -1,0 +1,11 @@
+{{ if lookPath "omarchy" -}}
+#!/usr/bin/env bash
+set -euo pipefail
+
+omarchy pkg add {{ .omarchy.packages | join " " }}
+
+{{ range .omarchy.webapps -}}
+[[ -f "$HOME/.local/share/applications/{{ .name }}.desktop" ]] || omarchy webapp install {{ .name | quote }} {{ .url | quote }} ""
+{{ end }}
+omarchy bar background none
+{{ end -}}
