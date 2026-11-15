@@ -1,1 +1,7 @@
+{{- $gitName := promptStringOnce . "gitName" "Git name" -}}
+{{- $gitEmail := promptStringOnce . "gitEmail" "Git email" -}}
 sourceDir = {{ .chezmoi.workingTree | quote }}
+
+[data]
+  gitName = {{ $gitName | quote }}
+  gitEmail = {{ $gitEmail | quote }}
