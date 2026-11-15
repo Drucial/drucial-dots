@@ -5,6 +5,7 @@ alias x='exit'
 alias e='nvim'
 alias gg='lazygit'
 alias cc='claude'
+alias ~='cd ~'
 
 alias zn='zen-notes'
 alias zr='zen-review'
@@ -12,10 +13,13 @@ alias zo='zen-octo'
 alias zl='zen-linear'
 alias zs='zen-stats'
 
+# Edits go through chezmoi so the repo, not just this machine, gets the change.
 if [ -n "$ZSH_VERSION" ]; then
   alias src='source ~/.zshrc'
+  alias zshrc='chezmoi edit --apply ~/.zshrc'
 else
   alias src='source ~/.bashrc'
+  alias bashrc='chezmoi edit --apply ~/.bashrc'
 fi
 
 alias fs='fzf --ansi --disabled --delimiter : --bind "start:reload:rg --column --line-number --no-heading --color=always --smart-case {q}" --bind "change:reload:sleep 0.1; rg --column --line-number --no-heading --color=always --smart-case {q} || true" --preview "bat --style=numbers --color=always --highlight-line {2} {1}" --bind "enter:become(nvim +{2} {1})"'
