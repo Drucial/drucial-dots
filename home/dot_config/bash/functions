@@ -1,0 +1,4 @@
+# Bash-only functions, sourced from ~/.bashrc.
+
+# Claude Code follows the Omarchy theme here; the shared settings.json can't say that per machine.
+claude() { command claude --settings '{"theme":"custom:omarchy"}' "$@"; }

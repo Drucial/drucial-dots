@@ -1,27 +1,12 @@
-# Omarchy environment (OMARCHY_PATH + PATH), needed even for non-interactive shells
+# Omarchy environment (OMARCHY_PATH + PATH), needed even for non-interactive shells.
 [[ -r /usr/share/omarchy/default/bash/env-bootstrap ]] && source /usr/share/omarchy/default/bash/env-bootstrap
 
-# If not running interactively, don't do anything else (leave this above the rc source)
 [[ $- != *i* ]] && return
 
-# All the default Omarchy aliases and functions
-# (don't mess with these directly, just overwrite them here!)
 source "$OMARCHY_PATH/default/bash/rc"
 
-# Add your own exports, aliases, and functions here.
-#
-# Make an alias for invoking commands you use constantly
-alias c='clear'
-alias x='exit'
-
-# Apps
-alias gg='lazygit'
-alias cc='claude'
-
-# This machine's Claude Code follows the Omarchy theme; the shared agent-kit settings.json can't say that per machine.
-claude() { command claude --settings '{"theme":"custom:omarchy"}' "$@"; }
-
-
+source ~/.config/shell/aliases
+source ~/.config/bash/functions
 
 # atuin needs bash-preexec on bash; loaded last so its Ctrl-R replaces fzf's.
 if command -v atuin &> /dev/null && [[ -f /usr/share/bash-preexec/bash-preexec.sh ]]; then
