@@ -12,3 +12,4 @@
 {{ end }}
 .config/nvim/AGENTS.md
 .config/nvim/docs
+.config/yazi/plugins

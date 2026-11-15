@@ -1,0 +1,5 @@
+[mgr]
+ratio = [1, 2, 3]
+
+[tasks]
+image_bound = [10000, 10000]

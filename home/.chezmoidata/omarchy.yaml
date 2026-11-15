@@ -8,6 +8,9 @@ omarchy:
     - lsof
     - openai-codex-desktop
     - spotify
+    - yazi
+    - 7zip
+    - resvg
   webapps:
     - name: Linear
       url: https://linear.app
