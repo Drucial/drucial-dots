@@ -1,0 +1,6 @@
+[tools]
+go = "latest"
+{{- if eq .chezmoi.os "darwin" }}
+# Omarchy supplies node on Linux (/etc/mise/conf.d/omarchy-tools.toml).
+node = "latest"
+{{- end }}
