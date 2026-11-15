@@ -65,6 +65,8 @@ keys, settings, layouts and mods, nvim's `lazy-lock.json`, the font line
 
 - **Config:** `chezmoi add ~/.config/<app>`, then strip the source copy down to
   the settings that differ from the app's defaults.
+- **App that rewrites its whole config on exit** (btop): track a `modify_` script
+  that sets only your keys, like `home/dot_config/btop/modify_btop.conf`.
 - **Linux- or macOS-only config:** also list it under the other OS in
   `home/.chezmoiignore`.
 - **Omarchy package:** add it to `packages` in `home/.chezmoidata/omarchy.yaml`,
