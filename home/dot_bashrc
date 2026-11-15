@@ -5,6 +5,7 @@
 
 source "$OMARCHY_PATH/default/bash/rc"
 
+source ~/.config/shell/env
 source ~/.config/shell/aliases
 source ~/.config/shell/functions
 source ~/.config/bash/functions
