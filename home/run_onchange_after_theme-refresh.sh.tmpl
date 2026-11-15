@@ -1,0 +1,10 @@
+{{ if lookPath "omarchy" -}}
+#!/usr/bin/env bash
+# Renders the herdr theme on a fresh machine, and again when its template or hook changes:
+# {{ include "dot_config/omarchy/themed/herdr-dark.json.tpl" | sha256sum }}
+# {{ include "dot_config/omarchy/themed/herdr-light.json.tpl" | sha256sum }}
+# {{ include "dot_config/omarchy/hooks/theme-set.d/executable_20-herdr-theme" | sha256sum }}
+set -euo pipefail
+mkdir -p ~/.config/herdr-app/themes
+omarchy theme refresh
+{{ end -}}
