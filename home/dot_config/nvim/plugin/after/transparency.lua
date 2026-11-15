@@ -1,9 +1,5 @@
--- Make highlight groups transparent while preserving their other attributes.
---
--- Runs on ColorScheme, not once at startup. `:colorscheme` always fires it, so one handler
--- covers every switcher: Omarchy rewriting its spec, zen-theme.nvim following ZenTerm, and a
--- manual :colorscheme. As a one-shot this was clobbered by whichever colorscheme applied last,
--- which is what left nvim opaque inside a ZenTerm pane.
+-- Makes highlight groups transparent on every ColorScheme, so a theme switch
+-- cannot leave nvim opaque.
 local function make_transparent(name)
   local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = name, link = false })
   if ok then

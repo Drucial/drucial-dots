@@ -15,12 +15,6 @@ in a split takes the split with it. `Snacks.bufdelete` preserves the layout.
 `bundle exec`. On a large file that stall is visible. Consider
 `format_after_save` for ruby specifically.
 
-### Colorscheme ownership is decided by event ordering
-
-Omarchy applies the colorscheme after `lazy.setup()`; zen-theme applies its own
-on `VimEnter`, so it wins by running later. Neither is the declared authority.
-Pick one and make the precedence explicit.
-
 ### Theme hot-reload never tested end to end
 
 The `LazyReload` autocmd is registered and lazy's reloader tracks `theme.lua`,

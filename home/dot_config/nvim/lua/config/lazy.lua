@@ -34,8 +34,7 @@ require("lazy").setup({
   checker = { enabled = true },
 })
 
--- Off Omarchy nothing names a colorscheme at startup, so fall back. zen-theme.nvim
--- still gets the last word on VimEnter when ZenTerm publishes one.
+-- Off Omarchy nothing names a colorscheme at startup, so fall back.
 local _, colorscheme = omarchy.read()
 if not (colorscheme and pcall(vim.cmd.colorscheme, colorscheme)) then
   pcall(vim.cmd.colorscheme, "rose-pine-moon")

@@ -22,8 +22,8 @@ kills theme hot-reload. It is also generated — never format or edit it.
 
 It is gitignored and created by `lua/config/lazy.lua` at bootstrap, only when the
 Omarchy target exists. Do not commit it: off Omarchy (the Mac) the link dangles
-and the whole `plugins` import fails. There, zen-theme.nvim follows ZenTerm
-instead and `lazy.lua` falls back to `rose-pine-moon`.
+and the whole `plugins` import fails. There `lazy.lua` falls back to
+`rose-pine-moon`.
 
 **Never edit `/usr/share/omarchy/`.** Reading it is fine and often useful.
 

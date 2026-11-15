@@ -2,3 +2,5 @@
 .config/hypr
 .config/omarchy
 {{ end }}
+.config/nvim/AGENTS.md
+.config/nvim/docs

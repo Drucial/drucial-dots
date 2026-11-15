@@ -53,6 +53,9 @@ return {
         files = { hidden = true, ignored = true, exclude = exclude },
         grep = { hidden = true, ignored = true, exclude = exclude },
         explorer = {
+          hidden = true,
+          ignored = true,
+          exclude = exclude,
           layout = { hidden = { "input" }, auto_hide = { "input" } },
           jump = { close = true },
         },
