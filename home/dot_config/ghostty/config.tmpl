@@ -1,0 +1,50 @@
+# Ghostty reads this only at process start: quit and relaunch to apply changes.
+
+{{ if eq .chezmoi.os "darwin" -}}
+font-family = JetBrainsMono Nerd Font Mono
+{{- else -}}
+# Quoted: `omarchy font set` rewrites this exact form.
+font-family = "JetBrainsMono Nerd Font"
+{{- end }}
+font-style = Regular
+font-size = 10
+
+cursor-style-blink = true
+adjust-cursor-thickness = 3
+
+shell-integration-features = no-cursor,ssh-env
+
+working-directory = inherit
+window-inherit-working-directory = false
+window-theme = ghostty
+window-padding-x = 12
+window-padding-y = 8
+window-padding-balance = true
+confirm-close-surface = false
+resize-overlay = never
+gtk-toolbar-style = flat
+background-opacity = .97
+
+# `tabs`, not `hidden`: hidden also hides the native tab strip and stops the titlebar dragging.
+macos-titlebar-style = tabs
+macos-window-buttons = hidden
+macos-option-as-alt = true
+
+keybind = shift+insert=paste_from_clipboard
+keybind = control+insert=copy_to_clipboard
+# CSI-u so TUIs can tell Shift+Enter and Alt+Shift+Enter from Enter and Alt+Enter.
+keybind = shift+enter=csi:13;2u
+keybind = alt+shift+enter=csi:13;4u
+keybind = super+control+shift+alt+arrow_down=resize_split:down,100
+keybind = super+control+shift+alt+arrow_up=resize_split:up,100
+keybind = super+control+shift+alt+arrow_left=resize_split:left,100
+keybind = super+control+shift+alt+arrow_right=resize_split:right,100
+
+mouse-scroll-multiplier = 0.95
+# Fixes general slowness on Hyprland: https://github.com/ghostty-org/ghostty/discussions/3224
+async-backend = epoll
+
+# Omarchy's theme on Linux; absent on macOS, where `?` skips it.
+config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
+# Untracked per-machine overrides (theme on the Macs, font size), loaded last so they win.
+config-file = ?"~/.config/ghostty/local.conf"

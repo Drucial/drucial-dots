@@ -10,7 +10,7 @@ require("hypr.autostart")
 
 require("default.hypr.toggles")
 
-o.window("foot", { workspace = "1" })
+o.window("com\\.mitchellh\\.ghostty", { workspace = "1" })
 o.window("herdr-app", { workspace = "1" })
 o.window("chromium", { workspace = "2" })
 o.window("com\\.anthropic\\.Claude", { workspace = "3" })

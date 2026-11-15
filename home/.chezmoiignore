@@ -2,6 +2,7 @@
 .bashrc
 .config/bash
 .config/hypr
+.config/xdg-terminals.list
 .config/omarchy
 {{ end }}
 {{ if ne .chezmoi.os "darwin" }}

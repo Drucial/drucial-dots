@@ -3,6 +3,7 @@ omarchy:
     - atuin
     - bash-preexec
     - claude-desktop
+    - ghostty
     - herdr-app
     - lsof
     - openai-codex-desktop
