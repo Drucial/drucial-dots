@@ -1,0 +1,58 @@
+format = """
+$hostname\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$line_break\
+$python\
+$character
+"""
+right_format = "$time"
+
+[character]
+success_symbol = "[❯](purple)"
+error_symbol = "[❯](red)"
+vimcmd_symbol = "[❮](green)"
+
+[directory]
+style = "bold bright-blue"
+read_only = " 󰌾 "
+
+[git_branch]
+format = "[$symbol](green) [$branch]($style) "
+symbol = ""
+style = "blue"
+truncation_length = 50
+
+[git_state]
+style = "bright-black"
+
+[git_status]
+format = "([$ahead_behind$staged$modified$untracked$renamed$deleted$conflicted$stashed]($style))"
+style = "italic bright-blue"
+ahead = "[⇡ ${count}](italic blue) "
+behind = "[⇣ ${count}](italic red) "
+diverged = "[⇕ ⇡ [${ahead_count}](regular white) ⇣ [${behind_count}](white)](bright-magenta) "
+conflicted = "[≠](italic bright-magenta) "
+untracked = "[?$count](bright-yellow) "
+stashed = "[󰏢](bright-green) "
+modified = "[~$count](yellow) "
+staged = "[+$count](bright-cyan) "
+renamed = "[»](bright-blue) "
+deleted = "[-$count](italic red) "
+
+[hostname]
+ssh_symbol = " "
+format = "[$ssh_symbol$hostname]($style) "
+style = "bold purple"
+
+[python]
+format = "[$virtualenv]($style) "
+style = "bright-black"
+
+[time]
+format = "[$time]($style)"
+time_format = "%r %b %d"
+style = "bold bright-black"
+disabled = false
