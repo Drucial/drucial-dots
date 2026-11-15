@@ -1,5 +1,7 @@
 omarchy:
   packages:
+    - atuin
+    - bash-preexec
     - claude-desktop
     - herdr-app
     - openai-codex-desktop

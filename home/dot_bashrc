@@ -22,3 +22,9 @@ alias cc='claude'
 claude() { command claude --settings '{"theme":"custom:omarchy"}' "$@"; }
 
 
+
+# atuin needs bash-preexec on bash; loaded last so its Ctrl-R replaces fzf's.
+if command -v atuin &> /dev/null && [[ -f /usr/share/bash-preexec/bash-preexec.sh ]]; then
+  source /usr/share/bash-preexec/bash-preexec.sh
+  eval "$(atuin init bash)"
+fi
