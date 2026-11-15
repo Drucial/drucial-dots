@@ -12,7 +12,8 @@ which mirrors `$HOME` (`home/dot_config/hypr` → `~/.config/hypr`).
 - Nothing per-machine is tracked: themes, monitors, display scale, hardware files.
 - Packages on Omarchy come from the official and Omarchy repos via
   `omarchy pkg add`. No AUR.
-- Secrets never go in the repo.
+- Secrets never go in the repo. Shell secrets (API keys) live in the untracked
+  `~/.config/shell/secrets`, which both shells source when it exists.
 
 ## Layout
 
