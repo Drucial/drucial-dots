@@ -30,10 +30,14 @@ which mirrors `$HOME` (`home/dot_config/hypr` → `~/.config/hypr`).
 ```sh
 git clone https://github.com/Drucial/drucial-dots.git ~/Dev/drucial-dots
 sudo pacman -S chezmoi            # macOS: brew install chezmoi
-chezmoi init --source ~/Dev/drucial-dots
+chezmoi init --source ~/Dev/drucial-dots   # prompts once for git name and email
 chezmoi diff                      # review before anything changes
 chezmoi apply
+gh auth login                     # git's credential helper calls gh
 ```
+
+Per-machine values (git identity) live in `~/.config/chezmoi/chezmoi.toml`, never
+in the repo.
 
 ## Day to day
 
