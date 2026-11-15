@@ -4,6 +4,7 @@ omarchy:
     - bash-preexec
     - claude-desktop
     - herdr-app
+    - lsof
     - openai-codex-desktop
     - spotify
   webapps:

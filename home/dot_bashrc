@@ -6,6 +6,7 @@
 source "$OMARCHY_PATH/default/bash/rc"
 
 source ~/.config/shell/aliases
+source ~/.config/shell/functions
 source ~/.config/bash/functions
 
 # atuin needs bash-preexec on bash; loaded last so its Ctrl-R replaces fzf's.

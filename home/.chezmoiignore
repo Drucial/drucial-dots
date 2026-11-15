@@ -1,6 +1,13 @@
 {{ if ne .chezmoi.os "linux" }}
+.bashrc
+.config/bash
 .config/hypr
 .config/omarchy
+{{ end }}
+{{ if ne .chezmoi.os "darwin" }}
+.zshrc
+.zprofile
+.config/zsh
 {{ end }}
 .config/nvim/AGENTS.md
 .config/nvim/docs

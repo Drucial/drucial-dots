@@ -1,0 +1,50 @@
+# Functions shared by bash and zsh.
+
+# Yazi that leaves the shell in the directory it was closed in.
+y() {
+  local tmp cwd
+  tmp="$(mktemp -t yazi-cwd.XXXXXX)"
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
+
+ports() {
+  printf "%-7s %-24s %s\n" PORT COMMAND PID
+  lsof -nP -iTCP -sTCP:LISTEN 2>/dev/null |
+    awk 'NR > 1 {
+      n = split($9, addr, ":")
+      port = addr[n]
+      if (!seen[port " " $2]++) printf "%-7s %-24s %s\n", port, $1, $2
+    }' |
+    sort -n
+}
+
+killport() {
+  if [ -z "$1" ]; then
+    echo "usage: killport <port>" >&2
+    return 1
+  fi
+  local pids
+  pids="$(lsof -tiTCP:"$1" -sTCP:LISTEN 2>/dev/null)"
+  if [ -z "$pids" ]; then
+    echo "killport: nothing listening on port $1" >&2
+    return 1
+  fi
+  echo "$pids" | xargs kill -9 && echo "killport: freed $1"
+}
+
+fkill() {
+  local rows selected
+  rows="$(ports)"
+  if [ "$(echo "$rows" | wc -l)" -le 1 ]; then
+    echo "fkill: no listening ports" >&2
+    return 1
+  fi
+  selected="$(echo "$rows" | fzf --multi --header-lines=1 --prompt='port> ' \
+    --header='enter kills selected (SIGKILL) · tab marks multiple' \
+    --layout=reverse --height=40% --preview-window=hidden)" || return
+  [ -n "$selected" ] && echo "$selected" | awk '{print $3}' | xargs kill -9
+}
