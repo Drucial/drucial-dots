@@ -55,7 +55,10 @@ chezmoi update        # git pull + apply
 ```
 
 `chezmoi diff` shows any drift between the repo and the machine; check it before
-applying.
+applying. Some files are rewritten by their apps or edited in place — herdr-app's
+keys, settings, layouts and mods, nvim's `lazy-lock.json`, the font line
+`omarchy font set` writes into ghostty's config. After changing those, run
+`chezmoi re-add` so the repo picks them up.
 
 ## Adding
 
