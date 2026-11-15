@@ -77,12 +77,16 @@
   },
   "layout:Zen": {
     "ctrl-alt-g": "drucial-floats.lazygit",
+    "ctrl-alt-y": "drucial-floats.yazi",
+    "ctrl-alt-e": "drucial-floats.nvim",
     "ctrl-alt-o": "drucial-floats.zen-octo",
     "ctrl-alt-l": "drucial-floats.zen-linear",
     "ctrl-alt-r": "drucial-floats.zen-review"
   },
   "layout:zen-lab": {
     "ctrl-alt-g": "drucial-floats.lazygit",
+    "ctrl-alt-y": "drucial-floats.yazi",
+    "ctrl-alt-e": "drucial-floats.nvim",
     "ctrl-alt-o": "drucial-floats.zen-octo",
     "ctrl-alt-l": "drucial-floats.zen-linear",
     "ctrl-alt-r": "drucial-floats.zen-review"

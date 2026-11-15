@@ -43,7 +43,7 @@
                 "mod": "zen-lab-prs"
               },
               "size": {
-                "px": 260
+                "px": 46
               },
               "min": 46
             }
@@ -87,7 +87,7 @@
                   },
                   "focus": {
                     "width": 1,
-                    "color": "accent"
+                    "color": "border"
                   },
                   "radius": 10,
                   "gap": 8,

@@ -13,10 +13,12 @@ function floats() {
   const bin = `${home()}/.local/bin`;
   return {
     lazygit: { title: "Lazygit", argv: ["lazygit"], repo: true, kept: false },
+    yazi: { title: "Yazi", argv: ["yazi"], repo: false, pane: true, kept: false },
+    nvim: { title: "Neovim", argv: ["nvim"], repo: false, pane: true, kept: true },
     "zen-review": { title: "Zen Review", argv: [`${bin}/zen-review`], repo: true, kept: false },
-    "zen-octo": { title: "Zen Octo", argv: [`${bin}/zen-octo`], repo: false, kept: true },
-    "zen-octo-pr": { title: "Zen Octo", argv: [`${bin}/zen-octo`], repo: false, kept: false, targeted: true },
-    "zen-linear": { title: "Zen Linear", argv: [`${bin}/zen-linear`], repo: false, kept: true },
+    "zen-octo": { title: "Zen Octo", argv: [`${bin}/zen-octo`], repo: false, home: true, kept: true },
+    "zen-octo-pr": { title: "Zen Octo", argv: [`${bin}/zen-octo`], repo: false, home: true, kept: false, targeted: true },
+    "zen-linear": { title: "Zen Linear", argv: [`${bin}/zen-linear`], repo: false, home: true, kept: true },
   };
 }
 
@@ -44,14 +46,14 @@ async function workingFolder(machine) {
 
 async function start(name, float) {
   const space = spaces().find((s) => s.id === focused()?.space);
-  const local = float.kept || float.targeted;
+  const local = float.home;
   const machine = local ? null : space?.machine ?? null;
   const { dir, root } = local ? { dir: home(), root: null } : await workingFolder(machine);
   if (float.repo && !root) {
     notify({ title: `${float.title} needs a git repository`, body: dir ?? "No focused folder", level: "warning" });
     return null;
   }
-  const args = ["run", "--bg", "--json", "--no-parent", "--no-notify", "--rm", "--cwd", root ?? dir ?? home()];
+  const args = ["run", "--bg", "--json", "--no-parent", "--no-notify", "--rm", "--cwd", (float.pane ? dir : root ?? dir) ?? home()];
   if (machine) args.push("--on", machine);
   const argv = float.targeted ? [...float.argv, record(TARGET)[name]] : float.argv;
   const result = await hc([...args, "--", ...argv]);
