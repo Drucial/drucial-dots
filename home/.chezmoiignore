@@ -9,6 +9,7 @@
 .zshrc
 .zprofile
 .config/zsh
+.config/rex
 {{ end }}
 .config/nvim/AGENTS.md
 .config/nvim/docs
