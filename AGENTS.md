@@ -64,6 +64,10 @@ keys, settings, layouts and mods, nvim's `lazy-lock.json`, the font line
 `omarchy font set` writes into ghostty's config. After changing those, run
 `chezmoi re-add` so the repo picks them up.
 
+herdr-app's `keys.json` replaces all of herdr's default shortcuts, which differ
+per OS, so each OS has its own full copy in `home/.chezmoitemplates/herdr-keys-<os>.json`.
+`re-add` skips templates: copy the live `keys.json` over that OS's file instead.
+
 ## Adding
 
 - **Config:** `chezmoi add ~/.config/<app>`, then strip the source copy down to
