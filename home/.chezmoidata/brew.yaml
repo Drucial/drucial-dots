@@ -7,6 +7,7 @@ brew:
     - fd
     - fzf
     - gh
+    - imagemagick
     - jq
     - lazydocker
     - lazygit
@@ -24,6 +25,8 @@ brew:
     - zoxide
     - zsh-autosuggestions
     - zsh-syntax-highlighting
+    - kardolus/chatgpt-cli/chatgpt-cli
+    - stripe/stripe-cli/stripe
   casks:
     - 1password
     - 1password-cli
