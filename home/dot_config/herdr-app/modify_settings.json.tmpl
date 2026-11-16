@@ -8,6 +8,8 @@ printf '%s' "${input:-{\}}" | jq --indent 2 '. * $want' --argjson want '{
   "minimum_contrast": 1,
 {{- if eq .chezmoi.os "linux" }}
   "theme": "omarchy-zen",
+{{- else }}
+  "theme": "ink",
 {{- end }}
   "font": "JetBrainsMono Nerd Font"
 }'
