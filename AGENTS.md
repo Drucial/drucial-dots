@@ -36,20 +36,52 @@ which mirrors `$HOME` (`home/dot_config/hypr` → `~/.config/hypr`).
 
 ## New machine
 
-On a Mac, install [Homebrew](https://brew.sh) first.
+### Omarchy
+
+Install Omarchy, then:
 
 ```sh
+sudo pacman -S chezmoi
 git clone https://github.com/Drucial/drucial-dots.git ~/Dev/drucial-dots
-sudo pacman -S chezmoi            # macOS: brew install chezmoi
 chezmoi init --source ~/Dev/drucial-dots   # prompts once for git name and email
-chezmoi diff                      # review before anything changes
-chezmoi apply
-gh auth login                     # git's credential helper calls gh
+chezmoi diff                               # review before anything changes
+chezmoi apply                              # asks for sudo to install packages
+gh auth login                              # git's credential helper calls gh
 ```
 
+The apply also installs the web apps, sets the bar, renders the herdr theme and
+installs the yazi plugins. Then by hand:
+
+- Delete the files in `~/.config/nvim` that `chezmoi managed` doesn't list,
+  except Omarchy's `lua/plugins/theme.lua` link. They are Omarchy's stock nvim
+  config, which chezmoi never removes.
+
+### Mac
+
+Install [Homebrew](https://brew.sh), then:
+
+```sh
+brew install chezmoi
+git clone https://github.com/Drucial/drucial-dots.git ~/Dev/drucial-dots
+chezmoi init --source ~/Dev/drucial-dots   # prompts once for git name and email
+chezmoi diff                               # review before anything changes
+chezmoi apply                              # brew bundle may ask for a password
+gh auth login                              # git's credential helper calls gh
+```
+
+Then by hand: open OrbStack once, and install any apps only this machine needs.
+
+### Both
+
+- Open herdr once, then `chezmoi apply` again: the keys script adds my keys to
+  the `keys.json` herdr writes on first launch.
+- Open nvim once so it installs its plugins.
+- Put API keys in `~/.config/shell/secrets`.
+- Claude's config is a separate repo: follow
+  [agent-kit](https://github.com/Drucial/agent-kit)'s README.
+
 Per-machine values (git identity) live in `~/.config/chezmoi/chezmoi.toml`, never
-in the repo. Claude's config is a separate repo: see
-[agent-kit](https://github.com/Drucial/agent-kit)'s README.
+in the repo.
 
 ## Day to day
 
