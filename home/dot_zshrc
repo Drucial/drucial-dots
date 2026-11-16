@@ -3,6 +3,8 @@
 # Without it, macOS tools like lazygit read ~/Library/Application Support instead of ~/.config.
 export XDG_CONFIG_HOME="$HOME/.config"
 
+export EDITOR="nvim"
+
 # zsh picks vi mode when EDITOR contains "vi"; keep emacs keys like bash.
 bindkey -e
 
