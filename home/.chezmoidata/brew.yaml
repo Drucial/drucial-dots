@@ -1,0 +1,42 @@
+brew:
+  formulae:
+    - atuin
+    - bat
+    - btop
+    - eza
+    - fd
+    - fzf
+    - gh
+    - jq
+    - lazydocker
+    - lazygit
+    - libpq
+    - mise
+    - mole
+    - neovim
+    - render
+    - resvg
+    - ripgrep
+    - sevenzip
+    - starship
+    - tree-sitter-cli
+    - yazi
+    - zoxide
+    - zsh-autosuggestions
+    - zsh-syntax-highlighting
+  casks:
+    - 1password
+    - 1password-cli
+    - chatgpt
+    - claude
+    - cleanshot
+    - codex
+    - font-jetbrains-mono-nerd-font
+    - ghostty
+    - herdr-app
+    - linear
+    - notion-calendar
+    - orbstack
+    - slack
+    - tailscale-app
+    - tinycast

@@ -11,7 +11,8 @@ which mirrors `$HOME` (`home/dot_config/hypr` → `~/.config/hypr`).
 - Track what to add, never what to remove. Each machine uninstalls by hand.
 - Nothing per-machine is tracked: themes, monitors, display scale, hardware files.
 - Packages on Omarchy come from the official and Omarchy repos via
-  `omarchy pkg add`. No AUR.
+  `omarchy pkg add`. No AUR. Packages on the Macs come from Homebrew.
+- Nothing project-specific. A project's tools go in that project's `mise.toml`.
 - Secrets never go in the repo. Shell secrets (API keys) live in the untracked
   `~/.config/shell/secrets`, which both shells source when it exists.
 
@@ -23,6 +24,8 @@ which mirrors `$HOME` (`home/dot_config/hypr` → `~/.config/hypr`).
 | `home/.chezmoidata/omarchy.yaml` | Omarchy packages and web apps to install |
 | `home/dot_local/share/icons/...` | Web app icons |
 | `home/run_onchange_after_omarchy.sh.tmpl` | Installs the above, sets the bar; re-runs when either changes |
+| `home/.chezmoidata/brew.yaml` | Homebrew formulae and casks for the Macs |
+| `home/run_onchange_after_brew.sh.tmpl` | Installs the above with `brew bundle`; re-runs when the list changes |
 | `home/.chezmoiignore` | Paths skipped per OS |
 | `home/.chezmoi.toml.tmpl` | Per-machine chezmoi config, generated on `init` |
 
@@ -71,6 +74,8 @@ keys, settings, layouts and mods, nvim's `lazy-lock.json`, the font line
   `home/.chezmoiignore`.
 - **Omarchy package:** add it to `packages` in `home/.chezmoidata/omarchy.yaml`,
   then `chezmoi apply`.
+- **Mac package:** add it to `formulae` or `casks` in `home/.chezmoidata/brew.yaml`,
+  then `chezmoi apply`.
 - **Web app:** add `name`, `url` and `icon` to `webapps` in the same file, and
   put a 256px PNG named `<icon>.png` in
   `home/dot_local/share/icons/hicolor/256x256/apps/`.
@@ -80,4 +85,4 @@ keys, settings, layouts and mods, nvim's `lazy-lock.json`, the font line
 - **Config:** `chezmoi forget ~/.config/<app>` stops tracking it and leaves the
   live file alone. Delete the live file by hand if it should go too.
 - **Package or web app:** delete its line. Uninstall it on each machine by hand
-  (`omarchy pkg drop <pkg>`, `omarchy webapp remove <name>`).
+  (`omarchy pkg drop <pkg>`, `omarchy webapp remove <name>`, `brew uninstall <pkg>`).

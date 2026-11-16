@@ -1,0 +1,13 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env bash
+set -euo pipefail
+
+brew bundle --no-upgrade --file=- <<'BREWFILE'
+{{ range .brew.formulae -}}
+brew {{ . | quote }}
+{{ end -}}
+{{ range .brew.casks -}}
+cask {{ . | quote }}
+{{ end -}}
+BREWFILE
+{{ end -}}
