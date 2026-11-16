@@ -53,6 +53,11 @@ opt.shiftround = true
 -- System clipboard
 opt.clipboard = "unnamedplus"
 
+-- Omarchy's provider sends yanks over SSH, tmux and herdr to the local clipboard; a local Mac keeps pbcopy.
+if vim.fn.has("mac") == 0 or vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
+  require("config.remote_clipboard").setup()
+end
+
 -- Vertical context around the cursor. Not 999: a pinned cursor line makes zz,
 -- zt and zb inert, so half-page scrolls re-center themselves in keymaps.lua.
 opt.scrolloff = 8

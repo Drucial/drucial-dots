@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Installs the tools in mise's config; re-runs when it changes:
+# {{ include "dot_config/mise/config.toml.tmpl" | sha256sum }}
+set -euo pipefail
+command -v mise > /dev/null || { echo "mise not installed; tools skipped" >&2; exit 1; }
+mise install

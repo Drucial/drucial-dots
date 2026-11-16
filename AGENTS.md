@@ -27,6 +27,7 @@ which mirrors `$HOME` (`home/dot_config/hypr` → `~/.config/hypr`).
 | `home/.chezmoidata/brew.yaml` | Homebrew formulae and casks for the Macs |
 | `home/run_onchange_after_brew.sh.tmpl` | Installs the above with `brew bundle`; re-runs when the list changes |
 | `home/run_onchange_after_theme-refresh.sh.tmpl` | Omarchy: renders the herdr theme; re-runs when its template or hook changes |
+| `home/run_onchange_after_mise-tools.sh.tmpl` | Installs the tools in `mise/config.toml`; re-runs when it changes |
 | `home/run_onchange_after_yazi-plugins.sh.tmpl` | Installs yazi plugins from `package.toml`; re-runs when it changes |
 | `home/dot_config/shell/` | Env, aliases and functions shared by bash and zsh; aliases live only here |
 | `home/dot_bashrc`, `home/dot_config/bash/` | Linux: Omarchy's bash defaults, then the shared files and bash-only functions |
