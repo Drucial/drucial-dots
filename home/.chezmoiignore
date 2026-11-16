@@ -4,7 +4,7 @@
 .config/hypr
 .config/xdg-terminals.list
 .config/omarchy
-.local/share/icons
+.local
 {{ end }}
 {{ if ne .chezmoi.os "darwin" }}
 .zshrc
