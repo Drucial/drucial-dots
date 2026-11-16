@@ -15,6 +15,7 @@ brew:
     - mise
     - mole
     - neovim
+    - poppler
     - render
     - resvg
     - ripgrep
