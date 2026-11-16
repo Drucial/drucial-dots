@@ -60,13 +60,13 @@ chezmoi update        # git pull + apply
 
 `chezmoi diff` shows any drift between the repo and the machine; check it before
 applying. Some files are rewritten by their apps or edited in place — herdr-app's
-keys, settings, layouts and mods, nvim's `lazy-lock.json`, the font line
+settings, layouts and mods, nvim's `lazy-lock.json`, the font line
 `omarchy font set` writes into ghostty's config. After changing those, run
 `chezmoi re-add` so the repo picks them up.
 
-herdr-app's `keys.json` replaces all of herdr's default shortcuts, which differ
-per OS, so each OS has its own full copy in `home/.chezmoitemplates/herdr-keys-<os>.json`.
-`re-add` skips templates: copy the live `keys.json` over that OS's file instead.
+herdr-app's `keys.json` is the exception: `home/dot_config/herdr-app/modify_keys.json.tmpl`
+sets only my keys, per OS, on top of the defaults herdr writes. Change keys there,
+not with `re-add`.
 
 ## Adding
 

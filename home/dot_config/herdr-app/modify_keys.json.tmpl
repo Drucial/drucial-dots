@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# keys.json replaces all of herdr's defaults, so only these keys are set on top of the file herdr writes; null removes a default.
+set -euo pipefail
+{{- $m := "ctrl-alt" }}
+{{- if eq .chezmoi.os "darwin" }}{{ $m = "cmd" }}{{ end }}
+input=$(cat)
+[ -n "$input" ] || exit 0
+printf '%s' "$input" | jq --indent 2 '. * $want | walk(if type == "object" then with_entries(select(.value != null)) else . end)' --argjson want '{
+  "global": {
+{{- if eq .chezmoi.os "darwin" }}
+    "cmd-alt-[": null,
+    "cmd-alt-]": null,
+    "cmd-ctrl-[": "space.prev",
+    "cmd-ctrl-]": "space.next",
+    "cmd-ctrl-r": "tab.rename",
+    "cmd-ctrl-shift-r": "space.rename",
+    "cmd-shift-e": "drucial-tabs.files",
+    "cmd-shift-g": "drucial-tabs.changes"
+{{- else }}
+    "alt-shift-[": "space.prev",
+    "alt-shift-]": "space.next",
+    "alt-{": "space.prev",
+    "alt-}": "space.next"
+{{- end }}
+  },
+{{- range list "Zen" "zen-lab" }}
+  "layout:{{ . }}": {
+    "{{ $m }}-e": "drucial-floats.nvim",
+    "{{ $m }}-g": "drucial-floats.lazygit",
+    "{{ $m }}-l": "drucial-floats.zen-linear",
+    "{{ $m }}-o": "drucial-floats.zen-octo",
+    "{{ $m }}-r": "drucial-floats.zen-review",
+    "{{ $m }}-y": "drucial-floats.yazi"
+  }{{ if eq . "Zen" }},{{ end }}
+{{- end }}
+}'
