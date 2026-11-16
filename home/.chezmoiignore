@@ -8,7 +8,6 @@
 {{ if ne .chezmoi.os "darwin" }}
 .zshrc
 .zprofile
-.config/zsh
 .config/rex
 {{ end }}
 .config/nvim/AGENTS.md
