@@ -1,11 +1,7 @@
 # Ghostty reads this only at process start: quit and relaunch to apply changes.
 
-{{ if eq .chezmoi.os "darwin" -}}
-font-family = JetBrainsMono Nerd Font Mono
-{{- else -}}
 # Quoted: `omarchy font set` rewrites this exact form.
 font-family = "JetBrainsMono Nerd Font"
-{{- end }}
 font-style = Regular
 font-size = 10
 
