@@ -136,7 +136,6 @@
     }
   ],
   "background": "chrome",
-  "theme": "omarchy-zen",
   "terminal_padding": [
     14,
     12

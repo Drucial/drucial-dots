@@ -60,13 +60,13 @@ chezmoi update        # git pull + apply
 
 `chezmoi diff` shows any drift between the repo and the machine; check it before
 applying. Some files are rewritten by their apps or edited in place — herdr-app's
-settings, layouts and mods, nvim's `lazy-lock.json`, the font line
+layouts and mods, nvim's `lazy-lock.json`, the font line
 `omarchy font set` writes into ghostty's config. After changing those, run
 `chezmoi re-add` so the repo picks them up.
 
-herdr-app's `keys.json` is the exception: `home/dot_config/herdr-app/modify_keys.json.tmpl`
-sets only my keys, per OS, on top of the defaults herdr writes. Change keys there,
-not with `re-add`.
+herdr-app's `keys.json` and `settings.json` are the exception: their `modify_`
+scripts in `home/dot_config/herdr-app/` set only my values, per OS, on top of
+what herdr writes. Change them there, not with `re-add`.
 
 ## Adding
 

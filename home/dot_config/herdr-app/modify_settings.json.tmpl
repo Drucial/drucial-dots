@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Herdr rewrites settings.json, so only these keys are set; the rest stays Herdr's.
+set -euo pipefail
+input=$(cat)
+printf '%s' "${input:-{\}}" | jq --indent 2 '. * $want' --argjson want '{
+  "sounds": { "enabled": true },
+  "font_ligatures": false,
+  "minimum_contrast": 1,
+{{- if eq .chezmoi.os "linux" }}
+  "theme": "omarchy-zen",
+{{- end }}
+  "font": "JetBrainsMono Nerd Font"
+}'
