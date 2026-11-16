@@ -7,6 +7,26 @@ alias gg='lazygit'
 alias cc='claude'
 alias ~='cd ~'
 
+if command -v eza &> /dev/null; then
+  alias ls='eza -lh --group-directories-first --icons=auto'
+  alias lsa='ls -a'
+  alias lt='eza --tree --level=2 --long --icons --git'
+  alias lta='lt -a'
+fi
+
+alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
+alias eff='$EDITOR "$(ff)"'
+
+command -v zoxide &> /dev/null && alias cd='zd'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+alias g='git'
+alias gcm='git commit -m'
+alias gcam='git commit -a -m'
+alias gcad='git commit -a --amend'
+
 alias zn='zen-notes'
 alias zr='zen-review'
 alias zo='zen-octo'
@@ -26,44 +46,6 @@ alias fs='fzf --ansi --disabled --delimiter : --bind "start:reload:rg --column -
 
 {{ if eq .chezmoi.os "darwin" -}}
 alias ip='ipconfig getifaddr en0 | tee >(pbcopy)'
-
-# Omarchy's aliases, which Linux already gets from $OMARCHY_PATH/default/bash/aliases.
-if command -v eza &> /dev/null; then
-  alias ls='eza -lh --group-directories-first --icons=auto'
-  alias lsa='ls -a'
-  alias lt='eza --tree --level=2 --long --icons --git'
-  alias lta='lt -a'
-fi
-
-alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
-alias eff='$EDITOR "$(ff)"'
-
-command -v zoxide &> /dev/null && alias cd="zd"
-zd() {
-  if (( $# == 0 )); then
-    builtin cd ~ || return
-  elif [[ -d $1 ]]; then
-    builtin cd "$1" || return
-  else
-    if ! z "$@"; then
-      echo "Error: Directory not found"
-      return 1
-    fi
-    printf "\U000F17A9 "
-    pwd
-  fi
-}
-
-n() { if [ "$#" -eq 0 ]; then command nvim . ; else command nvim "$@"; fi; }
-
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-
-alias g='git'
-alias gcm='git commit -m'
-alias gcam='git commit -a -m'
-alias gcad='git commit -a --amend'
 {{- else -}}
 alias ip='ip -4 -o addr show scope global | awk "{print \$4}" | cut -d/ -f1 | head -1 | tee >(wl-copy)'
 {{- end }}

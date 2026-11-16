@@ -1,16 +1,11 @@
-# Omarchy's bash defaults ported to zsh, then the shared shell files, so the Macs match the Linux machines.
+# zsh setup for the Macs, then the shared shell files.
 
 # Without it, macOS tools like lazygit read ~/Library/Application Support instead of ~/.config.
 export XDG_CONFIG_HOME="$HOME/.config"
 
-# zsh picks vi mode when EDITOR contains "vi"; Omarchy's readline is emacs.
+# zsh picks vi mode when EDITOR contains "vi"; keep emacs keys like bash.
 bindkey -e
 
-export EDITOR="nvim"
-export SUDO_EDITOR="$EDITOR"
-export BAT_THEME=ansi
-export MANROFFOPT="-c"
-export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 case ":$PATH:" in
   *":$HOME/.local/bin:"*) ;;
   *) export PATH="$PATH:$HOME/.local/bin" ;;
@@ -26,12 +21,6 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' menu select
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 bindkey '^[[Z' reverse-menu-complete
-
-autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
-zle -N up-line-or-beginning-search
-zle -N down-line-or-beginning-search
-bindkey '^[[A' up-line-or-beginning-search
-bindkey '^[[B' down-line-or-beginning-search
 
 command -v mise &> /dev/null && eval "$(mise activate zsh)"
 command -v starship &> /dev/null && eval "$(starship init zsh)"

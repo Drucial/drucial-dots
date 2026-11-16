@@ -1,5 +1,9 @@
 # Environment shared by bash and zsh.
 
+export EDITOR="nvim"
+export MANROFFOPT="-c"
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+
 export FZF_DEFAULT_OPTS="
   --style=full
   --layout=reverse

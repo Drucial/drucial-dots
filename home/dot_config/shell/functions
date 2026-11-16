@@ -48,3 +48,16 @@ fkill() {
     --layout=reverse --height=40% --preview-window=hidden)" || return
   [ -n "$selected" ] && echo "$selected" | awk '{print $3}' | xargs kill -9
 }
+
+# cd that falls back to zoxide's remembered folders.
+zd() {
+  if [ "$#" -eq 0 ]; then
+    builtin cd ~ || return
+  elif [ -d "$1" ]; then
+    builtin cd "$1" || return
+  else
+    z "$@" || { echo "Error: Directory not found"; return 1; }
+    printf "\U000F17A9 "
+    pwd
+  fi
+}
