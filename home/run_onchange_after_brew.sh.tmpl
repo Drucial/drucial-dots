@@ -2,13 +2,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-{{- $thirdParty := list }}
-{{- range .brew.formulae }}{{ if contains "/" . }}{{ $thirdParty = append $thirdParty . }}{{ end }}{{ end }}
-{{- if $thirdParty }}
-
-# Homebrew refuses third-party tap formulae until they are trusted; trust only the ones listed.
-brew trust --formula {{ $thirdParty | join " " }}
-{{- end }}
 
 brew bundle --no-upgrade --file=- <<'BREWFILE'
 {{ range .brew.formulae -}}
