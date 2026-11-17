@@ -23,12 +23,8 @@ which mirrors `$HOME` (`home/dot_config/hypr` → `~/.config/hypr`).
 | `home/dot_config/...` | Configs, copied to `~/.config/...` |
 | `home/.chezmoidata/omarchy.yaml` | Omarchy packages and web apps to install |
 | `home/dot_local/share/icons/...` | Web app icons |
-| `home/run_onchange_after_omarchy.sh.tmpl` | Installs the above, sets the bar; re-runs when either changes |
 | `home/.chezmoidata/brew.yaml` | Homebrew formulae and casks for the Macs |
-| `home/run_onchange_after_brew.sh.tmpl` | Installs the above with `brew bundle`; re-runs when the list changes |
-| `home/run_onchange_after_theme-refresh.sh.tmpl` | Omarchy: renders the herdr theme; re-runs when its template or hook changes |
-| `home/run_onchange_after_mise-tools.sh.tmpl` | Installs the tools in `mise/config.toml`; re-runs when it changes |
-| `home/run_onchange_after_yazi-plugins.sh.tmpl` | Installs yazi plugins from `package.toml`; re-runs when it changes |
+| `home/run_onchange_after_*.sh.tmpl` | Install packages (10), render the herdr theme (20), then mise tools and yazi plugins (30). Each re-runs when its rendered text changes, including the hashes of the files it reads |
 | `home/dot_config/shell/` | Env, aliases and functions shared by bash and zsh; aliases live only here |
 | `home/dot_bashrc`, `home/dot_config/bash/` | Linux: Omarchy's bash defaults, then the shared files and bash-only functions |
 | `home/dot_zshrc`, `home/dot_zprofile` | Macs: zsh setup and Homebrew, then the shared files |
@@ -43,40 +39,31 @@ Install Omarchy, then:
 
 ```sh
 sudo pacman -S chezmoi
-git clone https://github.com/Drucial/drucial-dots.git ~/Dev/drucial-dots
-chezmoi init --source ~/Dev/drucial-dots   # prompts once for git name and email
-chezmoi diff                               # review before anything changes
-chezmoi apply                              # asks for sudo to install packages
-gh auth login                              # git's credential helper calls gh
+chezmoi init --apply --source ~/Dev/drucial-dots Drucial/drucial-dots   # prompts for git name and email; sudo for packages
+gh auth login                                                           # git's credential helper calls gh
 ```
 
-The apply also installs the web apps, sets the bar, renders the herdr theme and
-installs the yazi plugins. Then by hand:
-
-- Delete the files in `~/.config/nvim` that `chezmoi managed` doesn't list,
-  except Omarchy's `lua/plugins/theme.lua` link. They are Omarchy's stock nvim
-  config, which chezmoi never removes.
+Then delete what `chezmoi unmanaged ~/.config/nvim` lists, except Omarchy's
+`lua/plugins/theme.lua` link. That is Omarchy's stock nvim config, which chezmoi
+never removes.
 
 ### Mac
 
 Install [Homebrew](https://brew.sh), then:
 
 ```sh
+eval "$(/opt/homebrew/bin/brew shellenv)"   # this shell only; chezmoi writes ~/.zprofile
 brew install chezmoi
-git clone https://github.com/Drucial/drucial-dots.git ~/Dev/drucial-dots
-chezmoi init --source ~/Dev/drucial-dots   # prompts once for git name and email
-chezmoi diff                               # review before anything changes
-chezmoi apply                              # brew bundle may ask for a password
-gh auth login                              # git's credential helper calls gh
+chezmoi init --apply --source ~/Dev/drucial-dots Drucial/drucial-dots   # prompts for git name and email
+gh auth login                                                           # git's credential helper calls gh
 ```
 
-Then by hand: open OrbStack once, and install any apps only this machine needs.
+Then open OrbStack once, and install any apps only this machine needs.
 
 ### Both
 
-- Open herdr once, then `chezmoi apply` again: the keys script adds my keys to
-  the `keys.json` herdr writes on first launch.
-- Open nvim once so it installs its plugins.
+- herdr's keys land on the first `chezmoi apply` or `update` after herdr's first
+  launch, since the keys script edits the `keys.json` herdr writes then.
 - Put API keys in `~/.config/shell/secrets`.
 - Claude's config is a separate repo: follow
   [agent-kit](https://github.com/Drucial/agent-kit)'s README.
@@ -90,27 +77,27 @@ chezmoi copies files; it does not symlink. Edit either side, then sync:
 
 ```sh
 chezmoi edit ~/.config/hypr/bindings.lua   # edit the source, then: chezmoi apply
-chezmoi re-add                             # or edit the live file, then pull it back
+chezmoi re-add <path>                      # or edit the live file, then pull it back
 ```
 
 Commit and push from `~/Dev/drucial-dots`. On the other machines:
 
 ```sh
-chezmoi update        # git pull + apply
+chezmoi update --init   # git pull, regenerate the config if its template changed, apply
 ```
 
 `chezmoi diff` shows any drift between the repo and the machine; check it before
 applying. Some files are rewritten by their apps or edited in place — herdr-app's
-mods, nvim's `lazy-lock.json`, the font line
-`omarchy font set` writes into ghostty's config. After changing those, run
-`chezmoi re-add` so the repo picks them up.
+mods, the font line `omarchy font set` writes into ghostty's config. `re-add`
+pulls those back, but it only updates files already tracked, and never `.tmpl`
+or `modify_` sources: edit those in the repo, and `chezmoi add` new files.
 
-herdr-app's keys, settings and layouts are the exception, because herdr writes
-to them while it runs. Their `modify_` scripts in `home/dot_config/herdr-app/`
-set only my keys and settings, per OS, on top of herdr's. The layouts live in
-`home/.chezmoitemplates/herdr-layouts/`; applying one keeps the live file's panel
-widths, shown panels, focus border color and picked theme. Change all of these in
-the repo, not with `re-add`.
+herdr-app's keys, settings and layouts are `modify_` scripts, because herdr
+writes to them while it runs. They set only my keys and settings, per OS, on top
+of herdr's. The layouts live in `home/.chezmoitemplates/herdr-layouts/`; applying
+one keeps the live file's panel widths, shown panels, focus border color and
+picked theme. nvim's `lazy-lock.json` is untracked: each machine keeps its own
+plugin versions.
 
 ## Adding
 
