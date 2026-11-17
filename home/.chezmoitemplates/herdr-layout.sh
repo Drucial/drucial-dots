@@ -17,4 +17,7 @@ jq -n --indent 2 --argjson repo "$repo" --argjson live "$live" '
         | (if .content.pane.focus.color? != null and $m[.id].content.pane.focus.color? != null
            then .content.pane.focus.color = $m[.id].content.pane.focus.color else . end)
       else . end)
-  | if $live.theme != null then .theme = $live.theme else . end'
+  | if $live.theme != null then .theme = $live.theme else . end
+  | . as $out
+  | reduce ($live | keys_unsorted[] | select(. as $k | $out | has($k))) as $k ({}; .[$k] = $out[$k])
+  | . + $out'
