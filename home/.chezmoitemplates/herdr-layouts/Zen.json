@@ -110,15 +110,15 @@
             {
               "id": "prs-panel",
               "type": "block",
-              "hidden": true,
+              "content": {
+                "mod": "drucial-prs"
+              },
               "size": {
                 "px": 368
               },
               "min": 280,
               "max": 900,
-              "content": {
-                "mod": "drucial-prs"
-              }
+              "hidden": true
             }
           ],
           "padding": 8,
