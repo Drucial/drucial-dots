@@ -28,7 +28,7 @@ printf '%s' "$input" | jq --indent 2 '. * $want | walk(if type == "object" then 
     "{{ $m }}-g": "drucial-floats.lazygit",
     "{{ $m }}-l": "drucial-floats.zen-linear",
     "{{ $m }}-o": "drucial-floats.zen-octo",
-    "{{ if eq .chezmoi.os "darwin" }}cmd-u{{ else }}ctrl-alt-p{{ end }}": "layout.toggle:prs-panel",
+    "{{ $m }}-u": "layout.toggle:prs-panel",
     "{{ $m }}-r": "drucial-floats.zen-review",
     "{{ $m }}-y": "drucial-floats.yazi"
   }

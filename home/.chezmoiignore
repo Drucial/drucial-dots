@@ -2,7 +2,6 @@
 .bashrc
 .config/bash
 .config/hypr
-.config/fcitx5
 .config/xdg-terminals.list
 .config/omarchy
 .local
