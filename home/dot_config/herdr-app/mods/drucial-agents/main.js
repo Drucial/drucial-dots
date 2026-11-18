@@ -46,6 +46,11 @@ const sortOf = () => SORTS.find((s) => s.id === shared("agents.sort")) ?? SORTS[
 const SECTION = { 4: "Needs you", 3: "Done", 2: "Working", 1: "Idle" };
 const SECTION_STATUS = { 4: "blocked", 3: "done", 2: "working" };
 
+// The machine an agent on another machine runs on (`vps/t7`), null here.
+function machineOf(a) {
+  return a.address.includes("/") ? a.address.split("/")[0] : null;
+}
+
 // The agent's icon from the app's program table: a one-color glyph or a picture.
 function icon(p, size, color) {
   if (!p?.icon) return null;
@@ -289,8 +294,7 @@ export default class Agents extends View {  fitToRows(height) {
     const row = (a, i, subs = []) => {
       const pic = icon(a.program, 18, t.foreground);
       const more = detail.get(a.address);
-      // An agent on another machine (`vps/t7`) says which.
-      const machine = a.address.includes("/") ? a.address.split("/")[0] : null;
+      const machine = machineOf(a);
       if (collapsed) {
         const badge = a.status === "working"
           ? svg("mods/workspace-chrome/spinner.svg").absolute().top(-5).right(-5).size(10).text_color(t.working).spin(900)
@@ -364,8 +368,9 @@ export default class Agents extends View {  fitToRows(height) {
           })).child(pic)))
         .child(h_flex().flex_1().min_w(0).gap(5).items_center()
           .child(div().min_w(0).max_w(full && more ? 120 : 200).truncate().text_color(idle ? t.muted : t.foreground).child(name))
-          .when(full && Boolean(more), el => el.child(div().flex_1().min_w(0).truncate().text_color(t.dim).child(`\u00b7 ${more}`))))
-        .when(Boolean(machine), el => el.child(div().text_size(10).text_color(t.dim).child(machine)))
+          .when(full && Boolean(more), el => el.child(div().flex_1().min_w(0).truncate().text_color(t.dim).child(`\u00b7 ${more}`)))
+          .when(full && Boolean(machine), el => el.child(div().id(`machine-${a.address}`).flex_none().tooltip(machine)
+            .child(svg("mods/workspace-chrome/server.svg").size(12).text_color(t.dim)))))
         .when(subs.length > 0 && (this.hovered === a.address || this.folded.has(a.address)), el => el.child(fold(a, subs, this.hovered === a.address)))
         .when(this.hovered === a.address, el => el.child(pin))
         .child(this.status(t, a, byPriority && !isPinned));
@@ -378,7 +383,7 @@ export default class Agents extends View {  fitToRows(height) {
       const r = rankOf(a) || RANK.idle;
       const id = byPriority ? `sec-${r}` : `sp-${a.space}`;
       if (groups.at(-1)?.id === id) groups.at(-1).members.push(a);
-      else groups.push({ id, label: byPriority ? SECTION[r] : a.space_name || "", status: byPriority ? SECTION_STATUS[r] : null, members: [a] });
+      else groups.push({ id, label: byPriority ? SECTION[r] : a.space_name || "", status: byPriority ? SECTION_STATUS[r] : null, machine: byPriority ? null : machineOf(a), members: [a] });
     }
 
     // A group's header; it folds the group. Folded, it says how many and the most urgent state.
@@ -404,6 +409,9 @@ export default class Agents extends View {  fitToRows(height) {
         .child(div().truncate().text_color(t[g.status] ?? t.dim).child(g.label))
         .when(byPriority || !open, (el) => el.child(div().text_color(t.dim).child(String(g.members.length))))
         .child(div().flex_1())
+        .when(Boolean(g.machine), (el) => el.child(h_flex().min_w(0).gap(4).items_center().text_size(11).font_normal().text_color(t.dim)
+          .child(svg("mods/workspace-chrome/server.svg").size(12).flex_none())
+          .child(div().truncate().child(g.machine))))
         .when(!open, (el) => el
           .when(!byPriority && top && top !== "idle", (el) => el.child(this.status(t, { status: top }, true)))
           .child(svg("mods/workspace-chrome/chevron-right.svg").size(14).flex_none().text_color(t.dim)));
