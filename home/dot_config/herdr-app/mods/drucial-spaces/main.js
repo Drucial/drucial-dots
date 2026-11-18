@@ -45,8 +45,21 @@ export function tone(t, status) {
   return t[status] ?? t.unknown;
 }
 
+const FADE_STEP_PX = 2;
+const LIST_BOTTOM_PAD = 14;
+const TOP_FADE_STEPS = 6;
+const BOTTOM_FADE_STEPS = 12;
+
+function listFade(color, edge, steps) {
+  const alpha = (i) => Math.round(((i + 1) / steps) ** 1.6 * 255).toString(16).padStart(2, "0");
+  const strips = Array.from({ length: steps }, (_, i) => div().h(FADE_STEP_PX).bg(color.slice(0, 7) + alpha(i)));
+  const anchored = edge === "top" ? v_flex().absolute().top_0() : v_flex().absolute().bottom_0();
+  return anchored.left_0().right_0().children(edge === "top" ? strips.reverse() : strips);
+}
+
 export default class Spaces extends View {
   init(_props, cx) {
+    this.listScroll = { top: 0, viewport: 0, content: 0 };
     this.git = {}; // where() -> { name, branch, ahead, behind, repo, linked }, null: not a repo
     this.checked = {}; // where() -> when it was last looked at
     this.unsure = new Set(); // where()s git couldn't answer for (a machine away)
@@ -443,8 +456,35 @@ export default class Spaces extends View {
         .when(!collapsed, el => el.child("Spaces"))
         .child(div().id("space-new").size(26).flex_none().flex().items_center().justify_center().rounded(6).hover(s => s.bg(t.hover).text_color(t.foreground))
           .on_click(() => run("space.new")).child(svg("mods/workspace-chrome/plus.svg").size(15))))
-      .child(v_flex().flex_1().min_h(0).pl(collapsed ? 12 : 8).pr(collapsed ? 4 : 0).pb(14).overflow_y_scrollbar().mode("always")
+      .child(this.fadedList(t, v_flex().id("spaces-list").size_full().pl(collapsed ? 12 : 8).pr(collapsed ? 4 : 0).pb(LIST_BOTTOM_PAD).overflow_y_scroll()
         .on_mouse_up("left", (_e, cx) => { this.pressed = null; cx.notify(); })
-        .children(this.grouped(t, collapsed)));
+        .child(v_flex().id("spaces-content").flex_none()
+          .on_size_change((size, cx) => this.measureList({ content: size.height + LIST_BOTTOM_PAD }, cx))
+          .children(this.grouped(t, collapsed)))));
+  }
+
+  // Scroll areas don't report their offset, so it is followed from wheel deltas and clamped to the measured sizes.
+  measureList(sizes, cx) {
+    Object.assign(this.listScroll, sizes);
+    this.trackListScroll(this.listScroll.top, cx);
+    cx.notify();
+  }
+
+  trackListScroll(top, cx) {
+    const max = Math.max(0, this.listScroll.content - this.listScroll.viewport);
+    const clamped = Math.min(max, Math.max(0, top));
+    if (clamped === this.listScroll.top) return;
+    this.listScroll.top = clamped;
+    cx.notify();
+  }
+
+  fadedList(t, list) {
+    const scrollable = this.listScroll.content - this.listScroll.viewport;
+    return v_flex().relative().flex_1().min_h(0)
+      .child(list
+        .on_size_change((size, cx) => this.measureList({ viewport: size.height }, cx))
+        .on_scroll_wheel((e, cx) => this.trackListScroll(this.listScroll.top - e.delta.y, cx)))
+      .when(this.listScroll.top > 0, el => el.child(listFade(t.chrome, "top", TOP_FADE_STEPS)))
+      .when(this.listScroll.top < scrollable - 1, el => el.child(listFade(t.chrome, "bottom", BOTTOM_FADE_STEPS)));
   }
 }
