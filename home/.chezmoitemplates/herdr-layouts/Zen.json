@@ -106,6 +106,19 @@
                   "lone": true
                 }
               }
+            },
+            {
+              "id": "prs-panel",
+              "type": "block",
+              "hidden": true,
+              "size": {
+                "px": 368
+              },
+              "min": 280,
+              "max": 900,
+              "content": {
+                "mod": "drucial-prs"
+              }
             }
           ],
           "padding": 8,
