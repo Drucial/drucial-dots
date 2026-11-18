@@ -19,8 +19,23 @@ export default class Tabs extends View {
       for (;;) {
         const command = await nextCommand();
         if (command === "files" || command === "changes") this.togglePanel(command);
+        else if (command === "next") this.step(1);
+        else if (command === "prev") this.step(-1);
       }
     });
+  }
+
+  // Follows the sidebar's order and skips machines folded shut there; spaces it hasn't listed yet go last.
+  step(by) {
+    const walk = shared("spaces.walk") ?? { ids: [], folded: [] };
+    const sp = spaces(), byId = new Map(sp.map(s => [s.id, s])), folded = new Set(walk.folded);
+    const order = [...walk.ids.filter(id => byId.has(id)), ...sp.map(s => s.id).filter(id => !walk.ids.includes(id))].map(id => byId.get(id));
+    const open = order.filter(s => s.active || !folded.has(s.machine ?? null));
+    if (!open.length) return;
+    const found = open.findIndex(s => s.active);
+    const at = found >= 0 ? found : by > 0 ? -1 : open.length;
+    const next = open[((at + by) % open.length + open.length) % open.length];
+    if (!next.active) run("space.select", { id: next.id });
   }
 
   togglePanel(id) {

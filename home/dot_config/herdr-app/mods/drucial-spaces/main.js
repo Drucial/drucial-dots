@@ -5,7 +5,7 @@
 
 import { View, div, svg } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
-import { spaces, machines, panes, run, nextCommand, openOverlay, exec, hc, theme, shared, setShared, watchFolder, window, layout } from "herdr";
+import { spaces, machines, panes, run, openOverlay, exec, hc, theme, shared, setShared, watchFolder, window, layout } from "herdr";
 
 function find(node, id) {
   if (node?.id === id) return node;
@@ -57,16 +57,11 @@ function listFade(color, edge, steps) {
   return anchored.left_0().right_0().children(edge === "top" ? strips.reverse() : strips);
 }
 
+const WALK = "spaces.walk";
+
 export default class Spaces extends View {
   init(_props, cx) {
     this.listScroll = { top: 0, viewport: 0, content: 0 };
-    cx.spawn(async () => {
-      for (;;) {
-        const command = await nextCommand();
-        if (command === "next") this.step(1);
-        else if (command === "prev") this.step(-1);
-      }
-    });
     this.git = {}; // where() -> { name, branch, ahead, behind, repo, linked }, null: not a repo
     this.checked = {}; // where() -> when it was last looked at
     this.unsure = new Set(); // where()s git couldn't answer for (a machine away)
@@ -295,16 +290,12 @@ export default class Spaces extends View {
     return [...new Set([...rows.map(r => r.w.machine).filter(Boolean), ...this.machines.map(m => m.name), ...Object.keys(this.reconnecting)])].sort();
   }
 
-  // Walks the spaces in the order drawn, passing over machines folded shut.
-  step(by) {
+  // The tab bar steps through spaces in this order, since it stays shown while this sidebar hides.
+  publishWalk() {
     const rows = this.ordered();
-    const drawn = [null, ...this.remoteMachines(rows)].flatMap(m => rows.filter(r => (r.w.machine ?? null) === m));
-    const found = drawn.findIndex(r => r.w.active);
-    const at = found >= 0 ? found : by > 0 ? -1 : drawn.length;
-    for (let n = 1; n <= drawn.length; n++) {
-      const r = drawn[((at + by * n) % drawn.length + drawn.length) % drawn.length];
-      if (!this.folded.has(r.w.machine ?? null)) return run("space.select", { id: r.w.id });
-    }
+    const ids = [null, ...this.remoteMachines(rows)].flatMap(m => rows.filter(r => (r.w.machine ?? null) === m)).map(r => r.w.id);
+    const walk = { ids, folded: [...this.folded] };
+    if (JSON.stringify(walk) !== JSON.stringify(shared(WALK))) setShared(WALK, walk);
   }
 
   // The rows, under a header per machine once one isn't this computer.
@@ -460,6 +451,7 @@ export default class Spaces extends View {
   }
 
   render() {
+    this.publishWalk();
     const t = theme();
     const collapsed = narrow();
     const palette = ["ansi6", "ansi3", "ansi4", "ansi5", "ansi2", "ansi1"];

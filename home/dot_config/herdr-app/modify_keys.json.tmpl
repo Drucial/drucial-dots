@@ -25,15 +25,15 @@ printf '%s' "$input" | jq --indent 2 '. * $want | walk(if type == "object" then 
   },
   "layout:Zen": {
 {{- if eq .chezmoi.os "darwin" }}
-    "cmd-ctrl-[": "drucial-spaces.prev",
-    "cmd-ctrl-]": "drucial-spaces.next",
+    "cmd-ctrl-[": "drucial-tabs.prev",
+    "cmd-ctrl-]": "drucial-tabs.next",
 {{- else }}
-    "alt-shift-[": "drucial-spaces.prev",
-    "alt-shift-]": "drucial-spaces.next",
-    "alt-{": "drucial-spaces.prev",
-    "alt-}": "drucial-spaces.next",
-    "ctrl-shift-pageup": "drucial-spaces.prev",
-    "ctrl-shift-pagedown": "drucial-spaces.next",
+    "alt-shift-[": "drucial-tabs.prev",
+    "alt-shift-]": "drucial-tabs.next",
+    "alt-{": "drucial-tabs.prev",
+    "alt-}": "drucial-tabs.next",
+    "ctrl-shift-pageup": "drucial-tabs.prev",
+    "ctrl-shift-pagedown": "drucial-tabs.next",
 {{- end }}
     "{{ $m }}-e": "drucial-floats.nvim",
     "{{ $m }}-g": "drucial-floats.lazygit",
