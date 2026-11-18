@@ -114,14 +114,14 @@ export default class Tabs extends View {
 
   // Where you are while the sidebar is hidden; opens the picker, as the Terminals layout's chip does.
   spaceChip(t, space) {
-    return h_flex().id("space-chip").h(29).px(10).gap(7).rounded(7).items_center().flex_none().text_size(12.8)
-      .border(1).border_color(t.border).bg(t.raised).text_color(t.foreground).hover(s => s.bg(t.hover))
+    return h_flex().id("space-chip").h(29).px(10).gap(6).rounded(7).items_center().flex_none().text_size(12.8)
+      .border(1).border_color(t.chrome).bg(t.chrome).text_color(t.muted).hover(s => s.bg(t.hover).text_color(t.foreground))
       .on_mouse_down("left", (_e, cx) => cx.stop_propagation())
       .on_click(() => openOverlay({ mod: "picker", kind: "popup", at: "top", offset: 40, width: 640, height: 0.8 }))
       .child(svg(`mods/drucial-workspace-chrome/${space.machine ? "server" : "monitor"}.svg`).size(14).text_color(t.dim))
-      .child(div().max_w(140).truncate().text_color(t.muted).child(space.machine ?? "This computer"))
+      .child(div().max_w(140).truncate().child(space.machine ?? "This computer"))
       .child(div().text_color(t.dim).child("/"))
-      .child(div().max_w(170).truncate().child(space.name))
+      .child(div().max_w(170).truncate().text_color(t.foreground).child(space.name))
       .child(svg("mods/drucial-workspace-chrome/chevron-down.svg").size(13).text_color(t.dim));
   }
 }
