@@ -1,14 +1,12 @@
-// Sidebar list of the person's open pull requests, ones awaiting their review and unanswered mentions; a click opens zen-octo on that PR.
+// Right-panel list of the person's open pull requests, ones awaiting their review and unanswered mentions; a click opens zen-octo on that PR.
 
 import { View, div, svg } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
-import { exec, layout, run, setShared, shared, terminals, theme, window } from "herdr";
+import { exec, run, setShared, shared, theme, window } from "herdr";
 
 const REFRESH = 60000;
 const RETURN_REFRESH = 15000;
 const WAKE_CHECK = 5000;
-const MAX_HEIGHT = 520;
-const HEADING = 46;
 const GROUPS = [
   { key: "mine", title: "My PRs", search: "author:@me" },
   { key: "review", title: "To review", search: "review-requested:@me" },
@@ -35,17 +33,6 @@ const conversationQuery = (ids) => `query {
     }
   }
 }`;
-
-function find(node, id) {
-  if (node?.id === id) return node;
-  for (const child of node?.children ?? []) {
-    const found = find(child, id);
-    if (found) return found;
-  }
-  return null;
-}
-
-const narrow = () => (find(layout(), "sidebar")?.size?.px ?? Infinity) < 160;
 
 // Mentioned after the person last commented or reviewed; only the latest 50 comments, 30 reviews and 50 threads are read.
 function unanswered(pr, login) {
@@ -131,18 +118,12 @@ function mergeMark(pr, t) {
     .child(svg("mods/zen-lab-prs/merge.svg").size(12).text_color(color));
 }
 
-function octoOpen() {
-  const open = (shared("floats.open") ?? {})["zen-octo"];
-  return Boolean(open) && terminals().some((t) => t.address === open.terminal && t.state !== "exited");
-}
-
 export default class PullRequests extends View {
   init(_props, cx) {
     this.prs = {};
     this.error = null;
     this.loading = true;
     this.folded = new Set(JSON.parse(localStorage.getItem("prs.folded") ?? "[]"));
-    this.shut = localStorage.getItem("prs.shut") === "true";
     this.replies = new Map();
     this.fetchedAt = 0;
     this.wasActive = true;
@@ -172,10 +153,6 @@ export default class PullRequests extends View {
       this.refreshing = false;
       cx.notify();
     });
-  }
-
-  open() {
-    if (!octoOpen()) run("drucial-floats.zen-octo");
   }
 
   openPR(url) {
@@ -225,16 +202,6 @@ export default class PullRequests extends View {
     return div().id(id).h(28).flex_none().px(8).flex().items_center().text_size(12).text_color(t.dim).truncate().child(text);
   }
 
-  compact(t) {
-    const total = GROUPS.reduce((n, g) => n + (this.prs[g.key]?.length ?? 0), 0);
-    return h_flex().id("prs-compact").h(32).flex_none().items_center().justify_center().rounded(8)
-      .hover((s) => s.bg(t.hover)).tooltip(`${total} open pull requests`)
-      .on_click(() => this.open())
-      .child(div().relative().text_color(t.muted)
-        .child(svg("mods/workspace-chrome/git-compare.svg").size(16))
-        .when(total > 0, (el) => el.child(div().absolute().top(-6).right(-9).text_size(9.5).font_bold().text_color(t.foreground).child(`${total}`))));
-  }
-
   sections(t) {
     if (this.error && !Object.keys(this.prs).length) return [this.header(GROUPS[0], 0, true, t), this.note("prs-error", this.error, t)];
     const shown = this.shownGroups();
@@ -252,47 +219,18 @@ export default class PullRequests extends View {
     return GROUPS.filter((g) => this.loading || this.prs[g.key]?.length);
   }
 
-  fitBlock(collapsed) {
-    const shown = this.shownGroups();
-    const rows = collapsed ? 32 : !shown.length || (this.error && !Object.keys(this.prs).length) ? 54 : shown.reduce((h, g, i) => {
-      const head = i === 0 ? 26 : 42;
-      if (this.folded.has(g.key)) return h + head;
-      return h + head + (this.loading ? 28 : this.prs[g.key].length * 44);
-    }, 0);
-    const px = collapsed ? rows + 22 : this.shut ? HEADING : Math.min(MAX_HEIGHT, HEADING + rows + 14);
-    if (px === this.fittedPx) return;
-    this.fittedPx = px;
-    run("layout.resize", { id: "prs", px });
-  }
-
-  toggleShut(cx) {
-    this.shut = !this.shut;
-    localStorage.setItem("prs.shut", String(this.shut));
-    cx.notify();
-  }
-
   heading(t) {
     const total = GROUPS.reduce((n, g) => n + (this.prs[g.key]?.length ?? 0), 0);
-    return h_flex().id("prs-heading").h(HEADING).flex_none().pl(16).pr(2).gap(8).items_center().text_size(13).text_color(t.dim)
-      .cursor_pointer().on_click((_e, cx) => this.toggleShut(cx))
-      .child(div().flex_1().child("Pull requests"))
-      .when(this.shut && total > 0, (el) => el.child(div().flex_none().text_size(11.5).child(`${total}`)))
-      .child(div().id("prs-shut").size(26).flex_none().flex().items_center().justify_center().rounded(6)
-        .hover((s) => s.bg(t.hover).text_color(t.foreground))
-        .child(svg(`mods/workspace-chrome/chevron-${this.shut ? "right" : "down"}.svg`).size(15)));
+    return h_flex().h(30).flex_none().px(10).gap(8).items_center().border_b(1).border_color(t.border).text_size(12)
+      .child(div().flex_1().font_medium().text_color(t.foreground).child("Pull requests"))
+      .when(total > 0, (el) => el.child(div().text_size(10.5).text_color(t.muted).child(`${total} open`)));
   }
 
   render() {
     const t = theme();
-    const collapsed = narrow();
-    this.fitBlock(collapsed);
-    if (collapsed) {
-      return v_flex().size_full().min_h(0).bg(t.chrome).text_size(13)
-        .child(v_flex().flex_1().min_h(0).pl(12).pr(4).pt(8).pb(14).child(this.compact(t)));
-    }
-    return v_flex().size_full().min_h(0).bg(t.chrome).text_size(13)
+    return v_flex().size_full().min_h(0).rounded(10).overflow_hidden().bg(t.background).border_1().border_color(t.border).text_color(t.foreground).text_size(13)
       .child(this.heading(t))
-      .when(!this.shut, (el) => el.child(v_flex().flex_1().min_h(0).pl(8).pb(14).overflow_y_scrollbar()
-        .children(this.sections(t))));
+      .child(v_flex().id("prs-list").flex_1().min_h(0).p(6).pb(14).overflow_y_scroll()
+        .children(this.sections(t)));
   }
 }

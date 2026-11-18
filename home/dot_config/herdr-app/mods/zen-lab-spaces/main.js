@@ -73,8 +73,21 @@ function mark(t, st) {
   return null;
 }
 
+const FADE_STEP_PX = 2;
+const LIST_BOTTOM_PAD = 14;
+const TOP_FADE_STEPS = 6;
+const BOTTOM_FADE_STEPS = 12;
+
+function listFade(color, edge, steps) {
+  const alpha = (i) => Math.round(((i + 1) / steps) ** 1.6 * 255).toString(16).padStart(2, "0");
+  const strips = Array.from({ length: steps }, (_, i) => div().h(FADE_STEP_PX).bg(color.slice(0, 7) + alpha(i)));
+  const anchored = edge === "top" ? v_flex().absolute().top_0() : v_flex().absolute().bottom_0();
+  return anchored.left_0().right_0().children(edge === "top" ? strips.reverse() : strips);
+}
+
 export default class Spaces extends View {
   init(_props, cx) {
+    this.listScroll = { top: 0, viewport: 0, content: 0 };
     this.git = {}; // where() -> { name, branch, ahead, behind, repo, linked }, null: not a repo
     this.checked = {}; // where() -> when it was last looked at
     this.unsure = new Set(); // where()s git couldn't answer for (a machine away)
@@ -560,9 +573,30 @@ export default class Spaces extends View {
     this.order = [];
     const list = this.grouped(t, collapsed);
     if (!collapsed) setAgentOrder(this.order);
-    return v_flex().size_full().min_h(0).bg(t.chrome).text_size(13)
-      .child(v_flex().flex_1().min_h(0).pl(collapsed ? 12 : 8).pr(collapsed ? 4 : 0).pb(14).overflow_y_scrollbar().mode("always")
+    const scrollable = this.listScroll.content - this.listScroll.viewport;
+    return v_flex().relative().size_full().min_h(0).bg(t.chrome).text_size(13)
+      .child(v_flex().id("spaces-list").flex_1().min_h(0).pl(collapsed ? 12 : 8).pr(collapsed ? 4 : 0).pb(LIST_BOTTOM_PAD).overflow_y_scroll()
+        .on_size_change((size, cx) => this.measureList({ viewport: size.height }, cx))
+        .on_scroll_wheel((e, cx) => this.trackListScroll(this.listScroll.top - e.delta.y, cx))
         .on_mouse_up("left", (_e, cx) => { this.pressed = null; cx.notify(); })
-        .children(list));
+        .child(v_flex().id("spaces-content").flex_none()
+          .on_size_change((size, cx) => this.measureList({ content: size.height + LIST_BOTTOM_PAD }, cx))
+          .children(list)))
+      .when(this.listScroll.top > 0, el => el.child(listFade(t.chrome, "top", TOP_FADE_STEPS)))
+      .when(this.listScroll.top < scrollable, el => el.child(listFade(t.chrome, "bottom", BOTTOM_FADE_STEPS)));
+  }
+
+  measureList(sizes, cx) {
+    Object.assign(this.listScroll, sizes);
+    this.trackListScroll(this.listScroll.top, cx);
+    cx.notify();
+  }
+
+  trackListScroll(top, cx) {
+    const max = Math.max(0, this.listScroll.content - this.listScroll.viewport);
+    const clamped = Math.min(max, Math.max(0, top));
+    if (clamped === this.listScroll.top) return;
+    this.listScroll.top = clamped;
+    cx.notify();
   }
 }
