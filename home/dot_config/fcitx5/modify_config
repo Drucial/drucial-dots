@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# fcitx5 rewrites this file, so only the hotkeys below are cleared; the rest stays Omarchy's. Ctrl+Alt+P belongs to herdr's PR panel.
+set -euo pipefail
+awk '
+  BEGIN { clear["[Hotkey/TogglePreedit]"] = 1 }
+  /^\[/ { if (skipping) print ""; skipping = ($0 in clear); if (skipping) { print; seen[$0] = 1; next } }
+  !skipping { print }
+  END { for (s in clear) if (!(s in seen)) print "\n" s }
+'
