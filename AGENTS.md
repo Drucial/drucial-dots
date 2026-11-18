@@ -66,6 +66,8 @@ Then open OrbStack once, and install any apps only this machine needs.
 - herdr's keys land on the first `chezmoi apply` or `update` after herdr's first
   launch, since the keys script edits the `keys.json` herdr writes then.
 - Put API keys in `~/.config/shell/secrets`.
+- Run `claude plugin install zen-review@praxis-labs`. Claude installs the other
+  enabled plugins on first launch, but not ones from third-party marketplaces.
 
 Per-machine values (git identity) live in `~/.config/chezmoi/chezmoi.toml`, never
 in the repo.
