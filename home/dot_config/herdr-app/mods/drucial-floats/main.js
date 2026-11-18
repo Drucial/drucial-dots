@@ -7,6 +7,7 @@ import { closeOverlay, exec, focused, hc, home, nextCommand, notify, openOverlay
 const OPEN = "floats.open";
 const KEPT = "floats.kept";
 const TARGET = "floats.target";
+const STARTED_ON = "floats.started-on";
 const TITLE_BAR = 28;
 
 function floats() {
@@ -17,7 +18,6 @@ function floats() {
     nvim: { title: "Neovim", argv: ["nvim"], repo: false, pane: true, kept: true },
     "zen-review": { title: "Zen Review", argv: [`${bin}/zen-review`], repo: true, kept: false },
     "zen-octo": { title: "Zen Octo", argv: [`${bin}/zen-octo`], repo: false, home: true, kept: true },
-    "zen-octo-pr": { title: "Zen Octo", argv: [`${bin}/zen-octo`], repo: false, home: true, kept: false, targeted: true },
     "zen-linear": { title: "Zen Linear", argv: [`${bin}/zen-linear`], repo: false, home: true, kept: true },
   };
 }
@@ -44,7 +44,7 @@ async function workingFolder(machine) {
   return { dir, root: git?.code === 0 ? git.stdout.trim() : null };
 }
 
-async function start(name, float) {
+async function start(float, target) {
   const space = spaces().find((s) => s.id === focused()?.space);
   const local = float.home;
   const machine = local ? null : space?.machine ?? null;
@@ -55,8 +55,7 @@ async function start(name, float) {
   }
   const args = ["run", "--bg", "--json", "--no-parent", "--no-notify", "--rm", "--cwd", (float.pane ? dir : root ?? dir) ?? home()];
   if (machine) args.push("--on", machine);
-  const argv = float.targeted ? [...float.argv, record(TARGET)[name]] : float.argv;
-  const result = await hc([...args, "--", ...argv]);
+  const result = await hc([...args, "--", ...float.argv, ...(target ? [target] : [])]);
   if (result.code !== 0) {
     notify({ title: `${float.title} didn't start`, body: result.stderr.trim(), level: "error" });
     return null;
@@ -64,19 +63,7 @@ async function start(name, float) {
   return JSON.parse(result.stdout).address;
 }
 
-async function toggle(name) {
-  const float = floats()[name];
-  if (!float) return;
-  const open = record(OPEN)[name];
-  if (open && alive(open.terminal)) {
-    closeOverlay(open.overlay);
-    patch(OPEN, name, null);
-    if (!float.targeted || open.target === record(TARGET)[name]) return;
-  }
-  const kept = record(KEPT)[name];
-  const terminal = float.kept && alive(kept) ? kept : await start(name, float);
-  if (!terminal) return;
-  if (float.kept) patch(KEPT, name, terminal);
+function show(name, terminal) {
   const overlay = openOverlay({
     kind: "dialog",
     key: `float-${name}`,
@@ -90,7 +77,46 @@ async function toggle(name) {
       ],
     },
   });
-  patch(OPEN, name, { overlay, terminal, target: float.targeted ? record(TARGET)[name] : undefined });
+  patch(OPEN, name, { overlay, terminal });
+}
+
+function hide(name) {
+  const open = record(OPEN)[name];
+  if (!open || !alive(open.terminal)) return false;
+  closeOverlay(open.overlay);
+  patch(OPEN, name, null);
+  return true;
+}
+
+async function toggle(name) {
+  const float = floats()[name];
+  if (!float || hide(name)) return;
+  const kept = record(KEPT)[name];
+  const terminal = float.kept && alive(kept) ? kept : await start(float);
+  if (!terminal) return;
+  if (float.kept) {
+    patch(KEPT, name, terminal);
+    if (terminal !== kept) patch(STARTED_ON, name, null);
+  }
+  show(name, terminal);
+}
+
+// One kept copy per float: a new target replaces it, since a running tool can't be pointed elsewhere.
+async function openOn(name, target) {
+  const float = floats()[name];
+  if (!float || !target) return;
+  const kept = record(KEPT)[name];
+  if (alive(kept) && record(STARTED_ON)[name] === target) {
+    if (!alive(record(OPEN)[name]?.terminal)) show(name, kept);
+    return;
+  }
+  hide(name);
+  if (alive(kept)) run("terminal.kill", { terminal: kept });
+  const terminal = await start(float, target);
+  if (!terminal) return;
+  patch(KEPT, name, terminal);
+  patch(STARTED_ON, name, target);
+  show(name, terminal);
 }
 
 export default class Floats extends View {
@@ -99,7 +125,8 @@ export default class Floats extends View {
     cx.spawn(async () => {
       for (;;) {
         const command = await nextCommand();
-        await toggle(command);
+        if (command === "zen-octo-pr") await openOn("zen-octo", record(TARGET)["zen-octo-pr"]);
+        else await toggle(command);
       }
     });
   }
