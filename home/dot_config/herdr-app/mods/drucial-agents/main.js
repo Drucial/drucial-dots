@@ -194,7 +194,7 @@ export default class Agents extends View {  fitToRows(height) {
     const on = k.address === shown;
     return h_flex()
       .id(`sub-${k.address}`)
-      .pl(39)
+      .pl(16)
       .pr(8)
       .rounded(8)
       .h(26)
@@ -205,7 +205,7 @@ export default class Agents extends View {  fitToRows(height) {
       .when(on, (el) => el.bg(t.raised))
       .hover((s) => s.bg(t.hover))
       .on_click(() => this.peek(k.address))
-      .children(s.lines.map(l => v_flex().h_full().w(9).mr(4).flex_none()
+      .children(s.lines.map((l, i) => v_flex().h_full().w(9).mr(i < s.lines.length - 1 ? 13 : 4).flex_none()
         .when(l === "│", el => el.border_l(1.5).border_color(t.input))
         .when(l === "└" || l === "├", el => el.child(div().h(13).flex_none().border_l(1.5).border_b(1.5).rounded_bl(6).border_color(t.input)))
         .when(l === "├", el => el.child(div().flex_1().border_l(1.5).border_color(t.input)))))
