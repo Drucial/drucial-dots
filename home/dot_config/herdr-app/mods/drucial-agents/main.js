@@ -205,9 +205,10 @@ export default class Agents extends View {  fitToRows(height) {
       .when(on, (el) => el.bg(t.raised))
       .hover((s) => s.bg(t.hover))
       .on_click(() => this.peek(k.address))
-      .children(s.lines.map(l => div().self_start().mt(-4).w(9).h(17).mr(4).flex_none()
-        .when(Boolean(l), el => el.border_l(1.5).border_color(t.input))
-        .when(l === "└" || l === "├", el => el.border_b(1.5).rounded_bl(6))))
+      .children(s.lines.map(l => v_flex().h_full().w(9).mr(4).flex_none()
+        .when(l === "│", el => el.border_l(1.5).border_color(t.input))
+        .when(l === "└" || l === "├", el => el.child(div().h(13).flex_none().border_l(1.5).border_b(1.5).rounded_bl(6).border_color(t.input)))
+        .when(l === "├", el => el.child(div().flex_1().border_l(1.5).border_color(t.input)))))
       .when(Boolean(pic), el => el.child(div().mr(8).child(pic)))
       .child(div().flex_1().truncate().text_color(on ? t.foreground : t.muted).child(k.name || k.template || k.program?.name || k.address))
       .child(this.status(t, { status: st }, compact));
