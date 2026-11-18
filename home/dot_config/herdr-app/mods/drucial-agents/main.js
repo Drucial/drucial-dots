@@ -437,7 +437,7 @@ export default class Agents extends View {  fitToRows(height) {
         el.child(
           h_flex()
             .pl(16)
-            .pr(8)
+            .pr(2)
             .h(AGENTS_HEADER)
             .pt(12)
             .pb(3)
