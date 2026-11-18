@@ -5,7 +5,7 @@
 
 import { View, div, svg } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
-import { spaces, machines, panes, run, openOverlay, exec, hc, theme, shared, setShared, watchFolder, window, layout } from "herdr";
+import { spaces, machines, panes, run, nextCommand, openOverlay, exec, hc, theme, shared, setShared, watchFolder, window, layout } from "herdr";
 
 function find(node, id) {
   if (node?.id === id) return node;
@@ -60,6 +60,13 @@ function listFade(color, edge, steps) {
 export default class Spaces extends View {
   init(_props, cx) {
     this.listScroll = { top: 0, viewport: 0, content: 0 };
+    cx.spawn(async () => {
+      for (;;) {
+        const command = await nextCommand();
+        if (command === "next") this.step(1);
+        else if (command === "prev") this.step(-1);
+      }
+    });
     this.git = {}; // where() -> { name, branch, ahead, behind, repo, linked }, null: not a repo
     this.checked = {}; // where() -> when it was last looked at
     this.unsure = new Set(); // where()s git couldn't answer for (a machine away)
@@ -284,11 +291,27 @@ export default class Spaces extends View {
     return out;
   }
 
+  remoteMachines(rows) {
+    return [...new Set([...rows.map(r => r.w.machine).filter(Boolean), ...this.machines.map(m => m.name), ...Object.keys(this.reconnecting)])].sort();
+  }
+
+  // Walks the spaces in the order drawn, passing over machines folded shut.
+  step(by) {
+    const rows = this.ordered();
+    const drawn = [null, ...this.remoteMachines(rows)].flatMap(m => rows.filter(r => (r.w.machine ?? null) === m));
+    const found = drawn.findIndex(r => r.w.active);
+    const at = found >= 0 ? found : by > 0 ? -1 : drawn.length;
+    for (let n = 1; n <= drawn.length; n++) {
+      const r = drawn[((at + by * n) % drawn.length + drawn.length) % drawn.length];
+      if (!this.folded.has(r.w.machine ?? null)) return run("space.select", { id: r.w.id });
+    }
+  }
+
   // The rows, under a header per machine once one isn't this computer.
   grouped(t, collapsed) {
     const rows = this.ordered();
     const draw = (r) => (collapsed ? this.compact(r, t) : this.row(r, t));
-    const remote = [...new Set([...rows.map(r => r.w.machine).filter(Boolean), ...this.machines.map(m => m.name), ...Object.keys(this.reconnecting)])].sort();
+    const remote = this.remoteMachines(rows);
     const loading = m => {
       const layout = machines().find(k => k.name === m)?.layout;
       return layout === "loading" || (!layout && this.machines.some(k => k.name === m && k.state === "connected"))
