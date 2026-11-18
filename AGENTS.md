@@ -25,6 +25,7 @@ which mirrors `$HOME` (`home/dot_config/hypr` → `~/.config/hypr`).
 | `home/dot_local/share/icons/...` | Web app icons |
 | `home/.chezmoidata/brew.yaml` | Homebrew formulae and casks for the Macs |
 | `home/run_onchange_after_*.sh.tmpl` | Install packages (10), render the herdr theme (20), then mise tools and yazi plugins (30). Each re-runs when its rendered text changes, including the hashes of the files it reads |
+| `home/dot_claude/` | Claude Code: global `CLAUDE.md`, skills, agents, hooks, themes, status line; `settings.json` is a `modify_` script |
 | `home/dot_config/shell/` | Env, aliases and functions shared by bash and zsh; aliases live only here |
 | `home/dot_bashrc`, `home/dot_config/bash/` | Linux: Omarchy's bash defaults, then the shared files and bash-only functions |
 | `home/dot_zshrc`, `home/dot_zprofile` | Macs: zsh setup and Homebrew, then the shared files |
@@ -65,8 +66,6 @@ Then open OrbStack once, and install any apps only this machine needs.
 - herdr's keys land on the first `chezmoi apply` or `update` after herdr's first
   launch, since the keys script edits the `keys.json` herdr writes then.
 - Put API keys in `~/.config/shell/secrets`.
-- Claude's config is a separate repo: follow
-  [agent-kit](https://github.com/Drucial/agent-kit)'s README.
 
 Per-machine values (git identity) live in `~/.config/chezmoi/chezmoi.toml`, never
 in the repo.
@@ -96,7 +95,8 @@ herdr-app's keys, settings and layouts are `modify_` scripts, because herdr
 writes to them while it runs. They set only my keys and settings, per OS, on top
 of herdr's. The layouts live in `home/.chezmoitemplates/herdr-layouts/`; applying
 one keeps the live file's panel widths, shown panels, focus border color and
-picked theme. nvim's `lazy-lock.json` is untracked: each machine keeps its own
+picked theme. Claude Code's `settings.json` works the same way: its `modify_`
+script sets my settings on top of what Claude writes. nvim's `lazy-lock.json` is untracked: each machine keeps its own
 plugin versions.
 
 ## Adding

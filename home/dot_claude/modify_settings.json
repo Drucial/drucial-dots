@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+# Claude Code rewrites settings.json, so only these keys are set; the rest stays Claude's.
+set -euo pipefail
+input=$(cat)
+[ -n "$input" ] || input="{}"
+want=$(cat <<'JSON'
+{
+  "cleanupPeriodDays": 90,
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
+  "permissions": {
+    "allow": [
+      "Bash(rg:*)",
+      "Bash(command -v:*)",
+      "Bash(tree:*)",
+      "Bash(git fetch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh run list:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm check:*)",
+      "Bash(npx prettier:*)",
+      "Bash(bundle exec rubocop:*)",
+      "Bash(bundle exec rails test:*)",
+      "Bash(bin/rails test:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh search:*)",
+      "Bash(gh pr status)",
+      "Bash(gh workflow list:*)",
+      "Bash(gh workflow view:*)",
+      "Bash(gh release list:*)",
+      "Bash(gh release view:*)",
+      "Bash(gh label list:*)",
+      "mcp__plugin_linear_linear__get_*",
+      "mcp__plugin_linear_linear__list_*",
+      "mcp__plugin_linear_linear__search_documentation",
+      "mcp__claude_ai_Linear__get_*",
+      "mcp__claude_ai_Linear__list_*",
+      "mcp__claude_ai_Linear__search_documentation"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)"
+    ],
+    "ask": [
+      "mcp__*inear*__create_*",
+      "mcp__*inear*__update_*",
+      "mcp__*inear*__save_*",
+      "mcp__*inear*__delete_*"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "opus",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/zenterm-context.sh"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/hc-context.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/sh -c 'rex __internal session-start --agent claude 2>/dev/null || true'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/format-after-edit.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "workflowKeywordTriggerEnabled": false,
+  "statusLine": {
+    "type": "command",
+    "command": "bash $HOME/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "swift-lsp@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "zen-review@praxis-labs": true,
+    "feature-dev@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": false,
+    "claude-md-management@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": false
+  },
+  "extraKnownMarketplaces": {
+    "praxis-labs": {
+      "source": {
+        "source": "github",
+        "repo": "praxis-labs-io/zen-review"
+      }
+    }
+  },
+  "spinnerTipsEnabled": false,
+  "terminalTitleFromRename": false,
+  "effortLevel": "medium",
+  "awaySummaryEnabled": false,
+  "tui": "fullscreen",
+  "autoMemoryEnabled": false,
+  "skipWorkflowUsageWarning": true,
+  "theme": "custom:ansi-dark-modified",
+  "switchModelsOnFlag": false,
+  "remoteControlAtStartup": false,
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
+  "autoMode": {
+    "environment": [
+      "**Primary use of Claude Code**: software development across personal products and client engagements. Client CODE is confidential and lives only in that client's own repos - committing and pushing it there is ordinary work. It is never the user's own work to port, vendor, or reuse into another client's repo, a personal repo, or any public destination. Client DATA (exports, dumps, user records) is entrusted third-party material and belongs in no repo at all.",
+      "**Repository visibility**: mixed - assume private unless the remote host and repo name indicate otherwise, or a visibility check in the transcript shows public. Public repos exist here, so 'the user's own repo' never implies 'safe to publish'.",
+      "**Internal sharing / snippet hosting**: None configured - paste, gist, snippet, and diagram-hosting services are outside the trust boundary; never post repository content, diffs, logs, or stack traces to them. GitHub is NOT off-machine for pushing to the session repo's own remote, nor for its PR and issue bodies. That clears the DESTINATION only: it never clears posting secrets, live user data, or client material, and it never applies to a public repo.",
+      "**Org-specific CLIs**: `gh`, `psql`, and hosting and database provider CLIs. When these target hosted or remote resources their destructive verbs (deploy, restart, delete, scale, restore) are consequential even when the surrounding task is routine. `psql` carries its risk in the SQL itself: `DROP`, `TRUNCATE`, unqualified `DELETE`/`UPDATE`, and `\\i` of an unread script are consequential against any non-local database.",
+      "**Secrets management**: local `.env` / `.env.local` files inside repo working trees, alongside provider dashboard environment variables. Fine: `test -n \"$KEY\"`, `grep -q '^API_KEY=' .env`, listing key NAMES. Not fine: `cat`/`echo`/`printenv` of a value, CLI output that prints credentials or connection strings, or any secret value reaching the transcript, a log file, or a commit.",
+      "**CI/CD deploy targets**: GitHub Actions workflows. A push to a branch a hosting service auto-deploys from IS a production deploy and must be judged as Production Deploy, not as an ordinary push. Edits under `.github/workflows/**` are deploy-pipeline changes, not ordinary source edits.",
+      "**Trusted repo**: The git repository the agent started in (its working directory) and its configured remote(s). Not every repository worked in is the user's own. Code, config, or data first read in one repository must not be committed, ported, or repointed into a different repository unless the instruction names BOTH the source repo and the destination repo. A fork, a vendored copy, and a sibling repo are different repositories; packages inside one monorepo are not. Moving work between repos is a deliberate act, never a side effect of refactoring nearby.",
+      "**Source control**: GitHub only.",
+      "**Sensitive data locations & audiences**: analytics exports and query results; any database query output containing user rows; client-supplied data files and dumps; payment customer, charge, and payout records; `.env` / `.env.local`. These never enter a repo working tree, a commit, a PR or issue body, a log file, or a paste service. Audience: the user only, unless cleared at the [named+specifics] bar.",
+      "**Sensitive remote targets**: every hosted database and deployed service, including dev, preview, and staging - plus any host, namespace, or container whose name carries `prod` or `production` as a whole word or name segment (hyphen/underscore/dot-delimited, so `prod-db` matches and `producer` does not). A Postgres reachable only on localhost/127.0.0.1 or inside a project docker-compose is NOT a sensitive remote target; routine local `psql` is ordinary work.",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment"
+    ]
+  }
+}
+JSON
+)
+printf '%s' "$input" | jq --indent 2 '. * $want' --argjson want "$want"
