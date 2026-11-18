@@ -105,9 +105,24 @@ export default class Tabs extends View {
         setShared("sidebar.collapsed", false);
         run("layout.resize", { id: "sidebar", px: shared("sidebar.width") ?? 268 });
       })).child(div().w(4).flex_none()))
+      .when(Boolean(sidebar?.hidden && space), el => el.child(button("sidebar-show", svg("mods/drucial-workspace-chrome/sidebar.svg").size(15), () => run("layout.show", { id: "sidebar" })))
+        .child(this.spaceChip(t, space)).child(div().w(4).flex_none()))
       .child(h_flex().id("tab-scroll").flex_1().min_w(0).h_full().items_center().gap(3).overflow_x_scrollbar().children(shown.map(item)))
       .when(w?.buttons, el => el.child(button("minimize", w.platform === "windows" ? svg("mods/drucial-tabs/win-min.svg").size(15) : "−", () => run("window.minimize")))
         .child(button("maximize", w.platform === "windows" ? svg(`mods/drucial-tabs/${w.maximized ? "win-restore" : "win-max"}.svg`).size(15) : "□", () => run("window.maximize")))
         .child(button("close-window", w.platform === "windows" ? svg("mods/drucial-tabs/win-close.svg").size(15) : svg("mods/pane/close.svg").size(15), () => run("window.close"))));
+  }
+
+  // Where you are while the sidebar is hidden; opens the picker, as the Terminals layout's chip does.
+  spaceChip(t, space) {
+    return h_flex().id("space-chip").h(29).px(10).gap(6).rounded(7).items_center().flex_none().text_size(12.8)
+      .border(1).border_color(t.chrome).bg(t.chrome).text_color(t.muted).hover(s => s.bg(t.hover).text_color(t.foreground))
+      .on_mouse_down("left", (_e, cx) => cx.stop_propagation())
+      .on_click(() => openOverlay({ mod: "picker", kind: "popup", at: "top", offset: 40, width: 640, height: 0.8 }))
+      .child(svg(`mods/drucial-workspace-chrome/${space.machine ? "server" : "monitor"}.svg`).size(14).text_color(t.dim))
+      .child(div().max_w(140).truncate().child(space.machine ?? "This computer"))
+      .child(div().text_color(t.dim).child("/"))
+      .child(div().max_w(170).truncate().text_color(t.foreground).child(space.name))
+      .child(svg("mods/drucial-workspace-chrome/chevron-down.svg").size(13).text_color(t.dim));
   }
 }
