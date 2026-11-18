@@ -105,8 +105,7 @@ export default class Tabs extends View {
         setShared("sidebar.collapsed", false);
         run("layout.resize", { id: "sidebar", px: shared("sidebar.width") ?? 268 });
       })).child(div().w(4).flex_none()))
-      .when(Boolean(sidebar?.hidden && space), el => el.child(button("sidebar-show", svg("mods/drucial-workspace-chrome/sidebar.svg").size(15), () => run("layout.show", { id: "sidebar" })))
-        .child(this.spaceChip(t, space)).child(div().w(4).flex_none()))
+      .when(Boolean(sidebar?.hidden && space), el => el.child(this.spaceChip(t, space)).child(div().w(4).flex_none()))
       .child(h_flex().id("tab-scroll").flex_1().min_w(0).h_full().items_center().gap(3).overflow_x_scrollbar().children(shown.map(item)))
       .when(w?.buttons, el => el.child(button("minimize", w.platform === "windows" ? svg("mods/drucial-tabs/win-min.svg").size(15) : "−", () => run("window.minimize")))
         .child(button("maximize", w.platform === "windows" ? svg(`mods/drucial-tabs/${w.maximized ? "win-restore" : "win-max"}.svg`).size(15) : "□", () => run("window.maximize")))
