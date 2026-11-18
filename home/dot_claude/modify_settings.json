@@ -42,13 +42,7 @@ want=$(cat <<'JSON'
       "Bash(gh workflow view:*)",
       "Bash(gh release list:*)",
       "Bash(gh release view:*)",
-      "Bash(gh label list:*)",
-      "mcp__plugin_linear_linear__get_*",
-      "mcp__plugin_linear_linear__list_*",
-      "mcp__plugin_linear_linear__search_documentation",
-      "mcp__claude_ai_Linear__get_*",
-      "mcp__claude_ai_Linear__list_*",
-      "mcp__claude_ai_Linear__search_documentation"
+      "Bash(gh label list:*)"
     ],
     "deny": [
       "Read(./.env)",
