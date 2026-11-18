@@ -58,6 +58,7 @@ function listFade(color, edge, steps) {
 }
 
 const WALK = "spaces.walk";
+const FOLDED = "machines.folded";
 
 export default class Spaces extends View {
   init(_props, cx) {
@@ -79,7 +80,8 @@ export default class Spaces extends View {
     this.machines = [];
     this.reconnecting = JSON.parse(localStorage.getItem("machines.reconnecting") ?? "{}");
     for (const state of Object.values(this.reconnecting)) state.busy = false;
-    this.folded = new Set(JSON.parse(localStorage.getItem("machines.folded") ?? "[]"));
+    this.folded = new Set(shared(FOLDED) ?? JSON.parse(localStorage.getItem("machines.folded") ?? "[]"));
+    if (!shared(FOLDED)) setShared(FOLDED, [...this.folded]);
     this.refreshMachines(cx);
     cx.timer.every(15000, cx => this.refreshMachines(cx));
     // `git status` walks the whole tree, on another machine a process there:
@@ -178,7 +180,7 @@ export default class Spaces extends View {
         if (machine.temporary) args.push("--temp");
         await ask(args);
         this.folded.delete(name);
-        localStorage.setItem("machines.folded", JSON.stringify([...this.folded]));
+        setShared(FOLDED, [...this.folded]);
         delete this.reconnecting[name];
       } catch (e) {
         state.error = String(e.message ?? e);
@@ -290,12 +292,11 @@ export default class Spaces extends View {
     return [...new Set([...rows.map(r => r.w.machine).filter(Boolean), ...this.machines.map(m => m.name), ...Object.keys(this.reconnecting)])].sort();
   }
 
-  // The tab bar steps through spaces in this order, since it stays shown while this sidebar hides.
+  // The tab bar steps through spaces in this order (worktrees under their repo), since it stays shown while this sidebar hides.
   publishWalk() {
     const rows = this.ordered();
     const ids = [null, ...this.remoteMachines(rows)].flatMap(m => rows.filter(r => (r.w.machine ?? null) === m)).map(r => r.w.id);
-    const walk = { ids, folded: [...this.folded] };
-    if (JSON.stringify(walk) !== JSON.stringify(shared(WALK))) setShared(WALK, walk);
+    if (JSON.stringify(ids) !== JSON.stringify(shared(WALK))) setShared(WALK, ids);
   }
 
   // The rows, under a header per machine once one isn't this computer.
@@ -323,7 +324,7 @@ export default class Spaces extends View {
         .cursor_pointer().hover(s => s.text_color(t.foreground))
         .on_click((_e, cx) => {
           folded ? this.folded.delete(m) : this.folded.add(m);
-          localStorage.setItem("machines.folded", JSON.stringify([...this.folded]));
+          setShared(FOLDED, [...this.folded]);
           cx.notify();
         })
         .child(svg(`mods/workspace-chrome/${m ? "server" : "monitor"}.svg`).size(14).flex_none())

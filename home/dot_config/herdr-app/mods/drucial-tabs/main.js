@@ -27,9 +27,9 @@ export default class Tabs extends View {
 
   // Follows the sidebar's order and skips machines folded shut there; spaces it hasn't listed yet go last.
   step(by) {
-    const walk = shared("spaces.walk") ?? { ids: [], folded: [] };
-    const sp = spaces(), byId = new Map(sp.map(s => [s.id, s])), folded = new Set(walk.folded);
-    const order = [...walk.ids.filter(id => byId.has(id)), ...sp.map(s => s.id).filter(id => !walk.ids.includes(id))].map(id => byId.get(id));
+    const walk = shared("spaces.walk") ?? [];
+    const sp = spaces(), byId = new Map(sp.map(s => [s.id, s])), folded = new Set(shared("machines.folded") ?? []);
+    const order = [...walk.filter(id => byId.has(id)), ...sp.map(s => s.id).filter(id => !walk.includes(id))].map(id => byId.get(id));
     const open = order.filter(s => s.active || !folded.has(s.machine ?? null));
     if (!open.length) return;
     const found = open.findIndex(s => s.active);
