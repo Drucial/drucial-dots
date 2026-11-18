@@ -41,6 +41,7 @@ const kidStatus = (k, listed) => {
 const SORTS = [
   { id: "priority", label: "Priority", icon: "clock" },
   { id: "grouped", label: "Grouped by space", icon: "layers" },
+  { id: "machine", label: "Priority by machine", icon: "server" },
 ];
 const sortOf = () => SORTS.find((s) => s.id === shared("agents.sort")) ?? SORTS[0];
 const SECTION = { 4: "Needs you", 3: "Done", 2: "Working", 1: "Idle" };
@@ -235,9 +236,13 @@ export default class Agents extends View {  fitToRows(height) {
     this.track(list, now);
     this.hold(list);
     const byPriority = sort.id === "priority";
+    const byMachine = sort.id === "machine";
     const urgency = new Map(list.map((a) => [a.address, Math.max(this.rank(a), ...this.tree(all, a.address).map((s) => RANK[kidStatus(s.t, this.listed)] ?? 0))]));
     const rankOf = (a) => urgency.get(a.address);
-    if (byPriority) list = [...list].sort((x, y) => rankOf(y) - rankOf(x) || this.since(y) - this.since(x) || y.seq - x.seq);
+    const urgent = (x, y) => rankOf(y) - rankOf(x) || this.since(y) - this.since(x) || y.seq - x.seq;
+    const local = (a) => (machineOf(a) ? 1 : 0);
+    if (byPriority) list = [...list].sort(urgent);
+    if (byMachine) list = [...list].sort((x, y) => local(x) - local(y) || (machineOf(x) ?? "").localeCompare(machineOf(y) ?? "") || urgent(x, y));
     const pinned = list.filter((a) => a.pinned);
     const rest = list.filter((a) => !a.pinned);
     list = [...pinned, ...rest];
@@ -341,7 +346,7 @@ export default class Agents extends View {  fitToRows(height) {
         .child(svg(`mods/workspace-chrome/${isPinned ? "pin-off" : "pin"}.svg`).size(14));
       // Under a space header the space goes without saying; an automatic tab number says nothing.
       // Without a space header above (priority, pinned) the row names its space.
-      const full = byPriority || isPinned;
+      const full = byPriority || byMachine || isPinned;
       const name = full ? a.space_name || label(a) : more ?? (/^\d+$/.test(label(a)) ? a.program?.name || label(a) : label(a));
       return h_flex()
         .id(`ag-${a.address}`)
@@ -369,20 +374,21 @@ export default class Agents extends View {  fitToRows(height) {
         .child(h_flex().flex_1().min_w(0).gap(5).items_center()
           .child(div().min_w(0).max_w(full && more ? 120 : 200).truncate().text_color(idle ? t.muted : t.foreground).child(name))
           .when(full && Boolean(more), el => el.child(div().flex_1().min_w(0).truncate().text_color(t.dim).child(`\u00b7 ${more}`)))
-          .when(full && Boolean(machine), el => el.child(div().id(`machine-${a.address}`).flex_none().tooltip(machine)
+          .when(full && Boolean(machine) && (!byMachine || isPinned), el => el.child(div().id(`machine-${a.address}`).flex_none().tooltip(machine)
             .child(svg("mods/workspace-chrome/server.svg").size(12).text_color(t.dim)))))
         .when(subs.length > 0 && (this.hovered === a.address || this.folded.has(a.address)), el => el.child(fold(a, subs, this.hovered === a.address)))
         .when(this.hovered === a.address, el => el.child(pin))
         .child(this.status(t, a, byPriority && !isPinned));
     };
 
-    // Groups in list order: spaces (grouped) or priority sections. Agents of a
+    // Groups in list order: spaces (grouped), machines or priority sections. Agents of a
     // space are next to each other in agents(), so neighbours make a group.
     const groups = pinned.length ? [{ id: "pinned", label: "Pinned", status: null, members: pinned }] : [];
     for (const a of rest) {
       const r = rankOf(a) || RANK.idle;
-      const id = byPriority ? `sec-${r}` : `sp-${a.space}`;
+      const id = byPriority ? `sec-${r}` : byMachine ? `m-${machineOf(a) ?? ""}` : `sp-${a.space}`;
       if (groups.at(-1)?.id === id) groups.at(-1).members.push(a);
+      else if (byMachine) groups.push({ id, label: machineOf(a) ?? "This computer", status: null, icon: machineOf(a) ? "server" : "monitor", members: [a] });
       else groups.push({ id, label: byPriority ? SECTION[r] : a.space_name || "", status: byPriority ? SECTION_STATUS[r] : null, machine: byPriority ? null : machineOf(a), members: [a] });
     }
 
@@ -406,6 +412,7 @@ export default class Agents extends View {  fitToRows(height) {
           open ? this.folded.add(g.id) : this.folded.delete(g.id);
           cx.notify();
         })
+        .when(Boolean(g.icon), (el) => el.child(svg(`mods/workspace-chrome/${g.icon}.svg`).size(14).flex_none().text_color(t.dim)))
         .child(div().truncate().text_color(t[g.status] ?? t.dim).child(g.label))
         .when(byPriority || !open, (el) => el.child(div().text_color(t.dim).child(String(g.members.length))))
         .child(div().flex_1())
@@ -448,7 +455,7 @@ export default class Agents extends View {  fitToRows(height) {
                 .rounded(6)
                 .text_color(t.dim)
                 .hover((s) => s.bg(t.hover).text_color(t.foreground))
-                .on_click(() => openOverlay({ mod: "drucial-agents", kind: "popup", width: 200, height: 140, props: { sortMenu: true } }))
+                .on_click(() => openOverlay({ mod: "drucial-agents", kind: "popup", width: 200, height: 172, props: { sortMenu: true } }))
                 .tooltip(`Sort agents: ${sort.label}`)
                 .child(svg(`mods/workspace-chrome/${sort.icon}.svg`).size(15)),
             ),
