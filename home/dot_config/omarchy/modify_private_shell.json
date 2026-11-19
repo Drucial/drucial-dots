@@ -20,12 +20,12 @@ layout=$(cat <<'JSON'
     { "id": "omarchy.keyboard-layout" },
     { "id": "omarchy.agents" },
     { "id": "omarchy.tailscale" },
-    { "id": "omarchy.network" },
     { "id": "omarchy.power" },
     { "id": "omarchy.clock", "format": "HH:mm" }
   ],
   "tray": [
     { "id": "omarchy.bluetooth" },
+    { "id": "omarchy.network" },
     { "id": "omarchy.audio" },
     { "id": "omarchy.monitor" }
   ]
