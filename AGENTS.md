@@ -98,7 +98,10 @@ writes to them while it runs. They set only my keys and settings, per OS, on top
 of herdr's. The layouts live in `home/.chezmoitemplates/herdr-layouts/`; applying
 one keeps the live file's panel widths, shown panels, focus border color and
 picked theme. Claude Code's `settings.json` works the same way: its `modify_`
-script sets my settings on top of what Claude writes. nvim's `lazy-lock.json` is untracked: each machine keeps its own
+script sets my settings on top of what Claude writes. Omarchy's `shell.json` too:
+its `modify_` script sets only the bar layout, keeping each machine's tray pins
+and hidden icons, so a layout changed on the bar must be copied into the script
+by hand. nvim's `lazy-lock.json` is untracked: each machine keeps its own
 plugin versions.
 
 ## Adding

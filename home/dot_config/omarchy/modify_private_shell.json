@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# The Omarchy shell and its migrations rewrite shell.json, so only the bar layout is set; each machine keeps its own tray pins and hidden icons.
+set -euo pipefail
+input=$(cat)
+[ -n "$input" ] || input=$(cat "${OMARCHY_PATH:-/usr/share/omarchy}/config/omarchy/shell.json")
+layout=$(cat <<'JSON'
+{
+  "left": [
+    { "id": "omarchy.menu" },
+    { "id": "omarchy.workspaces" }
+  ],
+  "centerBegin": [],
+  "center": [
+    { "id": "omarchy.indicators" },
+    { "id": "omarchy.system-update" }
+  ],
+  "centerEnd": [],
+  "right": [
+    { "id": "omarchy.tray" },
+    { "id": "omarchy.keyboard-layout" },
+    { "id": "omarchy.agents" },
+    { "id": "omarchy.tailscale" },
+    { "id": "omarchy.network" },
+    { "id": "omarchy.power" },
+    { "id": "omarchy.clock", "format": "HH:mm" }
+  ],
+  "tray": [
+    { "id": "omarchy.bluetooth" },
+    { "id": "omarchy.audio" },
+    { "id": "omarchy.monitor" }
+  ]
+}
+JSON
+)
+printf '%s' "$input" | jq -S --indent 2 --argjson layout "$layout" '
+  ([.bar.layout // {} | .[][] | select(.id == "omarchy.tray")] | first // {}) as $tray
+  | .bar.layout = ($layout | map_values(map(if .id == "omarchy.tray" then $tray * . else . end)))
+'
