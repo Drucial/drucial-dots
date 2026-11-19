@@ -16,6 +16,7 @@ opt.cursorline = true
 opt.signcolumn = "no"
 opt.fillchars:append({ eob = " " })
 opt.breakindent = true
+opt.wrap = false
 opt.swapfile = false
 
 -- Set here rather than per-plugin so it survives theme switches.
