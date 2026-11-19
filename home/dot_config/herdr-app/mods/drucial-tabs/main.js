@@ -11,6 +11,24 @@ function find(node, id) {
   return null;
 }
 
+const clean = (s) => (s ?? "").replace(/^[^\p{L}\p{N}]+/u, "").trim();
+
+function lead(tab, all) {
+  const mine = all.filter(p => p.tab === tab.id && p.terminal);
+  return mine.find(p => p.program?.agent) ?? mine.find(p => p.focused) ?? mine[0];
+}
+
+// As the agents list titles a tab, but an unnamed tab without a telling live title shows its program, never its number.
+function tabName(tab, all) {
+  const l = lead(tab, all);
+  const prog = l?.program?.name;
+  const live = clean(l?.title);
+  const telling = live && live !== prog && !/^[~/]|^[A-Za-z]:\\/.test(live) && !live.includes("@") && live.toLowerCase() !== l?.program?.key;
+  if ((!tab.named || tab.name === prog) && telling) return live;
+  if (tab.named && !/^tb\d+$/.test(tab.name)) return tab.name;
+  return prog ?? all.find(p => p.tab === tab.id)?.program?.name ?? "Terminal";
+}
+
 export default class Tabs extends View {
   init(_props, cx) {
     this.pressed = null;
@@ -81,7 +99,7 @@ export default class Tabs extends View {
       .on_mouse_down("left", stop).on_click(action).child(label);
     const item = (c, i) => {
       const program = panes().find(p => p.tab === c.id && p.program?.agent)?.program ?? panes().find(p => p.tab === c.id)?.program;
-      const name = /^tb\d+$/.test(c.name) ? program?.name ?? "Terminal" : c.name;
+      const name = tabName(c, panes());
       return h_flex().id(`tab-${c.id}`).h(29).px(10).when(c.active, el => el.pr(5)).gap(7).rounded(7).items_center().flex_none().text_size(12.8)
         .border(1).border_color(c.active ? t.border : t.chrome).bg(c.active ? t.raised : t.chrome).text_color(c.active ? t.foreground : t.muted)
         .hover(s => s.bg(t.hover))
