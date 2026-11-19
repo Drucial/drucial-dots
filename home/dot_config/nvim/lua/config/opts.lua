@@ -15,7 +15,6 @@ opt.relativenumber = true
 opt.cursorline = true
 opt.signcolumn = "no"
 opt.fillchars:append({ eob = " " })
-opt.breakindent = true
 opt.wrap = false
 opt.swapfile = false
 
