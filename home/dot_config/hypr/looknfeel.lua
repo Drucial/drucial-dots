@@ -1,7 +1,7 @@
 hl.config({
   general = {
     gaps_in = 12,
-    gaps_out = 24,
+    gaps_out = 12,
     border_size = 2,
     layout = "scrolling",
   },
