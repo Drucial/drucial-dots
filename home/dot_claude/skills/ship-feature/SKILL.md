@@ -62,17 +62,25 @@ Work silently between steps. Speak only when a step needs the user or produces a
 
    Confirm CI started with `gh pr checks`. Skipped, cancelled, or missing checks aren't passes. If CI didn't start, ask. Never push an empty commit.
 
-7. **Hand back.** Omit empty lines:
+7. **PR review.** Wait for CI with `gh pr checks --watch`; review bots usually post within that window. Then gather unresolved feedback:
+   - Top-level reviews and comments: `gh pr view --json reviews,comments`.
+   - Inline threads: `gh api repos/{owner}/{repo}/pulls/<n>/comments`, skipping resolved and outdated ones.
+   - Fix CI failures this change caused as in step 2.
+
+   Triage the feedback as in step 4 and wait for approval, then apply as in step 5 and push. Never reply to or resolve threads unless the user asks. If the push draws new reviews or CI failures, repeat once, then stop and report. With no reviews by the time CI finishes, note it and continue.
+
+8. **Hand back.** Omit empty lines:
 
    ```text
    **PR** <link>
    **Triage** fixed <n> · mitigated <n> · ignored <n>
-   **Verification** <full check result> · CI <status>
+   **PR review** fixed <n> · mitigated <n> · ignored <n>
+   **Verification** <full check result> · CI <final status>
    ```
 
-   Close with one line saying step 8 runs when they report the merge.
+   Close with one line saying step 7 re-runs when they say they're about to merge or ask to check reviews, and step 9 runs when they report the merge.
 
-8. **After the merge.** Only on the user's word.
+9. **After the merge.** Only on the user's word.
    - Verify with `gh pr view --json state,mergedAt,mergeCommit,headRefName`: `MERGED` with a merge commit. `CLOSED` isn't merged.
    - Check `git worktree list`. A worktree holding the branch is the user's call.
    - Check nothing is left on the branch by comparing content, since a squash rewrites shas. Anything found stops cleanup.
