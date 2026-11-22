@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# ZenTerm's Settings rewrite this file, so only these lines are enforced; theme and translucency stay per machine.
+# ZenTerm's Settings rewrite this file, so only these lines are enforced; theme, translucency and ssh hosts stay per machine.
 set -euo pipefail
-managed='float|keybind|ssh-host|window-chrome|cursor-style-blink|cursor-thickness|hide-toolbar-buttons|reduce-motion|tab-inherit-cwd|bottom-drawer-fraction|attention-toast|completion-toast|toast-duration'
+managed='float|keybind|window-chrome|cursor-style-blink|cursor-thickness|hide-toolbar-buttons|reduce-motion|tab-inherit-cwd|bottom-drawer-fraction|attention-toast|completion-toast|toast-duration'
 grep -vE "^[[:space:]]*((${managed})[[:space:]]*=|$)" || true
 cat <<'CONFIG'
 float = order:1 title:"Open Nvim" key:cmd+e icon:neovim command:nvim persist:dir
@@ -36,7 +36,4 @@ bottom-drawer-fraction = 0.3
 attention-toast = auto
 completion-toast = auto
 toast-duration = 5
-ssh-host = drucial@omakase-work: omakase-work
-ssh-host = drucial@omakase-desk: omakase-desk
-ssh-host = drucial@omakase-xps: omakase-xps
 CONFIG
