@@ -8,10 +8,9 @@ float = order:1 title:"Open Nvim" key:cmd+e icon:neovim command:nvim persist:dir
 float = order:2 title:"Open Lazygit" key:cmd+g icon:git command:lazygit height:0.78 git:true persist:dir
 float = order:3 title:"Open Linear" key:cmd+l icon:linear command:zen-linear persist:window
 float = order:4 title:"Zen Octo" key:cmd+o icon:github command:zen-octo persist:window
-float = order:5 title:"Open Slack" key:cmd+s icon:slack command:slk persist:window toolbar:false
-float = order:6 title:"Zen Notes" key:cmd+k icon:doc.text command:zen-notes persist:window toolbar:false
-float = order:7 title:"Zen Review" key:cmd+r icon:list.bullet.rectangle command:zen-review git:true persist:dir toolbar:false
-float = order:8 title:Yazi key:cmd+y icon:folder command:yazi width:0.9 height:0.9 persist:dir toolbar:false
+float = order:5 title:"Zen Notes" key:cmd+k icon:doc.text command:zen-notes persist:window toolbar:false
+float = order:6 title:"Zen Review" key:cmd+r icon:list.bullet.rectangle command:zen-review git:true persist:dir toolbar:false
+float = order:7 title:Yazi key:cmd+y icon:folder command:yazi width:0.9 height:0.9 persist:dir toolbar:false
 keybind = clear_screen=none
 keybind = fill_screen=cmd+shift+f
 keybind = focus_sidebar=cmd+ctrl+e
