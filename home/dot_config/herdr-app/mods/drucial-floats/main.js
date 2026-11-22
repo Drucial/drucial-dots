@@ -13,7 +13,7 @@ const TITLE_BAR = 28;
 function floats() {
   const bin = `${home()}/.local/bin`;
   return {
-    lazygit: { title: "Lazygit", argv: ["lazygit"], repo: true, kept: false },
+    lazygit: { title: "Lazygit", argv: [`${bin}/lazygit-themed`], repo: true, kept: false },
     yazi: { title: "Yazi", argv: ["yazi"], repo: false, pane: true, kept: false },
     nvim: { title: "Neovim", argv: ["nvim"], repo: false, pane: true, kept: true },
     "zen-review": { title: "Zen Review", argv: [`${bin}/zen-review`], repo: true, kept: false },

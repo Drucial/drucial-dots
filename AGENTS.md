@@ -22,7 +22,8 @@ which mirrors `$HOME` (`home/dot_config/hypr` → `~/.config/hypr`).
 | --- | --- |
 | `home/dot_config/...` | Configs, copied to `~/.config/...` |
 | `home/.chezmoidata/omarchy.yaml` | Omarchy packages and web apps to install |
-| `home/dot_local/share/icons/...` | Web app icons |
+| `home/private_dot_local/share/icons/...` | Web app icons |
+| `home/private_dot_local/bin/lazygit-themed` | Runs lazygit with a theme built from the terminal's colours, written to the untracked `~/.config/lazygit/theme.yml` |
 | `home/.chezmoidata/brew.yaml` | Homebrew formulae and casks for the Macs |
 | `home/run_onchange_after_*.sh.tmpl` | Install packages (10), render the herdr theme (20), then mise tools and yazi plugins (30). Each re-runs when its rendered text changes, including the hashes of the files it reads |
 | `home/dot_claude/` | Claude Code: global `CLAUDE.md`, skills, agents, hooks, themes, status line; `settings.json` is a `modify_` script |
@@ -118,7 +119,7 @@ plugin versions.
   then `chezmoi apply`.
 - **Web app:** add `name`, `url` and `icon` to `webapps` in the same file, and
   put a 256px PNG named `<icon>.png` in
-  `home/dot_local/share/icons/hicolor/256x256/apps/`.
+  `home/private_dot_local/share/icons/hicolor/256x256/apps/`.
 
 ## Removing
 
