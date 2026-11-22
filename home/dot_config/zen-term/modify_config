@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# ZenTerm's Settings rewrite this file, so only these lines are enforced; theme and translucency stay per machine.
+set -euo pipefail
+managed='float|keybind|ssh-host|window-chrome|cursor-style-blink|cursor-thickness|hide-toolbar-buttons|reduce-motion|tab-inherit-cwd|bottom-drawer-fraction|attention-toast|completion-toast|toast-duration'
+grep -vE "^[[:space:]]*((${managed})[[:space:]]*=|$)" || true
+cat <<'CONFIG'
+float = order:1 title:"Open Nvim" key:cmd+e icon:neovim command:nvim persist:dir
+float = order:2 title:"Open Lazygit" key:cmd+g icon:git command:lazygit height:0.78 git:true persist:dir
+float = order:3 title:"Open Linear" key:cmd+l icon:linear command:zen-linear persist:window
+float = order:4 title:"Zen Octo" key:cmd+o icon:github command:zen-octo persist:window
+float = order:5 title:"Open Slack" key:cmd+s icon:slack command:slk persist:window toolbar:false
+float = order:6 title:"Zen Notes" key:cmd+k icon:doc.text command:zen-notes persist:window toolbar:false
+float = order:7 title:"Zen Review" key:cmd+r icon:list.bullet.rectangle command:zen-review git:true persist:dir toolbar:false
+float = order:8 title:Yazi key:cmd+y icon:folder command:yazi width:0.9 height:0.9 persist:dir toolbar:false
+keybind = clear_screen=none
+keybind = fill_screen=cmd+shift+f
+keybind = focus_sidebar=cmd+ctrl+e
+keybind = nav_down=ctrl+j
+keybind = nav_left=ctrl+h
+keybind = nav_right=ctrl+l
+keybind = nav_up=ctrl+k
+keybind = rename_tab=cmd+ctrl+r
+keybind = resize_down=cmd+ctrl+j
+keybind = resize_left=cmd+ctrl+h
+keybind = resize_right=cmd+ctrl+l
+keybind = resize_up=cmd+ctrl+k
+keybind = search_selection=none
+keybind = toggle_focus_mode=cmd+enter
+window-chrome = false
+cursor-style-blink = true
+cursor-thickness = 3
+hide-toolbar-buttons = new-tab,split-h,split-v,bottom-drawer,right-drawer,scratch,focus-mode
+reduce-motion = off
+tab-inherit-cwd = true
+bottom-drawer-fraction = 0.3
+attention-toast = auto
+completion-toast = auto
+toast-duration = 5
+ssh-host = drucial@omakase-work: omakase-work
+ssh-host = drucial@omakase-desk: omakase-desk
+ssh-host = drucial@omakase-xps: omakase-xps
+CONFIG

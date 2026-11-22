@@ -10,6 +10,7 @@
 .zshrc
 .zprofile
 .config/rex
+.config/zen-term
 {{ end }}
 .config/nvim/AGENTS.md
 .config/nvim/docs

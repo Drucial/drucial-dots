@@ -102,7 +102,11 @@ picked theme. Claude Code's `settings.json` works the same way: its `modify_`
 script sets my settings on top of what Claude writes. Omarchy's `shell.json` too:
 its `modify_` script sets only the bar layout, keeping each machine's tray pins
 and hidden icons, so a layout changed on the bar must be copied into the script
-by hand. nvim's `lazy-lock.json` is untracked: each machine keeps its own
+by hand. ZenTerm's `config` too: its `modify_` script sets my floats, keybinds,
+ssh hosts and settings, keeping each machine's theme and translucency, so a
+float or setting changed in ZenTerm must be copied into the script by hand.
+ZenTerm's `workspaces` is a plain file: `re-add` it after editing workspaces in
+the app. nvim's `lazy-lock.json` is untracked: each machine keeps its own
 plugin versions.
 
 ## Adding
