@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Re-runs when package.toml changes:
+# Re-runs when package.toml changes; --discard because a bumped hash otherwise blocks the update:
 # {{ include "dot_config/yazi/package.toml" | sha256sum }}
 set -euo pipefail
 command -v ya > /dev/null || { echo "yazi not installed; plugins skipped" >&2; exit 1; }
-ya pkg install
+ya pkg install --discard
