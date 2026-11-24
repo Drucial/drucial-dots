@@ -153,6 +153,70 @@ persistent_float_action("nvim_float", "Toggle Neovim Float", "nvim", tool_bounds
 persistent_float_action("zen_octo_float", "Toggle Zen Octo Float", "zen-octo", tool_bounds, { user_bin .. "zen-octo" }, true)
 persistent_float_action("zen_linear_float", "Toggle Zen Linear Float", "zen-linear", tool_bounds, { user_bin .. "zen-linear" }, true)
 
+local projects_dir = os.getenv("HOME") .. "/Dev"
+
+local function project_names()
+  local result = rex.exec({ "find", projects_dir, "-mindepth", "1", "-maxdepth", "1", "-type", "d", "-not", "-name", ".*" }, { timeout = 5 })
+  if result == nil or not result.ok then return {} end
+  local names = {}
+  for path in result.stdout:gmatch("[^\n]+") do names[#names + 1] = path:match("([^/]+)$") end
+  table.sort(names, function(a, b) return a:lower() < b:lower() end)
+  return names
+end
+
+local function sessions_by_label()
+  local list, err = rex.call("session.list")
+  if err ~= nil then error(err, 0) end
+  local by_label = {}
+  for _, session in ipairs(list.sessions) do by_label[session.label] = session.session_id end
+  return by_label
+end
+
+rex.action{
+  name  = "open_project",
+  title = "Open Project…",
+  description = "Pick a folder in ~/Dev and switch to its session, creating it with a Claude tab if needed.",
+  run   = function(ctx, args)
+    local open = sessions_by_label()
+    local items = {}
+    for _, name in ipairs(project_names()) do
+      items[#items + 1] = {
+        id     = name,
+        icon   = "folder",
+        detail = open[name] and "open" or nil,
+      }
+    end
+
+    local choice, why, detail = rex.ui.pick{
+      title       = "Open project",
+      placeholder = "Filter projects in ~/Dev",
+      items       = items,
+    }
+    if choice == nil then
+      if why ~= "cancelled" then rex.log("warn", "open_project: " .. why .. " " .. (detail or "")) end
+      return
+    end
+
+    local session_id = open[choice]
+    if session_id == nil then
+      local created, err = rex.call("session.create", {
+        label = choice,
+        initial_windows = { {
+          window_label = "agent",
+          layout = rex.layout.block{
+            flavor  = terminal .. ".shell",
+            options = { cwd = projects_dir .. "/" .. choice, command = { user_bin .. "claude" } },
+          },
+        } },
+      })
+      if err ~= nil then error(err, 0) end
+      session_id = created.session_id
+    end
+    rex.client.queue("session.select", { session_id = session_id })
+  end,
+}
+
+rex.bind("cmd+shift+o", "open_project")
 rex.bind("cmd+g", "lazygit_float")
 rex.bind("cmd+o", "zen_octo_float")
 rex.bind("cmd+l", "zen_linear_float")
