@@ -78,7 +78,7 @@ local function float_action(name, title, label, command, requires_repo)
   }
 end
 
-float_action("lazygit_float", "Toggle Lazygit Float", "lazygit", { user_bin .. "lazygit-themed" }, true)
+float_action("lazygit_float", "Toggle Lazygit Float", "lazygit", { "lazygit" }, true)
 float_action("zen_review_float", "Toggle Zen Review Float", "zen-review", { user_bin .. "zen-review" }, true)
 
 local function session_block(label)

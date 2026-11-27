@@ -4,3 +4,19 @@ gui:
   filterMode: fuzzy
   showNumstatInFilesView: true
   showDivergenceFromBaseBranch: arrowAndNumber
+  # Zen Ink, from github.com/praxis-labs-io/zen-ink.
+  authorColors:
+    "*": "#97f0cf"
+  theme:
+    activeBorderColor: ["#6ee6b8", bold]
+    inactiveBorderColor: ["#4a5468"]
+    searchingActiveBorderColor: ["#ebc17a", bold]
+    optionsTextColor: ["#6ee6b8"]
+    selectedLineBgColor: ["#1c2536"]
+    inactiveViewSelectedLineBgColor: ["#131824"]
+    cherryPickedCommitFgColor: ["#0a0d14"]
+    cherryPickedCommitBgColor: ["#5cc8e0"]
+    markedBaseCommitFgColor: ["#0a0d14"]
+    markedBaseCommitBgColor: ["#ebc17a"]
+    unstagedChangesColor: ["#f2707a"]
+    defaultFgColor: ["#dce3ee"]

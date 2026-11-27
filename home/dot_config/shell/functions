@@ -11,11 +11,6 @@ y() {
   rm -f -- "$tmp"
 }
 
-# Floats call ~/.local/bin/lazygit-themed directly; this covers lazygit and gg typed in a shell.
-lazygit() {
-  "$HOME/.local/bin/lazygit-themed" "$@"
-}
-
 ports() {
   printf "%-7s %-24s %s\n" PORT COMMAND PID
   lsof -nP -iTCP -sTCP:LISTEN 2>/dev/null |
