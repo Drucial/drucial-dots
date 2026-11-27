@@ -1,0 +1,10 @@
+# Zen Ink for zen-octo. Merge this `theme` block into ~/.zen-octo/config.yml.
+theme:
+  background: "#0a0d14"
+  foreground: "#dce3ee"
+  accent: "#6ee6b8"
+  success: "#6ee6b8"
+  warning: "#ebc17a"
+  error: "#f2707a"
+  actor: "#b58cff"
+  selectedBackground: "#1c2536"
