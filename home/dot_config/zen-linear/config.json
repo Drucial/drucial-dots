@@ -1,4 +1,5 @@
 {
+  "theme": "zen_ink",
   "group_by": "status",
   "sort_by": ["status", "priority"],
   "rounded_borders": true,
