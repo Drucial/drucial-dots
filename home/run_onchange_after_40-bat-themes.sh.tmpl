@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# bat reads themes from a built cache, so it rebuilds whenever a theme file changes:
+# {{ include "dot_config/bat/themes/zen-ink.tmTheme" | sha256sum }}
+set -euo pipefail
+command -v bat > /dev/null || { echo "bat not installed; theme cache skipped" >&2; exit 1; }
+bat cache --build

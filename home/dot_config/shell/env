@@ -6,7 +6,10 @@ export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export FZF_DEFAULT_OPTS="
   --style=full
   --layout=reverse
-  --color=16
+  --color=fg:#c3ccda,fg+:#f1f5fb,bg:-1,bg+:#1c2536,gutter:-1
+  --color=hl:#6ee6b8,hl+:#6ee6b8,query:#dce3ee,prompt:#6ee6b8,pointer:#6ee6b8
+  --color=marker:#ebc17a,spinner:#6ee6b8,info:#c3ccda,header:#5cc8e0
+  --color=border:#4a5468,separator:#4a5468,scrollbar:#4a5468,label:#c3ccda
   --height=100%
   --margin='1,2'
   --preview='bat --style=numbers --color=always {} | head -100'
