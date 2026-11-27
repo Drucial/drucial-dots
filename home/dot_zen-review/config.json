@@ -1,0 +1,12 @@
+{
+  "syntaxTheme": "zen-ink",
+  "background": "#0a0d14",
+  "foreground": "#dce3ee",
+  "paintBackground": true,
+  "addedHue": "#6ee6b8",
+  "removedHue": "#f2707a",
+  "theme": {
+    "accent": "#6ee6b8",
+    "selectedBackground": "#1c2536"
+  }
+}
