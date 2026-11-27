@@ -1,5 +1,5 @@
-[mgr]
-border_style = { fg = "darkgray" }
-
 [indicator]
 padding = { open = "▐", close = "▌" }
+
+[flavor]
+dark = "zen-ink"

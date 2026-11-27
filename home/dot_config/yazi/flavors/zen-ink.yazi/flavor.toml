@@ -1,0 +1,132 @@
+#:schema https://yazi-rs.github.io/schemas/theme.json
+
+[mgr]
+cwd = { fg = "#6ee6b8" }
+
+find_keyword  = { fg = "#ebc17a", bold = true, italic = true, underline = true }
+find_position = { fg = "#b58cff", bg = "reset", bold = true, italic = true }
+
+symlink_target = { fg = "#5cc8e0", italic = true }
+
+marker_copied   = { fg = "#6ee6b8", bg = "#6ee6b8" }
+marker_cut      = { fg = "#f2707a", bg = "#f2707a" }
+marker_marked   = { fg = "#5cc8e0", bg = "#5cc8e0" }
+marker_selected = { fg = "#ebc17a", bg = "#ebc17a" }
+marker_symbol   = "│"
+
+count_copied   = { fg = "#0a0d14", bg = "#6ee6b8" }
+count_cut      = { fg = "#0a0d14", bg = "#f2707a" }
+count_selected = { fg = "#0a0d14", bg = "#ebc17a" }
+
+border_symbol = "│"
+border_style  = { fg = "#4a5468" }
+
+syntect_theme = "./tmtheme.xml"
+
+[tabs]
+active   = { fg = "#0a0d14", bg = "#6ee6b8", bold = true }
+inactive = { fg = "#6ee6b8", bg = "#161b26" }
+
+sep_inner = { open = "", close = "" }
+sep_outer = { open = "", close = "" }
+
+[mode]
+normal_main = { fg = "#0a0d14", bg = "#6ee6b8", bold = true }
+normal_alt  = { fg = "#6ee6b8", bg = "#161b26" }
+
+select_main = { fg = "#0a0d14", bg = "#b58cff", bold = true }
+select_alt  = { fg = "#b58cff", bg = "#161b26" }
+
+unset_main = { fg = "#0a0d14", bg = "#f2707a", bold = true }
+unset_alt  = { fg = "#f2707a", bg = "#161b26" }
+
+[indicator]
+parent  = { fg = "#dce3ee", bg = "#1c2536" }
+current = { fg = "#f1f5fb", bg = "#1c2536", bold = true }
+preview = { bg = "#161b26" }
+
+[status]
+overall   = { fg = "#c3ccda" }
+sep_left  = { open = "", close = "" }
+sep_right = { open = "", close = "" }
+
+perm_sep   = { fg = "#4a5468" }
+perm_type  = { fg = "#6e9bff" }
+perm_read  = { fg = "#ebc17a" }
+perm_write = { fg = "#f2707a" }
+perm_exec  = { fg = "#6ee6b8" }
+
+progress_label  = { fg = "#dce3ee", bold = true }
+progress_normal = { fg = "#6ee6b8", bg = "#161b26" }
+progress_error  = { fg = "#f2707a", bg = "#161b26" }
+
+[which]
+border          = { fg = "#6ee6b8" }
+cols            = 3
+mask            = { bg = "#0a0d14" }
+cand            = { fg = "#5cc8e0" }
+rest            = { fg = "#4a5468" }
+desc            = { fg = "#b58cff" }
+separator       = "  "
+separator_style = { fg = "#4a5468" }
+
+[confirm]
+border     = { fg = "#6ee6b8" }
+title      = { fg = "#6ee6b8" }
+body       = {}
+list       = {}
+btn_yes    = { fg = "#0a0d14", bg = "#6ee6b8" }
+btn_no     = {}
+btn_labels = ["  [Y]es  ", "  (N)o  "]
+
+[spot]
+border   = { fg = "#6ee6b8" }
+title    = { fg = "#6ee6b8" }
+tbl_col  = { fg = "#6ee6b8" }
+tbl_cell = { fg = "#0a0d14", bg = "#ebc17a" }
+
+[notify]
+title_info  = { fg = "#6ee6b8" }
+title_warn  = { fg = "#ebc17a" }
+title_error = { fg = "#f2707a" }
+
+[pick]
+border   = { fg = "#6ee6b8" }
+active   = { fg = "#b58cff", bold = true }
+inactive = {}
+
+[input]
+border   = { fg = "#6ee6b8" }
+title    = {}
+value    = {}
+selected = { bg = "#1c2536" }
+
+[cmp]
+border   = { fg = "#6ee6b8" }
+active   = { bg = "#1c2536" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#6ee6b8" }
+title   = {}
+hovered = { fg = "#b58cff", bold = true }
+
+[help]
+border  = { fg = "#6ee6b8" }
+chord   = { fg = "#5cc8e0" }
+action  = { fg = "#c3ccda" }
+hovered = { bg = "#1c2536", bold = true }
+
+[filetype]
+rules = [
+	{ mime = "**/image/*", fg = "#ebc17a" },
+	{ mime = "**/{audio,video}/*", fg = "#b58cff" },
+	{ mime = "**/application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "#f2707a" },
+	{ mime = "**/application/{pdf,doc,rtf}", fg = "#5cc8e0" },
+	{ mime = "vfs/{absent,stale}", fg = "#4a5468" },
+	{ url = "*", is = "orphan", bg = "#f2707a" },
+	{ url = "*", is = "exec", fg = "#6ee6b8" },
+	{ url = "*", is = "dummy", bg = "#f2707a" },
+	{ url = "*/", is = "dummy", bg = "#f2707a" },
+	{ url = "*/", fg = "#6e9bff" },
+]
